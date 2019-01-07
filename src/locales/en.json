@@ -1,3 +1,14 @@
 {
-  "message": "hello i18n !!"
+  "nav": {
+    "whole": "Whole",
+    "roulette": "Roulette",
+    "guess": "Guess",
+    "tool": "Tool",
+    "more": "More",
+    "login": "Login"
+  },
+  "tips": {
+    "tips1": "The mystery game",
+    "tips2": "is coming soon"
+  }
 }
