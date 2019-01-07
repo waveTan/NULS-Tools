@@ -1,17 +1,40 @@
 <template>
-  <div class="home cb">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="home cb w1200">
+   <ul class="dapp-list">
+     <li>
+       <img src="./../assets/logo.png">
+       <b class="font12">神秘游戏即将上线<br/>敬请期待</b>
+     </li>
+     <li>
+       <img src="./../assets/logo.png">
+       <b class="font12">神秘游戏即将上线<br/>敬请期待</b>
+     </li>
+     <li>
+       <img src="./../assets/logo.png">
+       <b class="font12">神秘游戏即将上线<br/>敬请期待</b>
+     </li>
+     <li>
+       <img src="./../assets/logo.png">
+       <b class="font12">神秘游戏即将上线<br/>敬请期待</b>
+     </li>
+     <li>
+       <img src="./../assets/logo.png">
+       <b class="font12">神秘游戏即将上线<br/>敬请期待</b>
+     </li>
+   </ul>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
 export default {
   name: 'home',
   components: {
-    HelloWorld
   }
 }
 </script>
+<style lang="less">
+  @import "./../assets/css/style";
+  .home{
+
+  }
+</style>

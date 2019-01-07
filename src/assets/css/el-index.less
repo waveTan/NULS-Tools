@@ -1,119 +1,24 @@
 @import "style";
 
-.el-radio {
-  .el-radio__input {
-    .el-radio__inner {
-      border-color: @Ncolour;
-      background: @Bcolour;
+.el-menu{
+  float: left;
+  border-bottom: 0 !important;
+  .el-menu-item {
+    padding: 0 25px;
+    font-size: 16px;
+    .iconfont{
+      font-size: 28px;
+      padding: 0 5px 0 0;
     }
   }
-  .is-checked {
-    .el-radio__inner {
-      border-color: @Ncolour !important;
-      background: @Ncolour !important;
-    }
-  }
-}
-
-.el-form {
-  .el-form-item {
-    margin-bottom: 15px;
-    .el-form-item__label {
-      line-height: 25px;
-      padding: 0 12px 0 3px;
-    }
-    .el-form-item__content {
-      line-height: 0;
-      .el-input {
-        line-height: 0;
-        .el-input__inner {
-          height: 30px;
-          line-height: 30px;
-          border-radius: 1px;
-        }
-      }
-      .el-form-item__error {
-        font-size: 10px;
-        padding-top: 2px;
-      }
-    }
+  .is-active {
+    border-color: transparent !important;
+    color: @Ncolour !important;
   }
 }
 
-.el-table {
-  .has-gutter {
-    tr {
-      th {
-        background-color: @Bcolour;
-      }
-    }
-  }
-  td {
-    padding: 8px 0 !important;
+.el-select{
+  .el-input{
+    width: 110px;
   }
 }
-
-.el-tabs {
-  .el-tabs__header {
-    .el-tabs__nav-wrap {
-      .el-tabs__active-bar {
-        background-color: transparent;
-      }
-      .el-tabs__item {
-        &:hover {
-          color: @Ncolour;
-        }
-      }
-      .is-active {
-        color: @Ncolour;
-      }
-      &:after {
-        height: 1px !important;
-      }
-    }
-  }
-}
-
-.el-select {
-  .el-input {
-    .el-input__inner {
-      height: 30px;
-      line-height: 30px;
-      border-radius: 1px;
-      width: 174px;
-    }
-    .el-input__icon {
-      line-height: 30px;
-    }
-  }
-}
-
-.el-dialog__wrapper {
-  .el-dialog {
-    background-color: @Bcolour;
-    .el-dialog__header {
-      .el-dialog__headerbtn {
-        background-color: #6f7180;
-        top: -10px;
-        right: -10px;
-        border-radius: 8px;
-      }
-    }
-    .el-dialog__body {
-      .dialog-title{
-        margin: -30px 0 0 0;
-      }
-      .dialog-info{
-        word-break:break-all;
-        border: @BD1;
-        margin: 10px 20px 0;
-        padding: 5px;
-      }
-    }
-  }
-}
-
-.el-icon-menu{
-  margin: 10px 0 0 0;
-}
-
