@@ -5,10 +5,19 @@
     "guess": "Guess",
     "tool": "Tool",
     "more": "More",
-    "login": "Login"
+    "login": "Sign In"
+  },
+  "public": {
+    "address": "Address",
+    "balance": "Balance",
+    "signOut": "Sign Out",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
   },
   "tips": {
     "tips1": "The mystery game",
-    "tips2": "is coming soon"
+    "tips2": "is coming soon",
+    "tips3": "Please enter the private key",
+    "tips4": "Private keys are between 60 and 80 characters long"
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="home cb w1200">
    <ul class="dapp-list">
-     <li>
+     <li @click="toUrl('luckyWheel')">
        <img src="./../assets/logo.png">
        <b class="font12">{{$t('tips.tips1')}}<br/>{{$t('tips.tips2')}}</b>
      </li>
@@ -27,7 +27,17 @@
 <script>
 export default {
   name: 'home',
-  components: {
+  methods: {
+
+    /**
+     * 连接跳转
+     * @param urlName
+     */
+    toUrl(urlName) {
+      this.$router.push({
+        name: urlName
+      })
+    },
   }
 }
 </script>

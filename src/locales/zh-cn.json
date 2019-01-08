@@ -7,8 +7,17 @@
     "more": "更多",
     "login": "登录"
   },
+  "public": {
+    "address": "地址",
+    "balance": "余额",
+    "signOut": "退出",
+    "confirm": "确 定",
+    "cancel": "取 消"
+  },
   "tips": {
     "tips1": "神秘游戏即将上线",
-    "tips2": "敬请期待"
+    "tips2": "敬请期待",
+    "tips3": "请输入私钥",
+    "tips4": "私钥长度在 60 到 80 个字符"
   }
 }
