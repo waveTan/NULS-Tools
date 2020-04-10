@@ -1,83 +1,225 @@
 @import "style";
 @import url("https://at.alicdn.com/t/font_1002095_5ekbhc13qre.css");
-* html .clearfix {height: 1%}
-* {box-sizing: border-box;}
-body, div, dl, dt, dd, ul, ol, li,p, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea {margin: 0;padding: 0;font-family: @fontF, sans-serif;color: @Acolor;font-weight: 400}
-table {border-collapse: collapse;border-spacing: 0;}
-fieldset, img {border: 0;}
-address, caption, cite, code, dfn, em, strong, th, var {font-style: normal;font-weight: normal;}
-ol, ul {list-style: none;}
-q:before, q:after {content: ' '}
-a {text-decoration: none;color: @Acolor;outline: none;-webkit-tap-highlight-color: rgba(0, 0, 0, 0);}
-a:hover {text-decoration: none}
-a:focus {outline: none;}
-.tl {text-align: left;}
-.tc {text-align: center;}
-.tr {text-align: right;}
-.fw {font-weight: bold}
-.fl {float: left;display: inline;}
-.fr {float: right;display: inline;}
-.cb {clear: both;}
 
-.hidden {visibility: hidden;}
-.none {display: none;}
+* html .clearfix {
+  height: 1%
+}
 
-.w1200 {width: 1200px;margin: 0 auto;}
+* {
+  box-sizing: border-box;
+}
 
-.font10 {font-size: 10px;line-height: 10px;}
-.font12 {font-size: 12px;line-height: 12px;}
-.font14 {font-size: 14px;line-height: 16px;}
-.font16 {font-size: 16px;line-height: 16px;}
-.font18 {font-size: 18px;line-height: 18px;}
-.font20 {font-size: 20px;line-height: 20px;}
-.font24 {font-size: 24px;line-height: 24px;}
-.font30 {font-size: 30px;line-height: 30px;}
+body, div, dl, dt, dd, ul, ol, li, p, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea {
+  margin: 0;
+  padding: 0;
+  font-family: @fontF, sans-serif;
+  color: @Acolor;
+  font-weight: 400
+}
 
-.fW400 {font-weight: 400;}
-.fW600 {font-weight: 600;}
-.fCN {color: @Ncolour;}
-.fwhite{color: #FFFFFF;}
-.fred{color: red;}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
 
-.bg-white {background-color: @Bcolour1;}
-.bg-gray {background-color: @Bcolour2;}
+fieldset, img {
+  border: 0;
+}
+
+address, caption, cite, code, dfn, em, strong, th, var {
+  font-style: normal;
+  font-weight: normal;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+q:before, q:after {
+  content: ' '
+}
+
+a {
+  text-decoration: none;
+  color: @Acolor;
+  outline: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+a:hover {
+  text-decoration: none
+}
+
+a:focus {
+  outline: none;
+}
+
+.tl {
+  text-align: left;
+}
+
+.tc {
+  text-align: center;
+}
+
+.tr {
+  text-align: right;
+}
+
+.fw {
+  font-weight: bold
+}
+
+.fl {
+  float: left;
+  display: inline;
+}
+
+.fr {
+  float: right;
+  display: inline;
+}
+
+.cb {
+  clear: both;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.none {
+  display: none;
+}
+
+.w1200 {
+  width: 1200px;
+  margin: 0 auto;
+}
+
+.font10 {
+  font-size: 10px;
+  line-height: 10px;
+}
+
+.font12 {
+  font-size: 12px;
+  line-height: 12px;
+}
+
+.font14 {
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.font16 {
+  font-size: 16px;
+  line-height: 16px;
+}
+
+.font18 {
+  font-size: 18px;
+  line-height: 18px;
+}
+
+.font20 {
+  font-size: 20px;
+  line-height: 20px;
+}
+
+.font24 {
+  font-size: 24px;
+  line-height: 24px;
+}
+
+.font30 {
+  font-size: 30px;
+  line-height: 30px;
+}
+
+.fW400 {
+  font-weight: 400;
+}
+
+.fW600 {
+  font-weight: 600;
+}
+
+.fCN {
+  color: @Ncolour;
+}
+
+.fwhite {
+  color: #FFFFFF;
+}
+
+.fred {
+  color: red;
+}
+
+.bg-white {
+  background-color: @Bcolour1;
+}
+
+.bg-gray {
+  background-color: @Bcolour2;
+}
 
 /**可点击的手指样式**/
-.click {color: @Ccolour;cursor: pointer;}
-/**超长显示...**/
-.overflow {overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+.click {
+  color: @Ccolour;
+  cursor: pointer;
+}
 
-.dapp-list{
-  margin: 10px 0 0 0;
-  li{
+/**超长显示...**/
+.overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title {
+  height: 60px;
+  line-height: 40px;
+  padding: 20px 30px 0;
+  border-bottom: 1px solid #c1c1c1;
+}
+
+.dapp-list {
+  margin: 0 0 0 0;
+  li {
     width: 20%;
     height: 120px;
     border: @BD1;
     float: left;
-    margin: 40px 2.5% 0 2.5%;
+    margin: 20px 2.5% 0 2.5%;
     text-align: center;
     border-radius: 4px;
     cursor: pointer;
     color: #c1c1c1;
-    &:hover{
+
+    &:hover {
       border-radius: 2px;
       border-color: @Ncolour;
       color: @Ncolour;
-      img{
+
+      img {
         opacity: 0.8;
       }
     }
-    img{
+
+    img {
       height: 40px;
       opacity: 0.2;
       margin: 20px 0 0 0;
     }
-    b{
+
+    b {
       margin: 10px 0 0 0;
       font-weight: 400;
       line-height: 18px;
       display: block;
-      text-transform:Uppercase;
+      text-transform: Uppercase;
     }
   }
 }
@@ -86,21 +228,28 @@ a:focus {outline: none;}
   width: 25rem;
   margin: 0.5rem auto 0;
   display: block;
-  .addr,.bet,.result,.prize,.icon{
-    display: block;float: left;
+
+  .addr, .bet, .result, .prize, .icon {
+    display: block;
+    float: left;
   }
+
   .addr {
     width: 22%;
   }
+
   .bet {
     width: 30%;
   }
+
   .result {
     width: 30%;
   }
+
   .prize {
     width: 14%;
   }
+
   .icon {
     width: 4%;
   }

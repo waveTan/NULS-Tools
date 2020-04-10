@@ -1,7 +1,7 @@
 <template>
   <div class="tool w1200">
     <div>
-      <h6 class="title">文档</h6>
+      <h6 class="title font18 fW600">文档</h6>
       <ul class="dapp-list">
         <li>
           <img src="./../assets/logo.png">
@@ -14,7 +14,7 @@
       </ul>
     </div>
     <div class="cb">
-      <h6 class="title">工具</h6>
+      <h6 class="title font18 fW600">工具</h6>
       <ul class="dapp-list">
         <li>
           <img src="./../assets/logo.png">
@@ -27,7 +27,7 @@
       </ul>
     </div>
     <div class="cb">
-      <h6 class="title">交易</h6>
+      <h6 class="title font18 fW600">交流</h6>
       <ul class="dapp-list">
         <li>
           <img src="./../assets/logo.png">

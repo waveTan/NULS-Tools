@@ -1,27 +1,27 @@
 <template>
   <div class="home cb w1200">
-    <div class="nuls">
-      <h6 class="title">NULS</h6>
+    <div class="cb">
+      <h6 class="title font18 fW600">NULS </h6>
       <ul class="dapp-list">
         <li @click="toUrl('luckyWheel')">
           <img src="./../assets/logo.png">
-          <b class="font12">NULS Web钱包<br/>NULS的钱包</b>
+          <b class="font12">NULS Web钱包<br/>资产、共识、合约</b>
         </li>
         <li>
           <img src="./../assets/logo.png">
-          <b class="font12">nuls浏览器<br/>查询信息</b>
+          <b class="font12">NULS 浏览器<br/>账户、节点、合约、轮次查询</b>
         <li>
           <img src="./../assets/logo.png">
-          <b class="font12">naboxnulsapp<br/>{{$t('tips.tips2')}}</b>
+          <b class="font12">Nabox<br/>NULS APP</b>
         </li>
         <li>
           <img src="./../assets/logo.png">
-          <b class="font12">Githup<br/>源码信息</b>
+          <b class="font12">Githup<br/>NULS 开源代码</b>
         </li>
       </ul>
     </div>
     <div class="cb">
-      <h6 class="title">NUSL生态</h6>
+      <h6 class="title font18 fW600">生态</h6>
       <ul class="dapp-list">
         <li>
           <img src="./../assets/logo.png">
@@ -37,7 +37,7 @@
       </ul>
     </div>
     <div class="cb">
-      <h6 class="title">nuls小游戏</h6>
+      <h6 class="title font18 fW600">娱乐</h6>
       <ul class="dapp-list">
         <li>
           <img src="./../assets/logo.png">
@@ -61,7 +61,6 @@
 
 <script>
   export default {
-    name: 'home',
     methods: {
 
       /**
@@ -80,6 +79,6 @@
   @import "./../assets/css/style";
 
   .home {
-
+    min-height: 800px;
   }
 </style>
