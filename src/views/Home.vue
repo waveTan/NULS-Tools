@@ -37,7 +37,7 @@
       </ul>
     </div>
     <div class="cb">
-      <h6 class="title">游戏</h6>
+      <h6 class="title">nuls小游戏</h6>
       <ul class="dapp-list">
         <li>
           <img src="./../assets/logo.png">
