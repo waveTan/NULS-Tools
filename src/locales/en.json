@@ -1,6 +1,7 @@
 {
   "nav": {
-    "whole": "Whole",
+    "home": "Home",
+    "game": "Game",
     "roulette": "Roulette",
     "guess": "Guess",
     "tool": "Tool",

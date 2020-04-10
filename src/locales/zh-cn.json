@@ -1,6 +1,7 @@
 {
   "nav": {
-    "whole": "全部",
+    "home": "首页",
+    "game": "游戏",
     "roulette": "轮盘",
     "guess": "竞猜",
     "tool": "工具",

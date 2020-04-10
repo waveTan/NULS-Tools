@@ -5,9 +5,8 @@
     </el-col>
     <el-col :span="14" class="nav">
       <el-menu :default-active="activeIndex" mode="horizontal" @select="handleSelect" class="nav fl">
-        <el-menu-item index="home"><i class="iconfont icon-quanbu"></i>{{$t('nav.whole')}}</el-menu-item>
-        <el-menu-item index="roulette"><i class="iconfont icon-dazhuanpan"></i>{{$t('nav.roulette')}}</el-menu-item>
-        <el-menu-item index="guess"><i class="iconfont icon-jingcai"></i>{{$t('nav.guess')}}</el-menu-item>
+        <el-menu-item index="home"><i class="iconfont icon-quanbu"></i>{{$t('nav.home')}}</el-menu-item>
+        <el-menu-item index="game"><i class="iconfont icon-dazhuanpan"></i>{{$t('nav.game')}}</el-menu-item>
         <el-menu-item index="tool"><i class="iconfont icon-gongju"></i>{{$t('nav.tool')}}</el-menu-item>
         <el-menu-item index="more"><i class="iconfont icon-gengduo"></i>{{$t('nav.more')}}</el-menu-item>
       </el-menu>
@@ -41,8 +40,6 @@
 
 <script>
   import nulsJs from 'nuls-jssdk';
-  import {private_key_to_public_key, address_from_hash, public_key_to_hash} from 'nulsworldjs/src/model/data.js';
-  //const api_server = 'https://testnet.nuls.world/';
   export default {
     data() {
       return {
