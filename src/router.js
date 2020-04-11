@@ -1,11 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home'
-import Roulette from './views/Roulette'
-import LuckyWheel from './views/roulette/LuckyWheel'
-import Guess from './views/Guess'
-import More from './views/More'
-import Tool from './views/Tool'
+import Game from './views/game/Index.vue'
+import More from './views/more/Index.vue'
+import Tool from './views/tool/Index.vue'
 
 Vue.use(Router);
 
@@ -17,19 +15,9 @@ export default new Router({
       component: Home
     },
     {
-      path: '/roulette',
-      name: 'roulette',
-      component: Roulette
-    },
-    {
-      path: '/roulette/luckyWheel',
-      name: 'luckyWheel',
-      component: LuckyWheel
-    },
-    {
-      path: '/guess',
-      name: 'guess',
-      component: Guess
+      path: '/game',
+      name: 'game',
+      component: Game
     },
     {
       path: '/more',
