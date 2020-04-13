@@ -1,7 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home'
+import User from './views/user/User.vue'
+import NewAddress from './views/user/NewAddress.vue'
+import BackupsAddress from './views/user/BackupsAddress.vue'
 import Game from './views/game/Index.vue'
+import Lucky from './views/game/lucky/Index.vue'
 import More from './views/more/Index.vue'
 import Tool from './views/tool/Index.vue'
 
@@ -15,9 +19,29 @@ export default new Router({
       component: Home
     },
     {
+      path: '/user',
+      name: 'user',
+      component: User
+    },
+    {
+      path: '/user/NewAddress',
+      name: 'newAddress',
+      component: NewAddress
+    },
+    {
+      path: '/user/BackupsAddress',
+      name: 'backupsAddress',
+      component: BackupsAddress
+    },
+    {
       path: '/game',
       name: 'game',
       component: Game
+    },
+    {
+      path: '/game/lucky',
+      name: 'lucky',
+      component: Lucky
     },
     {
       path: '/more',

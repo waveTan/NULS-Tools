@@ -4,6 +4,9 @@ import store from './store'
 import router from './router'
 import i18n from './i18n'
 import './plugins/element.js'
+import LuckDraw from 'vue-luck-draw'
+
+Vue.use(LuckDraw);
 
 Vue.config.productionTip = false;
 
