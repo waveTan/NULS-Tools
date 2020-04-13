@@ -1,15 +1,16 @@
-const IS_DEV = process.env.NODE_ENV !== 'production';
-let host = window.location.host; //获取地址和端口
-//let host = '127.0.0.1:8080'; //获取地址和端口
-
-//Request response time
-export const API_TIME = IS_DEV ? '6000' : '16000';
-
-//运行环境（true:正式环境，false:测试环境）
-export const RUN_DEV = true;
-
-//Request url
-//测试网是http,正式环境是https
-let url= RUN_DEV ? 'https://'+host+'/api/' : 'http://'+host+'/api/';
-export const API_ROOT = IS_DEV ? '/api/' : url;
-
+/**
+ * @disc: 测试网 配置文件
+ * @date: 2019-10-10 13:58
+ * @author: Wave
+ */
+"use strict";
+//开发模式
+export const IS_DEV = process.env.NODE_ENV === 'production';
+//链信息
+export const chainInfo = {chainId: 1, assetsId: 1, prefix: 'NULS'};
+//api正式、测试网络的api
+export let API_URL = IS_DEV ? 'http://public2.nuls.io' : 'http://public2.nuls.io';
+//请求最迟时间
+export const API_TIME = IS_DEV ? '9000' : '5000';
+//浏览器连接地址
+export const EXPLORER_URL = 'http://www.nulscan.io/';

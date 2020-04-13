@@ -70,8 +70,8 @@
 
 <script>
   import nuls from 'nuls-sdk-js'
-  import {defaultAsset, API_PREFIX} from '@/config'
-  import {passwordVerification, connect} from '@/api/util'
+  import {chainInfo} from '@/config'
+  import {passwordVerification} from '@/api/requestData'
   import Password from '@/components/PasswordBar'
 
   export default {
@@ -296,7 +296,7 @@
       newAddressSubmitForm(formName) {
         this.$refs[formName].validate(async (valid) => {
           if (valid) {
-            this.newAddressInfo = nuls.newAddress(defaultAsset.assetsChainId, this.newAddressForm.pass, API_PREFIX);
+            this.newAddressInfo = nuls.newAddress(chainInfo.chainId, this.newAddressForm.pass, chainInfo.prefix);
             //console.log(this.newAddressInfo);
             localStorage.setItem('accountInfo', JSON.stringify(this.newAddressInfo));
             this.toUrl('backupsAddress');
@@ -308,14 +308,17 @@
 
       /**
        * @disc: 连接跳转
-       * @params: name, parameter, type
+       * @params: urlName, parameter, type
        * @date: 2019-09-02 11:12
        * @author: Wave
        */
-      toUrl(name, parameter = '', type = 0) {
-        let newConnect = connect(name, parameter, type);
-        if (newConnect.success) {
-          this.$router.push(newConnect.data)
+      toUrl(urlName, parameter = '', type = 0) {
+        if(type ===0){
+          this.$router.push({
+            name: urlName
+          })
+        }else {
+          console.log(name)
         }
       },
     }

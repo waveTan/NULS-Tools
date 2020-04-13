@@ -12,14 +12,13 @@ axios.defaults.headers.put['Content-Type'] = 'application/json';
  * @param params
  * @returns {Promise}
  */
-export function fetch(url, params = {}) {
+export function get(url, params = {}) {
   return new Promise((resolve, reject) => {
     axios.get(url, {params: params})
       .then(response => {
         resolve(response.data)
       })
       .catch(err => {
-        //reject(err)
         console.log(err);
         reject('网络异常')
       })
