@@ -1,7 +1,8 @@
 import axios from 'axios'
-import {API_TIME,API_ROOT} from '../config.js'
+import {API_URL, API_TIME, chainInfo} from '../config.js'
+
+axios.defaults.baseURL = API_URL;
 axios.defaults.timeout = API_TIME;
-axios.defaults.baseURL = API_ROOT;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 axios.defaults.headers.put['Content-Type'] = 'application/json';
 
@@ -32,9 +33,11 @@ export function get(url, params = {}) {
  * @param data
  * @returns {Promise}
  */
-export function post(url, data = {}) {
+export function post(url, methodName, data = {}) {
+  data.unshift(chainInfo.chainId);
+  const parameter = {"jsonrpc": "2.0", "method": methodName, "params": data, "id": Math.floor(Math.random() * 1000)};
   return new Promise((resolve, reject) => {
-    axios.post(url, data)
+    axios.post(url, parameter)
       .then(response => {
         resolve(response.data)
       }, err => {

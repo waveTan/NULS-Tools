@@ -39,10 +39,10 @@ export async function getAddressInfoByAddress(address) {
   return await post('/', 'getAccount', [address])
     .then((response) => {
       //console.log(response);
-      if (response.success) {
-        return {success: true, data: response.data}
+      if (response.hasOwnProperty('result')) {
+        return {success: true, data: response.result}
       } else {
-        return {success: false, data: response.data}
+        return {success: false, data: response}
       }
     })
     .catch((error) => {

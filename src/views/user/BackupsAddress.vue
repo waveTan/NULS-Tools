@@ -16,14 +16,14 @@
         <p class="sub_info pl_20"><i></i> {{$t('backupsAddress.backupsAddress3')}}</p>
       </div>
 
-      <div class="w630 tc btn-next pb_20">
-        <div class="mt_20">
+      <div class="w630 tc btn-next">
+        <div class="btn">
           <el-button type="success " @click="backupsKeyStore">{{$t('backupsAddress.backupsAddress41')}}</el-button>
         </div>
-        <div class="mt_20">
+        <div class="btn">
           <el-button type="success" @click="backupsKey">{{$t('backupsAddress.backupsAddress4')}}</el-button>
         </div>
-        <div class="mt_20 mb_20">
+        <div class="btn">
           <el-button @click="toUrl('home')"> {{$t('backupsAddress.backupsAddress5')}}</el-button>
         </div>
       </div>
@@ -183,7 +183,7 @@
         }
       }
     }
-    .backups-info{
+    .backups-info {
       .el-dialog {
         background-color: #F5F6F9 !important;
       }
@@ -191,6 +191,9 @@
   }
 
   .btn-next {
+    .btn {
+      margin: 20px 0 20px 0;
+    }
     @media screen and (max-width: 1024px) {
       width: 100%;
     }

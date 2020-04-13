@@ -31,7 +31,7 @@
                 <el-input v-model="importForm.checkPass" type="password" autocomplete="off">
                 </el-input>
               </el-form-item>
-              <el-form-item class="form-bnt mb_100">
+              <el-form-item class="form-bnt mb_100 tc">
                 <el-button type="success" @click="keyImport('importForm')">{{$t('newAddress.newAddress9')}}</el-button>
               </el-form-item>
             </el-form>
@@ -54,7 +54,7 @@
                 </el-checkbox>
               </el-checkbox-group>
             </el-form-item>
-            <el-form-item class="form-bnt">
+            <el-form-item class="form-bnt tc" style="margin-top: 20px">
               <el-button type="success" @click="newAddressSubmitForm('newAddressForm')">
                 {{$t('newAddress.newAddress2')}}
               </el-button>
@@ -71,7 +71,7 @@
 <script>
   import nuls from 'nuls-sdk-js'
   import {chainInfo} from '@/config'
-  import {passwordVerification} from '@/api/requestData'
+  import {passwordVerification, getAddressInfoByAddress} from '@/api/requestData'
   import Password from '@/components/PasswordBar'
 
   export default {
@@ -238,7 +238,7 @@
           this.keystoreInfo.address = isPassword.address;
           localStorage.setItem('accountInfo', JSON.stringify(this.keystoreInfo));
           this.toUrl('backupsAddress');
-          /*let addressInfo = await getAddressInfoByAddress(this.keystoreInfo.address);
+          let addressInfo = await getAddressInfoByAddress(this.keystoreInfo.address);
           if (addressInfo.success) {
             let newAddressInfo = {...this.keystoreInfo, ...addressInfo.data};
             localStorage.setItem('accountInfo', JSON.stringify(newAddressInfo));
@@ -249,7 +249,7 @@
               type: 'error',
               duration: 2000
             });
-          }*/
+          }
         } else {
           this.$message({message: this.$t('tips.tips4'), type: 'error', duration: 2000});
         }
@@ -264,12 +264,12 @@
       keyImport(formName) {
         this.$refs[formName].validate(async (valid) => {
           if (valid) {
-            const keyAddressInfo = nuls.importByKey(defaultAsset.assetsChainId, this.importForm.keys, this.importForm.pass, API_PREFIX);
+            const keyAddressInfo = nuls.importByKey(chainInfo.chainId, this.importForm.keys, this.importForm.pass, chainInfo.prefix);
             localStorage.setItem('accountInfo', JSON.stringify(keyAddressInfo));
             this.toUrl('backupsAddress');
-            //let addressInfo = await getAddressInfoByAddress(keyAddressInfo.address);
+            let addressInfo = await getAddressInfoByAddress(keyAddressInfo.address);
             //console.log(addressInfo);
-            /*if (addressInfo.success) {
+            if (addressInfo.success) {
               let newAddressInfo = {...keyAddressInfo, ...addressInfo.data};
               localStorage.setItem('accountInfo', JSON.stringify(newAddressInfo));
               this.toUrl('backupsAddress');
@@ -279,7 +279,7 @@
                 type: 'error',
                 duration: 2000
               });
-            }*/
+            }
             this.toUrl('backupsAddress');
           } else {
             return false;
@@ -313,11 +313,11 @@
        * @author: Wave
        */
       toUrl(urlName, parameter = '', type = 0) {
-        if(type ===0){
+        if (type === 0) {
           this.$router.push({
             name: urlName
           })
-        }else {
+        } else {
           console.log(name)
         }
       },

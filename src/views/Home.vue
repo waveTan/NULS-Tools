@@ -61,6 +61,21 @@
 
 <script>
   export default {
+    created() {
+
+    },
+    mounted() {
+    },
+    destroyed() {
+    },
+    components: {
+    },
+    computed: {
+
+    },
+    watch: {
+
+    },
     methods: {
 
       /** 连接跳转

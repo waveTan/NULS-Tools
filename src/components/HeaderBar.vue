@@ -11,17 +11,17 @@
         <el-menu-item index="more"><i class="iconfont icon-gengduo"></i>{{$t('nav.more')}}</el-menu-item>
       </el-menu>
     </el-col>
-    <el-col :span="6" class="user font14">
-      <div class="click fl" @click="toUrl('newAddress','',0)" v-if="!accountInfo.address">
+    <el-col :span="6" class="user font14" :class="accountInfo.address ? '':'tr'">
+      <div class="click fl" @click="toUrl('newAddress','',0)" v-show="!accountInfo.address">
         {{$t('nav.login')}}
       </div>
-      <div class="user-info fl" v-else>
+      <div class="user-info fl" v-show="accountInfo.address">
         <p class="font12">{{$t('public.address')}}：{{accountInfo.address}}</p>
         <p class="font12">{{$t('public.balance')}}：{{accountInfo.balance}} NULS
           <span class="click" @click="signOut">{{$t('public.signOut')}}</span>
         </p>
       </div>
-      <div class="language click fl" @click="selectLanguage">{{lang === 'en' ? 'English':'简体中文' }}</div>
+      <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? 'En':'中文' }}</div>
     </el-col>
   </el-row>
 </template>
@@ -32,8 +32,15 @@
       return {
         activeIndex: '1',//导航选中项
         lang: 'en',  //语言
-        accountInfo: {},
+        accountInfo: localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {} //账户信息
       };
+    },
+    created() {
+      setInterval(() => {
+        this.accountInfo = localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {}
+      }, 500)
+    },
+    mounted() {
     },
     methods: {
 
@@ -60,7 +67,16 @@
        * 退出
        */
       signOut() {
-
+        this.$confirm('您确定已经备份完成并退出当前账户！', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '去备份',
+          type: 'warning'
+        }).then(() => {
+          localStorage.removeItem('accountInfo');
+          this.toUrl('newAddress', '', 0)
+        }).catch(() => {
+          this.toUrl('BackupsAddress', '', 0)
+        });
       },
 
       /**
@@ -104,7 +120,7 @@
         }
       }
       .language {
-        margin: 0 0 0 50px;
+        margin: 0 0 0 10px;
       }
     }
   }

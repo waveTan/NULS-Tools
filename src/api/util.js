@@ -1,4 +1,5 @@
 import {BigNumber} from 'bignumber.js'
+import copy from 'copy-to-clipboard'
 
 /**
  * 10的N 次方
@@ -50,7 +51,7 @@ export function Division(nu, arg) {
 /**
  * 数字除以精度系数
  */
-export function timesDecimals(nu,decimals = 8) {
+export function timesDecimals(nu, decimals = 8) {
   let newNu = new BigNumber(Division(nu, Power(decimals)).toString());
   return newNu.toFormat().replace(/[,]/g, '');
 }
@@ -107,6 +108,12 @@ export function getLocalTime(time) {
   let localTime = utcTime + 3600000 * Math.abs(localUtc);
   return new Date(localTime);
 }
+
+/**
+ * 复制 copy
+ * @param value
+ */
+export const copys = (value) => copy(value);
 
 /**
  * 超长数字显示
