@@ -1,5 +1,7 @@
 import nuls from 'nuls-sdk-js'
+import {chainInfo} from '@/config'
 import {post} from './https'
+import {Minus} from './util'
 
 /**
  * @disc: 验证密码
@@ -11,7 +13,7 @@ import {post} from './https'
 export function passwordVerification(accountInfo, password) {
   let aesPri = accountInfo.aesPri ? accountInfo.aesPri : accountInfo.encryptedPrivateKey;
   const pri = nuls.decrypteOfAES(aesPri, password);
-  const newAddressInfo = nuls.importByKey(defaultAsset.assetsChainId, pri, password, API_PREFIX);
+  const newAddressInfo = nuls.importByKey(chainInfo.chainId, pri, password, chainInfo.prefix);
   if (newAddressInfo.address === accountInfo.address) {
     return {success: true, pri: pri, pub: accountInfo.pub, address: accountInfo.address, aesPri: newAddressInfo.aesPri};
   } else {
@@ -51,6 +53,31 @@ export async function getAddressInfoByAddress(address) {
 }
 
 /**
+ * 获取inputs and outputs
+ * @param transferInfo
+ * @returns {*}
+ **/
+export async function inputsOrOutputs(transferInfo, balanceInfo) {
+  let inputs = [{
+    address: transferInfo.fromAddress,
+    assetsChainId: transferInfo.assetsChainId,
+    assetsId: transferInfo.assetsId,
+    amount: transferInfo.amount,
+    locked: 0,
+    nonce: balanceInfo.data.nonce
+  }];
+
+  let outputs = [{
+    address: transferInfo.toAddress,
+    assetsChainId: transferInfo.assetsId,
+    assetsId: transferInfo.assetsId,
+    amount: Number(Minus(transferInfo.fee, transferInfo.amount)),
+    lockTime: 0
+  }];
+  return {success: true, data: {inputs: inputs, outputs: outputs}};
+}
+
+/**
  * 获取地址的余额及nonce根据地址
  * @param chainId
  * @param assetId
@@ -61,8 +88,8 @@ export async function getBalanceOrNonceByAddress(address, chainId = 2, assetId =
   return await post('/', 'getAccountBalance', [chainId, assetId, address])
     .then((response) => {
       //console.log(response);
-      if (response.success) {
-        return {success: true, data: {balance: response.data.balance, nonce: response.data.nonce}}
+      if (response.hasOwnProperty('result')) {
+        return {success: true, data: {balance: response.result.balance, nonce: response.result.nonce}}
       } else {
         return {success: false, data: response}
       }

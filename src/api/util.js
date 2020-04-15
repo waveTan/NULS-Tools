@@ -90,6 +90,16 @@ export function tofix(val, len, side) {
 }
 
 /**
+ * @disc: 方法休眠
+ * @params: time 时间毫秒
+ * @date: 2020-04-15 14:52
+ * @author: Wave
+ */
+export function sleep(time) {
+  for (let t = Date.now(); Date.now() - t <= time;) ;
+}
+
+/**
  * 根据不同时区显示时间
  * @param time
  * @returns {*}

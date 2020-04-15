@@ -12,7 +12,7 @@
       </el-menu>
     </el-col>
     <el-col :span="6" class="user font14" :class="accountInfo.address ? '':'tr'">
-      <div class="click fl" @click="toUrl('newAddress','',0)" v-show="!accountInfo.address">
+      <div class="click fl" style="width: 50px" @click="toUrl('newAddress','',0)" v-show="!accountInfo.address">
         {{$t('nav.login')}}
       </div>
       <div class="user-info fl" v-show="accountInfo.address">
@@ -27,6 +27,8 @@
 </template>
 
 <script>
+  import {timesDecimals} from '@/api/util.js'
+
   export default {
     data() {
       return {
@@ -37,7 +39,8 @@
     },
     created() {
       setInterval(() => {
-        this.accountInfo = localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {}
+        this.accountInfo = localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {};
+        this.accountInfo.balance = timesDecimals(this.accountInfo.balance, 8)
       }, 500)
     },
     mounted() {
@@ -75,7 +78,7 @@
           localStorage.removeItem('accountInfo');
           this.toUrl('newAddress', '', 0)
         }).catch(() => {
-          this.toUrl('BackupsAddress', '', 0)
+          this.toUrl('backupsAddress', '', 0)
         });
       },
 
