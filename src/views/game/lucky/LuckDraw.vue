@@ -140,15 +140,15 @@
           // 只要抽奖没有结束，就不让再次抽奖
           if (this.value < 0 || this.value >= this.awards.length) console.error('该索引的奖品不存在!');
           if (!this.canBeClick || this.value < 0 || this.value >= this.awards.length) return false;
-          let aa = await this.$parent.handStartBefore();
+          /*let aa = await this.$parent.handStartBefore();
           console.log(aa);
-          return false;
+          return false;*/
           this.canBeClick = false;
           let loc = this.windowToCanvas(canvas, e);
           ctx.beginPath();
           ctx.arc(this.radius, this.radius, 50, 0, Math.PI * 2, false);
           if (ctx.isPointInPath(loc.x, loc.y)) {
-            this.$emit('start','kkkk');
+            this.$emit('start');
             // 每次点击抽奖，都将初始化角度重置
             this.startRadian = -Math.floor(Math.random() * 180);
             // distance是计算出的将指定奖品旋转到指针处需要旋转的角度距离，distanceToStop下面会又说明
