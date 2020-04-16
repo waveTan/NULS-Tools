@@ -6,6 +6,7 @@ import NewAddress from './views/user/NewAddress.vue'
 import BackupsAddress from './views/user/BackupsAddress.vue'
 import Game from './views/game/Index.vue'
 import Lucky from './views/game/lucky/Index.vue'
+import GuessNumber from './views/game/guessNumber/GuessNumber.vue'
 import More from './views/more/Index.vue'
 import Tool from './views/tool/Index.vue'
 
@@ -42,6 +43,11 @@ export default new Router({
       path: '/game/lucky',
       name: 'lucky',
       component: Lucky
+    },
+    {
+      path: '/game/guessNumber',
+      name: 'guessNumber',
+      component: GuessNumber
     },
     {
       path: '/more',

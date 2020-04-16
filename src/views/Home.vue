@@ -42,6 +42,11 @@
         <li @click="toUrl('lucky','',0)">
           <img src="./../assets/logo.png">
           <b class="font12">大转盘<br/>玩转盘得NULS百分之百中奖</b>
+        </li>
+        <li @click="toUrl('guessNumber','',0)">
+          <img src="./../assets/logo.png">
+          <b class="font12">猜数字<br/>{{$t('tips.tips2')}}</b>
+        </li>
         <li>
           <img src="./../assets/logo.png">
           <b class="font12">快乐翻牌<br/>{{$t('tips.tips2')}}</b>
@@ -50,10 +55,7 @@
           <img src="./../assets/logo.png">
           <b class="font12">数字华容道<br/>{{$t('tips.tips2')}}</b>
         </li>
-        <li>
-          <img src="./../assets/logo.png">
-          <b class="font12">猜数字<br/>{{$t('tips.tips2')}}</b>
-        </li>
+
       </ul>
     </div>
   </div>
