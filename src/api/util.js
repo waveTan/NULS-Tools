@@ -50,10 +50,29 @@ export function Division(nu, arg) {
 
 /**
  * 数字除以精度系数
+ * @param nu
+ * @param decimals
+ * @returns {string}
+ * @constructor
  */
-export function timesDecimals(nu, decimals = 8) {
+export function divisionDecimals(nu, decimals = 8) {
   let newNu = new BigNumber(Division(nu, Power(decimals)).toString());
   return newNu.toFormat().replace(/[,]/g, '');
+}
+
+/**
+ * 数字乘以精度系数
+ * @param nu
+ * @param decimals
+ * @returns {number}
+ * @constructor
+ */
+export function timesDecimals(nu, decimals = 8) {
+  if (Number(nu) === 0) {
+    return 0;
+  }
+  let newNu = new BigNumber(Times(nu, Power(decimals)).toString());
+  return Number(newNu);
 }
 
 /**

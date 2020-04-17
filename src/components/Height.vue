@@ -46,6 +46,6 @@
 <style lang="less" type="text/less">
   .block_height {
     width: 120px;
-    line-height: 60px;
+    line-height: 40px;
   }
 </style>

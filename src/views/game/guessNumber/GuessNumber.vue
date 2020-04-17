@@ -8,13 +8,17 @@
           <p>2、此随机数是基于NULS随机数开发的绝对公平</p>
         </div>
         <div class="number">
-          <el-button circle v-for="item in valueList" :key="item" @click="clickNumber(item)">{{item}}</el-button>
+          <el-button circle v-for="item in valueList" :key="item.value" @click="clickNumber(item.value)"
+                     :class="item.value ===numberValue ? 'is_number':''">
+            {{item.label}}
+          </el-button>
         </div>
         <div class="submit tc">
           <el-button type="success">{{this.numberValue ==='' ? '请点击数字':'您猜本轮开'}} {{this.numberValue}}</el-button>
         </div>
         <div class="jackpot font14">
-          奖池<span class="font12">(NULSd6HgXNRbGv7iMsoRRA37fzyTukitrWAVe)</span>:5625.123 NULS
+          奖池<span class="font12" v-show="false">({{jackpotInfo.address}})</span>:&nbsp; <font
+                class="fCN fW600">{{jackpotInfo.balance}}</font> NULS
         </div>
       </div>
       <div class="fr party">
@@ -32,65 +36,41 @@
       </div>
     </div>
     <div class="footer cb">
-      <h3>开奖历史</h3>
-      <el-collapse v-model="activeName" accordion>
-        <el-collapse-item title="第4轮 开奖 8" name="1">
-          <div class="footer_table">
-            <el-table :data="partyData" style="width: 100%">
-              <el-table-column prop="address" label="地址" align="center" width="180">
-              </el-table-column>
-              <el-table-column prop="txHash" label="txHash" align="center" min-width="80">
-              </el-table-column>
-              <el-table-column prop="date" label="时间" align="center" width="180">
-              </el-table-column>
-              <el-table-column prop="amount" label="金额" align="center" width="150">
-              </el-table-column>
-            </el-table>
-          </div>
-        </el-collapse-item>
-        <el-collapse-item title="第3轮 开奖 5" name="2">
-          <div class="footer_table">
-            <el-table :data="partyData" style="width: 100%">
-              <el-table-column prop="address" label="地址" align="center" width="180">
-              </el-table-column>
-              <el-table-column prop="txHash" label="txHash" align="center" min-width="80">
-              </el-table-column>
-              <el-table-column prop="date" label="时间" align="center" width="180">
-              </el-table-column>
-              <el-table-column prop="amount" label="金额" align="center" width="150">
-              </el-table-column>
-            </el-table>
-          </div>
-        </el-collapse-item>
-        <el-collapse-item title="第2轮 开奖 4" name="3">
-          <div class="footer_table">
-            <el-table :data="partyData" style="width: 100%">
-              <el-table-column prop="address" label="地址" align="center" width="180">
-              </el-table-column>
-              <el-table-column prop="txHash" label="txHash" align="center" min-width="80">
-              </el-table-column>
-              <el-table-column prop="date" label="时间" align="center" width="180">
-              </el-table-column>
-              <el-table-column prop="amount" label="金额" align="center" width="150">
-              </el-table-column>
-            </el-table>
-          </div>
-        </el-collapse-item>
-        <el-collapse-item title="第1轮 开奖 6" name="4">
-          <div class="footer_table">
-            <el-table :data="partyData" style="width: 100%">
-              <el-table-column prop="address" label="地址" align="center" width="180">
-              </el-table-column>
-              <el-table-column prop="txHash" label="txHash" align="center" min-width="80">
-              </el-table-column>
-              <el-table-column prop="date" label="时间" align="center" width="180">
-              </el-table-column>
-              <el-table-column prop="amount" label="金额" align="center" width="150">
-              </el-table-column>
-            </el-table>
-          </div>
-        </el-collapse-item>
-      </el-collapse>
+      <el-tabs v-model="activeHistory" @tab-click="handleClick">
+        <el-tab-pane label="中奖历史" name="first">中奖历史</el-tab-pane>
+        <el-tab-pane label="参与历史" name="second">参与历史</el-tab-pane>
+        <el-tab-pane label="开奖历史" name="third">
+          <el-collapse v-model="activeName" accordion>
+            <el-collapse-item v-for="item in historyData"
+                              :title="'第' +item.gameId+'轮 开奖 '+item.gameLotteryDelay"
+                              :name=item.gameId>
+              <div class="footer_table">
+                <el-table :data="partyData" style="width: 100%">
+                  <el-table-column prop="address" label="地址" align="center" width="180">
+                  </el-table-column>
+                  <el-table-column prop="txHash" label="txHash" align="center" min-width="80">
+                  </el-table-column>
+                  <el-table-column prop="date" label="时间" align="center" width="180">
+                  </el-table-column>
+                  <el-table-column prop="amount" label="金额" align="center" width="150">
+                  </el-table-column>
+                </el-table>
+              </div>
+            </el-collapse-item>
+          </el-collapse>
+
+        </el-tab-pane>
+      </el-tabs>
+
+      <div class="page" v-show="pageTotal > pageSize ">
+        <el-pagination layout="total, prev, pager, next, jumper"
+                       @current-change="pageChange"
+                       :current-page=pageIndex
+                       :page-size=pageSize
+                       :total="pageTotal">
+        </el-pagination>
+      </div>
+
     </div>
     <Password ref="password" @passwordSubmit="guessPassSubmit">
     </Password>
@@ -98,8 +78,10 @@
 </template>
 
 <script>
+  import axios from 'axios'
   import nuls from 'nuls-sdk-js'
   import {chainInfo} from '@/config'
+  import {divisionDecimals} from '@/api/util'
   import {
     passwordVerification,
     getBalanceOrNonceByAddress,
@@ -111,18 +93,52 @@
   export default {
     data() {
       return {
-        valueList: 9,//
-        numberValue: '',
-        partyData: [
-          {address: 'NULS...WAVe', txHash: 'NULSew...WAVerwe', date: '2016-05-02 08:08:08', amount: '2.00'},
-          {address: 'NULS...WAVe', txHash: 'NULSew...WAVerwe', date: '2016-05-02 08:08:08', amount: '2.00'},
-          {address: 'NULS...WAVe', txHash: 'NULSew...WAVerwe', date: '2016-05-02 08:08:08', amount: '2.00'},
-          {address: 'NULS...WAVe', txHash: 'NULSew...WAVerwe', date: '2016-05-02 08:08:08', amount: '2.00'},
-          {address: 'NULS...WAVe', txHash: 'NULSew...WAVerwe', date: '2016-05-02 08:08:08', amount: '2.00'},
-        ],
-        activeName: '1'
+        config: {
+          url: 'http://192.168.1.40:81',
+        },
+        jackpotInfo: {
+          address: 'tNULSeBaMrbMRiFAUeeAt6swb4xVBNyi81YL24',
+          balance: 0,
+        },
+        valueList: [
+          {value: 0, label: 0},
+          {value: 1, label: 1},
+          {value: 2, label: 2},
+          {value: 3, label: 3},
+          {value: 4, label: 4},
+          {value: 5, label: 5},
+          {value: 6, label: 6},
+          {value: 7, label: 7},
+          {value: 8, label: 8},
+          {value: 9, label: 9},
+        ],//数字列表
+        numberValue: '',//选中数字
+        partyData: [],
+        activeHistory: 'first',
+        activeName: '1',
+        historyData: [],//开奖历史
+        participantData: [],//中奖历史
+        participantHistoryData: [],//参与历史
+        pageSize: 10, //每页显示条数
+        pageIndex: 1,  //当前页
+        pageTotal: 0,//总页数
       }
     },
+
+    created() {
+      this.getJackpotAmount(this.jackpotInfo.address)
+    },
+    mounted() {
+
+      setInterval(() => {
+        this.getJackpotAmount(this.jackpotInfo.address)
+      }, 10000)
+
+    },
+    destroyed() {
+      //clearInterval(this.chartInterval);
+    },
+    watch: {},
     components: {
       Password
     },
@@ -209,25 +225,93 @@
       },
 
       /**
-       * @disc: 开始抽奖
-       * @params:
-       * @date: 2020-04-15 11:29
+       * @disc:获取奖池金额
+       * @params: address
+       * @date: 2020-04-17 16:30
        * @author: Wave
        */
-      handleStart() {
-        console.log('开始抽奖');
+      async getJackpotAmount(address) {
+        let jackpotAmount = await getBalanceOrNonceByAddress(address, chainInfo.chainId, chainInfo.assetsId);
+        //console.log(jackpotAmount);
+        if (!jackpotAmount.success) {
+          console.log('获取奖池金额失败！')
+        }
+        jackpotAmount.data.balance = divisionDecimals(jackpotAmount.data.balance, 8);
+        this.jackpotInfo.balance = jackpotAmount.data.balance;
       },
 
       /**
-       * @disc: 抽奖完成
-       * @params: index 中奖索引
-       * @date: 2020-04-15 11:29
+       * @disc: tab 切换
+       * @params: tab
+       * @date: 2020-04-17 10:31
        * @author: Wave
        */
-      handleEnd(index) {
-        console.log(index);
-        alert('恭喜您抽到大奖, 奖品为' + this.awards[this.currIndex].name)
-      }
+      handleClick(tab) {
+        this.pageIndex = 1;
+        this.pageTotal = 0;
+        this.pageSize = 10;
+        if (tab.name === 'third') {
+          this.gameHistory();
+        }
+
+      },
+
+      /**
+       * @disc: 参与列表
+       * @date: 2020-04-17 9:53
+       * @author: Wave
+       */
+      async participantList(address) {
+        let url = this.config.url + '/game/user/participation/' + address;
+        let participantData = await axios.get(url);
+        //console.log(historyData);
+        if (participantData.data.success) {
+          this.pageTotal = participantData.data.data.total;
+          this.participantData = participantData.data.data.list;
+        }
+      },
+
+      /**
+       * @disc: 参与历史
+       * @date: 2020-04-17 9:53
+       * @author: Wave
+       */
+      async participantHistory(address) {
+        let url = this.config.url + '/game/user/lottery/' + address;
+        let participantHistoryData = await axios.get(url);
+        //console.log(historyData);
+        if (participantHistoryData.data.success) {
+          this.pageTotal = participantHistoryData.data.data.total;
+          this.participantHistoryData = participantHistoryData.data.data.list;
+        }
+      },
+
+      /**
+       * @disc: 开奖历史
+       * @date: 2020-04-17 9:53
+       * @author: Wave
+       */
+      async gameHistory() {
+        let url = this.config.url + '/game/history';
+        let data = {page: this.pageIndex, pageSize: this.pageSize};
+        let historyData = await axios.post(url, data);
+        //console.log(historyData);
+        if (historyData.data.success) {
+          this.pageTotal = historyData.data.data.total;
+          this.historyData = historyData.data.data.list;
+        }
+      },
+
+      /**
+       * @disc: 分页功能
+       * @params:val
+       * @date: 2020-04-17 16:03
+       * @author: Wave
+       */
+      pageChange(val) {
+        this.pageIndex = val;
+        this.gameHistory();
+      },
     }
   }
 </script>
@@ -257,6 +341,10 @@
           .is-circle {
             width: 40px;
             height: 40px;
+          }
+          .is_number {
+            background-color: #67C23A;
+            color: #FFFFFF;
           }
         }
         .submit {
@@ -289,14 +377,6 @@
       }
     }
     .footer {
-      h3 {
-        text-align: left;
-        margin: 20px 0 0 0;
-        border-bottom: 1px solid #c1c1c1;
-        padding: 0 0 5px 10px;
-        font-size: 16px;
-        font-weight: bold;
-      }
       .footer_table {
         .el-table {
           margin: 10px 0 0 0;
@@ -307,6 +387,14 @@
             padding: 2px 0;
           }
         }
+      }
+      .el-collapse-item__header {
+        height: 35px;
+        line-height: 35px;
+      }
+      .page {
+        margin: 20px auto 0;
+        text-align: center;
       }
     }
   }

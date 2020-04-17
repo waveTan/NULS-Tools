@@ -104,6 +104,18 @@
     components: {
       LuckDraw, Password
     },
+
+    created() {
+
+    },
+    mounted() {
+
+    },
+    destroyed() {
+      //clearInterval(this.chartInterval);
+    },
+    watch: {},
+
     methods: {
 
       /**

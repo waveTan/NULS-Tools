@@ -4,6 +4,10 @@ import store from './store'
 import router from './router'
 import i18n from './i18n'
 import './plugins/element.js'
+import {post} from './api/https'
+//定义全局变量
+Vue.prototype.$post = post;
+
 
 Vue.config.productionTip = false;
 
