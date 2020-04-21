@@ -1,5 +1,6 @@
 import {BigNumber} from 'bignumber.js'
 import copy from 'copy-to-clipboard'
+import {EXPLORER_URL} from '@/config'
 
 /**
  * 10的N 次方
@@ -179,6 +180,35 @@ export function superLong(string, leng) {
   } else {
     return string;
   }
+}
+
+/**
+ * 连接跳转
+ * @param name
+ * @param parameter
+ */
+export function connectToExplorer(name, parameter) {
+  let newUrl = '';
+  if (name === 'height') {
+    newUrl = EXPLORER_URL + 'block/info?height=' + parameter
+  } else if (name === 'address') {
+    newUrl = EXPLORER_URL + 'address/info?address=' + parameter
+  } else if (name === 'hash') {
+    newUrl = EXPLORER_URL + 'consensus/info?hash=' + parameter
+  } else if (name === 'rotation') {
+    newUrl = EXPLORER_URL + 'rotation/info?rotation=' + parameter
+  } else if (name === 'contractsInfo') {
+    newUrl = EXPLORER_URL + 'contracts/info?contractAddress=' + parameter
+  } else if (name === 'contracts') {
+    newUrl = EXPLORER_URL + 'contracts'
+  } else if (name === 'consensusInfo') {
+    newUrl = EXPLORER_URL + 'consensus/info?hash=' + parameter
+  } else if (name === 'transactionInfo') {
+    newUrl = EXPLORER_URL + 'transaction/info?hash=' + parameter
+  } else if (name === 'nuls') {
+    newUrl = parameter
+  }
+  return newUrl
 }
 
 /**

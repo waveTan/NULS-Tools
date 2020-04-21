@@ -80,7 +80,8 @@
     },
     methods: {
 
-      /** 连接跳转
+      /**
+       * @disc: 连接跳转
        * @param urlName
        * @param parameter
        * @param type  0:路由跳转 1：外部链接

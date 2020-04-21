@@ -27,7 +27,7 @@
 </template>
 
 <script>
-  import {timesDecimals} from '@/api/util.js'
+  import {divisionDecimals} from '@/api/util.js'
 
   export default {
     data() {
@@ -40,7 +40,7 @@
     created() {
       setInterval(() => {
         this.accountInfo = localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {};
-        this.accountInfo.balance = timesDecimals(this.accountInfo.balance, 8)
+        this.accountInfo.balance = divisionDecimals(this.accountInfo.balance, 8)
       }, 500)
     },
     mounted() {

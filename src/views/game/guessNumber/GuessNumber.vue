@@ -28,36 +28,108 @@
       </div>
       <div class="fr party">
         <h3>当前参与</h3>
-        <el-table :data="partyData" style="width: 100%">
-          <el-table-column prop="address" label="地址" align="center" width="120">
+        <el-table :data="gameDetailInfo.participants" style="width: 100%">
+          <el-table-column label="地址" align="center" width="120">
+            <template slot-scope="scope">
+              <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
+            </template>
           </el-table-column>
-          <el-table-column prop="txHash" label="txHash" align="center" min-width="80">
+          <el-table-column label="txHash" align="center" min-width="80">
+            <template slot-scope="scope">
+              <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
+            </template>
           </el-table-column>
-          <el-table-column prop="date" label="时间" align="center" width="160">
+          <el-table-column prop="txTime" label="时间" align="center" width="160">
           </el-table-column>
-          <el-table-column prop="amount" label="金额" align="center" width="70">
+          <el-table-column prop="number" label="猜数" align="center" width="70">
           </el-table-column>
         </el-table>
       </div>
     </div>
     <div class="footer cb">
       <el-tabs v-model="activeHistory" @tab-click="handleClick">
-        <el-tab-pane label="中奖历史" name="first">中奖历史</el-tab-pane>
-        <el-tab-pane label="参与历史" name="second">参与历史</el-tab-pane>
+        <el-tab-pane label="中奖历史" name="first">
+          <el-table :data="participantData" stripe style="width: 100%" border>
+            <el-table-column prop="gameId" label="游戏轮次" width="120" align="center">
+            </el-table-column>
+            <el-table-column label="参与地址" width="380" align="center">
+              <template slot-scope="scope">
+                <span class="click" @click="toUrl('address',scope.row.winner,1)">{{scope.row.winner}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="txHash" min-width="180" align="center">
+              <template slot-scope="scope">
+                <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="txTime" label="参与时间" width="160" align="center">
+            </el-table-column>
+            <el-table-column prop="perPrize" label="奖金" width="120" align="center">
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="参与历史" name="second">
+          <el-table :data="participantHistoryData" stripe style="width: 100%" border>
+            <el-table-column prop="id" label="序号" width="80" align="center">
+            </el-table-column>
+            <el-table-column prop="gameId" label="游戏轮次" width="120" align="center">
+            </el-table-column>
+            <el-table-column label="参与地址" width="380" align="center">
+              <template slot-scope="scope">
+                <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.address}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="txHash" min-width="180" align="center">
+              <template slot-scope="scope">
+                <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="txTime" label="参与时间" width="160" align="center">
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
         <el-tab-pane label="开奖历史" name="third">
-          <el-collapse v-model="activeName" accordion>
+          <el-collapse v-model="activeName" accordion @change="changeColapse()">
             <el-collapse-item v-for="item in historyData"
                               :title="'第' +item.gameId+'轮 开奖 '+item.gameLotteryDelay"
-                              :name=item.gameId>
+                              :name=item.gameId
+
+            >
               <div class="footer_table">
-                <el-table :data="partyData" style="width: 100%">
-                  <el-table-column prop="address" label="地址" align="center" width="180">
+                <div>参与信息</div>
+                <el-table :data="historyDataIn" style="width: 100%">
+                  <el-table-column label="地址" align="center" width="180">
+                    <template slot-scope="scope">
+                      <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
+                    </template>
                   </el-table-column>
-                  <el-table-column prop="txHash" label="txHash" align="center" min-width="80">
+                  <el-table-column label="txHash" align="center" min-width="80">
+                    <template slot-scope="scope">
+                      <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
+                    </template>
                   </el-table-column>
-                  <el-table-column prop="date" label="时间" align="center" width="180">
+                  <el-table-column prop="txTime" label="时间" align="center" width="180">
                   </el-table-column>
-                  <el-table-column prop="amount" label="金额" align="center" width="150">
+                  <el-table-column prop="number" label="猜数" align="center" width="150">
+                  </el-table-column>
+                </el-table>
+                <div>中奖信息</div>
+                <el-table :data="historyDataOut" style="width: 100%">
+                  <el-table-column label="地址" align="center" width="180">
+                    <template slot-scope="scope">
+                      <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="txHash" align="center" min-width="80">
+                    <template slot-scope="scope">
+                      <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="txTime" label="时间" align="center" width="180">
+                  </el-table-column>
+                  <el-table-column prop="number" label="猜数" align="center" width="150">
+                  </el-table-column>
+                  <el-table-column prop="perPrize" label="中奖金额" align="center" width="150">
                   </el-table-column>
                 </el-table>
               </div>
@@ -83,12 +155,13 @@
 </template>
 
 <script>
+  import moment from 'moment'
   import axios from 'axios'
   import nuls from 'nuls-sdk-js'
   import sdk from 'nuls-sdk-js/lib/api/sdk'
   import utils from 'nuls-sdk-js/lib/utils/utils'
   import {chainInfo, API_URL} from '@/config'
-  import {divisionDecimals, Times, Plus} from '@/api/util'
+  import {divisionDecimals, Times, Plus, getLocalTime, superLong, connectToExplorer} from '@/api/util'
   import {
     passwordVerification,
     getBalanceOrNonceByAddress,
@@ -109,6 +182,7 @@
           balance: 0,
         },//奖池信息
         gameCurrentInfo: {},//当前游戏信息
+        gameDetailInfo: {},//当前游戏信息
         valueList: [
           {value: 0, label: 0},
           {value: 1, label: 1},
@@ -123,11 +197,13 @@
         ],//数字列表
         numberValue: '',//选中数字
         partyData: [],
-        activeHistory: 'first',
-        activeName: '1',
-        historyData: [],//开奖历史
+        activeHistory: 'first',//tab选中了
+        activeName: '1', //手风琴选中
         participantData: [],//中奖历史
         participantHistoryData: [],//参与历史
+        historyData: [],//开奖历史
+        historyDataIn: [],//开奖历史参与
+        historyDataOut: [],//开奖历史中奖
         pageSize: 10, //每页显示条数
         pageIndex: 1,  //当前页
         pageTotal: 0,//总页数
@@ -141,9 +217,19 @@
     },
     mounted() {
 
+      if (this.activeHistory === 'first') {
+        this.userLotteryHistory(this.accontInfo.address)
+      } else if (this.activeHistory === 'second') {
+        this.gameParticipantHistory(this.accontInfo.address);
+      } else {
+        this.gameHistory();
+      }
+
       setInterval(() => {
-        //this.getJackpotAmount(this.jackpotInfo.address)
-      }, 10000)
+        this.getPrizePool();
+        this.gameCurrent();
+        this.gameDetail(this.gameCurrentInfo.id);
+      }, 10000);
 
     },
     destroyed() {
@@ -164,9 +250,47 @@
         let url = 'http://192.168.1.40:81/game/current';
         try {
           let resData = await axios.get(url);
+          console.log(resData);
+          if (resData.data.success) {
+            this.gameCurrentInfo = resData.data.data;
+          }
+        } catch (err) {
+          console.log(err)
+        }
+      },
+
+      /**
+       * @disc: 根据gameId获取当前游戏信息
+       * @params: gameId
+       * @date: 2020-04-20 18:08
+       * @author: Wave
+       */
+      async gameDetail(gameId, type = 0) {
+        let url = 'http://192.168.1.40:81/game/detail/' + gameId;
+        try {
+          let resData = await axios.get(url);
           //console.log(resData);
           if (resData.data.success) {
-            this.gameCurrentInfo = resData.data.data
+            for (let item of resData.data.data.participants) {
+              item.addresss = superLong(item.address, 4);
+              item.txHashs = superLong(item.txHash, 6);
+              item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
+            }
+            if (type === 0) {
+              this.gameDetailInfo = resData.data.data
+            } else {
+              this.historyDataIn = resData.data.data.participants;
+              for (let item of resData.data.data.lottery.winners) {
+                item.perPrize = divisionDecimals(resData.data.data.lottery.perPrize, 8);
+                item.address = item.winner;
+                item.addresss = superLong(item.address, 4);
+                item.number = resData.data.data.lottery.number;
+                item.txHash = resData.data.data.lottery.txHash;
+                item.txHashs = superLong(item.txHash, 6);
+                item.txTime = moment(getLocalTime(resData.data.data.lottery.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
+              }
+              this.historyDataOut = resData.data.data.lottery.winners;
+            }
           }
         } catch (err) {
           console.log(err)
@@ -180,7 +304,7 @@
        * @author: Wave
        */
       clickNumber(number) {
-        this.numberValue = number
+        this.numberValue = number.toString();
       },
 
       /**
@@ -202,7 +326,7 @@
           address: this.jackpotInfo.address,
           methodName: 'join',
           methodDesc: '(Long gameId, Integer number) return void',
-          args: [this.gameCurrentInfo.id, this.numberValue], //[gameId,number]
+          args: [this.gameCurrentInfo.id, Number(this.numberValue)], //[gameId,number]
         };
         let validateContractCallRes = await this.validateContractCall(this.accontInfo.address, contractInfo.value, sdk.CONTRACT_MAX_GASLIMIT, sdk.CONTRACT_MINIMUM_PRICE, contractInfo.address, contractInfo.methodName, contractInfo.methodDesc, contractInfo.args);
         //console.log(validateContractCallRes);
@@ -251,7 +375,7 @@
           address: this.jackpotInfo.address,
           methodName: 'join',
           methodDesc: '(Long gameId, Integer number) return void',
-          args: [this.gameCurrentInfo.id, this.numberValue], //[gameId,number]
+          args: [this.gameCurrentInfo.id, Number(this.numberValue)], //[gameId,number]
         };
         let contractCallDataInfo = await this.imputedContractCallGas(accountInfo.address, contractInfo.value, contractInfo.address, contractInfo.methodName, contractInfo.methodDesc, contractInfo.args);
         //console.log(contractCallDataInfo);
@@ -403,42 +527,59 @@
        * @author: Wave
        */
       handleClick(tab) {
+        //console.log(tab.name);
+        this.activeHistory = tab.name;
         this.pageIndex = 1;
         this.pageTotal = 0;
         this.pageSize = 10;
-        if (tab.name === 'third') {
+
+        if (this.activeHistory === 'first') {
+          this.userLotteryHistory(this.accontInfo.address)
+        } else if (this.activeHistory === 'second') {
+          this.gameParticipantHistory(this.accontInfo.address);
+        } else {
           this.gameHistory();
         }
 
       },
 
       /**
-       * @disc: 参与列表
+       * @disc: 中奖列表
+       * @params: address
        * @date: 2020-04-17 9:53
        * @author: Wave
        */
-      async participantList(address) {
-        let url = this.config.url + '/game/user/participation/' + address;
-        let participantData = await axios.get(url);
-        //console.log(historyData);
-        if (participantData.data.success) {
-          this.pageTotal = participantData.data.data.total;
-          this.participantData = participantData.data.data.list;
+      async userLotteryHistory(address) {
+        let url = this.config.url + '/game/user/lottery/' + address;
+        let resData = await axios.get(url);
+        //console.log(resData);
+        if (resData.data.success) {
+          for (let item of resData.data.data) {
+            item.perPrize = divisionDecimals(item.perPrize, 8);
+            item.txHashs = superLong(item.txHash, 15);
+            item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
+          }
+          this.participantData = resData.data.data;
         }
       },
 
       /**
-       * @disc: 参与历史
+       * @disc: 参与列表
+       * @params: address
        * @date: 2020-04-17 9:53
        * @author: Wave
        */
-      async participantHistory(address) {
-        let url = this.config.url + '/game/user/lottery/' + address;
-        let participantHistoryData = await axios.get(url);
-        //console.log(historyData);
-        if (participantHistoryData.data.success) {
-          this.pageTotal = participantHistoryData.data.data.total;
-          this.participantHistoryData = participantHistoryData.data.data.list;
+      async gameParticipantHistory(address) {
+        let url = this.config.url + '/game/user/participation/' + address;
+        let resData = await axios.get(url);
+        //console.log(resData);
+        if (resData.data.success) {
+          //this.pageTotal = resData.data.data.total;
+          for (let item of resData.data.data) {
+            item.txHashs = superLong(item.txHash, 15);
+            item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
+          }
+          this.participantHistoryData = resData.data.data;
         }
       },
 
@@ -459,6 +600,17 @@
       },
 
       /**
+       * @disc: 手风琴切换
+       * @params:
+       * @date: 2020-04-21 17:11
+       * @author: Wave
+       */
+      changeColapse() {
+        console.log(this.activeName);
+        this.gameDetail(this.activeName, 1)
+      },
+
+      /**
        * @disc: 分页功能
        * @params:val
        * @date: 2020-04-17 16:03
@@ -467,6 +619,23 @@
       pageChange(val) {
         this.pageIndex = val;
         this.gameHistory();
+      },
+
+      /**
+       * @disc: 连接跳转
+       * @param urlName
+       * @param parameter
+       * @param type  0:路由跳转 1：外部链接
+       */
+      toUrl(urlName, parameter, type) {
+        if (type === 0) {
+          this.$router.push({
+            name: urlName
+          })
+        } else {
+          let newUrl = connectToExplorer(urlName, parameter);
+          window.open(newUrl)
+        }
       },
     }
   }
@@ -547,6 +716,9 @@
       .el-collapse-item__header {
         height: 35px;
         line-height: 35px;
+      }
+      .el-table td, .el-table th {
+        padding: 5px 0 !important;
       }
       .page {
         margin: 20px auto 0;

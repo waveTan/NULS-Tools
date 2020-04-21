@@ -16,6 +16,7 @@
     "file-saver": "^2.0.2",
     "int64-buffer": "^0.99.1007",
     "less": "^3.9.0",
+    "moment": "^2.24.0",
     "nuls-jssdk": "^1.0.8",
     "nuls-sdk-js": "^2.4.3",
     "secp256k1": "^3.6.1",
