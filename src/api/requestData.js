@@ -1,7 +1,7 @@
 import nuls from 'nuls-sdk-js'
 import {chainInfo} from '@/config'
 import {post} from './https'
-import {Minus} from './util'
+import {Plus, Minus} from './util'
 
 /**
  * @disc: 验证密码
@@ -57,7 +57,7 @@ export async function getAddressInfoByAddress(address) {
  * @param transferInfo
  * @returns {*}
  **/
-export async function inputsOrOutputs(transferInfo, balanceInfo) {
+export async function inputsOrOutputs(transferInfo, balanceInfo, type = 2) {
   let inputs = [{
     address: transferInfo.fromAddress,
     assetsChainId: transferInfo.assetsChainId,
@@ -66,14 +66,26 @@ export async function inputsOrOutputs(transferInfo, balanceInfo) {
     locked: 0,
     nonce: balanceInfo.data.nonce
   }];
-
   let outputs = [{
     address: transferInfo.toAddress,
-    assetsChainId: transferInfo.assetsId,
+    assetsChainId: transferInfo.assetsChainId,
     assetsId: transferInfo.assetsId,
-    amount: Number(Minus(transferInfo.fee, transferInfo.amount)),
+    amount: transferInfo.amount,
     lockTime: 0
   }];
+
+  if (type === 2) {
+    outputs[0].amount = Number(Minus(transferInfo.fee, transferInfo.amount))
+  }
+
+  if (type === 16) {
+    if (transferInfo.toAddress) {
+      if (transferInfo.value) {
+        inputs[0].amount = Number(Plus(transferInfo.amount, transferInfo.fee));
+        outputs[0].amount = transferInfo.value;
+      }
+    }
+  }
   return {success: true, data: {inputs: inputs, outputs: outputs}};
 }
 
@@ -146,13 +158,13 @@ export async function broadcastTx(txHex) {
 export async function validateAndBroadcast(txHex) {
   return await post('/', 'validateTx', [txHex])
     .then((response) => {
-      console.log(response);
-      if (response.success) {
-        let newHash = response.data.value;
+      //console.log(response);
+      if (response.hasOwnProperty('result')) {
+        let newHash = response.result.value;
         return post('/', 'broadcastTx', [txHex])
           .then((response) => {
             //console.log(response);
-            if (response.success) {
+            if (response.hasOwnProperty('result')) {
               return {success: true, hash: newHash};
             } else {
               return {success: false, data: response};
