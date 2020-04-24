@@ -1,7 +1,10 @@
 <template>
   <div class="guess_number w1200">
     <div class="top">
-      <div class="fl guess">
+      <div class="fl guess" v-loading="loading"
+           :element-loading-text=loadingText
+           element-loading-spinner="el-icon-loading"
+           element-loading-background="rgba(0, 0, 0, 0.8)">
         <h2>NULS 猜数字</h2>
         <div class="explain">
           <p>1、用户选择0-9中的一个数字参与，每轮中奖的用户平分奖池所有（没有中奖奖池累计下一次）</p>
@@ -91,7 +94,7 @@
         <el-tab-pane label="开奖历史" name="third">
           <el-collapse v-model="activeName" accordion @change="changeColapse()">
             <el-collapse-item v-for="item in historyData"
-                              :title="'第' +item.gameId+'轮 开奖 '+item.gameLotteryDelay"
+                              :title="'第' +item.gameId+'轮 开奖: '+item.number+'  中奖金额: '+item.perPrize + '  开奖时间: '+item.txTime"
                               :name=item.gameId
 
             >
@@ -139,7 +142,7 @@
         </el-tab-pane>
       </el-tabs>
 
-      <div class="page" v-show="pageTotal > pageSize ">
+      <div class="page" v-show="pageTotal > pageSize">
         <el-pagination layout="total, prev, pager, next, jumper"
                        @current-change="pageChange"
                        :current-page=pageIndex
@@ -182,6 +185,8 @@
           balance: 0,
         },//奖池信息
         gameCurrentInfo: {},//当前游戏信息
+        loading: true,
+        loadingText: '',//加载提示语
         gameDetailInfo: {},//当前游戏信息
         valueList: [
           {value: 0, label: 0},
@@ -250,9 +255,31 @@
         let url = 'http://192.168.1.40:81/game/current';
         try {
           let resData = await axios.get(url);
-          console.log(resData);
+          //console.log(resData);
+          //console.log(this.$store.getters.getHeight);
           if (resData.data.success) {
-            this.gameCurrentInfo = resData.data.data;
+            if (resData.data.data) {
+              this.gameCurrentInfo = resData.data.data;
+              //console.log(this.gameCurrentInfo.endHeight < this.$store.getters.getHeight);
+              if (this.gameCurrentInfo.endHeight <= this.$store.getters.getHeight) {
+                this.loadingText = '准备开奖了';
+                this.loading = true;
+              } else {
+                this.loading = false;
+              }
+            } else {
+              this.gameCurrentInfo = {
+                id: 0,
+                startHeight: 0,
+                endHeight: 0,
+                gameLotteryDelay: 0,
+                txHash: "0",
+                txTime: 0,
+              };
+              this.loading = true;
+              this.loadingText = '正在准备下一轮，请稍等...';
+              this.userLotteryHistory(this.accontInfo.address);
+            }
           }
         } catch (err) {
           console.log(err)
@@ -550,16 +577,17 @@
        * @author: Wave
        */
       async userLotteryHistory(address) {
-        let url = this.config.url + '/game/user/lottery/' + address;
+        let url = this.config.url + '/game/user/lottery/' + address + '/' + this.pageIndex;
         let resData = await axios.get(url);
         //console.log(resData);
         if (resData.data.success) {
-          for (let item of resData.data.data) {
+          this.pageTotal = resData.data.data.total;
+          for (let item of resData.data.data.list) {
             item.perPrize = divisionDecimals(item.perPrize, 8);
             item.txHashs = superLong(item.txHash, 15);
             item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
           }
-          this.participantData = resData.data.data;
+          this.participantData = resData.data.data.list;
         }
       },
 
@@ -570,16 +598,16 @@
        * @author: Wave
        */
       async gameParticipantHistory(address) {
-        let url = this.config.url + '/game/user/participation/' + address;
+        let url = this.config.url + '/game/user/participation/' + address + '/' + this.pageIndex;
         let resData = await axios.get(url);
         //console.log(resData);
         if (resData.data.success) {
-          //this.pageTotal = resData.data.data.total;
-          for (let item of resData.data.data) {
+          this.pageTotal = resData.data.data.total;
+          for (let item of resData.data.data.list) {
             item.txHashs = superLong(item.txHash, 15);
             item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
           }
-          this.participantHistoryData = resData.data.data;
+          this.participantHistoryData = resData.data.data.list;
         }
       },
 
@@ -589,12 +617,17 @@
        * @author: Wave
        */
       async gameHistory() {
-        let url = this.config.url + '/game/history';
-        let data = {page: this.pageIndex, pageSize: this.pageSize};
-        let historyData = await axios.post(url, data);
+        let url = this.config.url + '/game/history/' + this.pageIndex;
+        //let data = {page: this.pageIndex, pageSize: this.pageSize};
+        let historyData = await axios.get(url);
         //console.log(historyData);
         if (historyData.data.success) {
           this.pageTotal = historyData.data.data.total;
+          for (let item of historyData.data.data.list) {
+            item.number = !item.number ? '流局' : item.number;
+            item.perPrize = !item.perPrize ? '流局' : divisionDecimals(item.perPrize, 8);
+            item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
+          }
           this.historyData = historyData.data.data.list;
         }
       },
@@ -606,7 +639,7 @@
        * @author: Wave
        */
       changeColapse() {
-        console.log(this.activeName);
+        //console.log(this.activeName);
         this.gameDetail(this.activeName, 1)
       },
 
@@ -618,7 +651,13 @@
        */
       pageChange(val) {
         this.pageIndex = val;
-        this.gameHistory();
+        if (this.activeHistory === 'first') {
+          this.userLotteryHistory(this.accontInfo.address)
+        } else if (this.activeHistory === 'second') {
+          this.gameParticipantHistory(this.accontInfo.address);
+        } else {
+          this.gameHistory();
+        }
       },
 
       /**
@@ -721,7 +760,7 @@
         padding: 5px 0 !important;
       }
       .page {
-        margin: 20px auto 0;
+        margin: 20px auto 80px;
         text-align: center;
       }
     }

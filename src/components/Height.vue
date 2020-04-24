@@ -31,6 +31,7 @@
             //console.log(response)
             if (response.hasOwnProperty("result")) {
               this.height = response.result.height;
+              this.$store.commit('setHeight', this.height);
             } else {
               this.height = 0;
             }
