@@ -8,7 +8,9 @@
         <h2>NULS 猜数字</h2>
         <div class="explain">
           <p>1、用户选择0-9中的一个数字参与，每轮中奖的用户平分奖池所有（没有中奖奖池累计下一次）</p>
-          <p>2、此随机数是基于NULS随机数开发的绝对公平</p>
+          <p>2、参与游戏将消耗 <span class="fred fW600">2.011</span> NULS</p>
+          <p>3、游戏每<span class="fred"> 20 </span>轮开奖一次，中间间隔<span class="fred"> 10 </span>轮</p>
+          <p>4、此随机数是基于<span class="fred">NULS随机数</span>开发的绝对公平</p>
         </div>
         <div class="number">
           <el-button circle v-for="item in valueList" :key="item.value" @click="clickNumber(item.value)"
@@ -181,7 +183,7 @@
           url: 'http://192.168.1.40:81',
         },//配置信息
         jackpotInfo: {
-          address: 'tNULSeBaNAUbZGCqnRm2nUD6uak2omChuEueVF',
+          address: 'tNULSeBaNAUbZGCqnRm2nUD6uak2omChuEueVF',//合约地址
           balance: 0,
         },//奖池信息
         gameCurrentInfo: {},//当前游戏信息
@@ -233,7 +235,6 @@
       setInterval(() => {
         this.getPrizePool();
         this.gameCurrent();
-        this.gameDetail(this.gameCurrentInfo.id);
       }, 10000);
 
     },
@@ -252,7 +253,7 @@
        * @author: Wave
        */
       async gameCurrent() {
-        let url = 'http://192.168.1.40:81/game/current';
+        let url = this.config.url + '/game/current';
         try {
           let resData = await axios.get(url);
           //console.log(resData);
@@ -260,6 +261,7 @@
           if (resData.data.success) {
             if (resData.data.data) {
               this.gameCurrentInfo = resData.data.data;
+              this.gameDetail(this.gameCurrentInfo.id);
               //console.log(this.gameCurrentInfo.endHeight < this.$store.getters.getHeight);
               if (this.gameCurrentInfo.endHeight <= this.$store.getters.getHeight) {
                 this.loadingText = '准备开奖了';
@@ -293,7 +295,7 @@
        * @author: Wave
        */
       async gameDetail(gameId, type = 0) {
-        let url = 'http://192.168.1.40:81/game/detail/' + gameId;
+        let url = this.config.url + '/game/detail/' + gameId;
         try {
           let resData = await axios.get(url);
           //console.log(resData);
@@ -397,6 +399,10 @@
         let accountInfo = JSON.parse(localStorage.getItem('accountInfo'));
         let newAccountInfo = await passwordVerification(accountInfo, password);
         //console.log(newAccountInfo);
+        if (!newAccountInfo.success) {
+          this.$message({message: '对不起，请输入正确的密码', type: 'error', duration: 3000});
+          return;
+        }
         let contractInfo = {
           value: 201000000,
           address: this.jackpotInfo.address,
@@ -624,8 +630,12 @@
         if (historyData.data.success) {
           this.pageTotal = historyData.data.data.total;
           for (let item of historyData.data.data.list) {
-            item.number = !item.number ? '流局' : item.number;
-            item.perPrize = !item.perPrize ? '流局' : divisionDecimals(item.perPrize, 8);
+            if (item.number || item.number === 0) {
+              item.perPrize = !item.perPrize ? '流局' : divisionDecimals(item.perPrize, 8);
+            } else {
+              item.number = '流局';
+              item.perPrize = '流局';
+            }
             item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
           }
           this.historyData = historyData.data.data.list;

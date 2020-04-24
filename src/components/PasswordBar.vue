@@ -12,7 +12,7 @@
         </el-input>
       </el-form-item>
     </el-form>
-    <div class="red">此操作将消耗0.01NULS</div>
+    <!-- <div class="red">此操作将消耗0.01NULS</div>-->
     <!--<el-radio v-model="radio" label="1">记住密码五分钟</el-radio>-->
     <div slot="footer" class="dialog-footer">
       <el-button @click="passwordClose">{{$t('public.cancel')}}</el-button>

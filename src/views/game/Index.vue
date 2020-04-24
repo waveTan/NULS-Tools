@@ -1,13 +1,21 @@
 <template>
   <div class="guess w1200">
     <ul class="dapp-list">
-      <li>
+      <li @click="toUrl('lucky','',0)">
         <img src="@/assets/logo.png">
-        <b class="font12">{{$t('tips.tips1')}}<br/>{{$t('tips.tips2')}}</b>
+        <b class="font12">大转盘<br/>玩转盘得NULS百分之百中奖</b>
+      </li>
+      <li @click="toUrl('guessNumber','',0)">
+        <img src="@/assets/logo.png">
+        <b class="font12">猜数字<br/>{{$t('tips.tips2')}}</b>
       </li>
       <li>
         <img src="@/assets/logo.png">
-        <b class="font12">{{$t('tips.tips1')}}<br/>{{$t('tips.tips2')}}</b>
+        <b class="font12">快乐翻牌<br/>{{$t('tips.tips2')}}</b>
+      </li>
+      <li>
+        <img src="@/assets/logo.png">
+        <b class="font12">数字华容道<br/>{{$t('tips.tips2')}}</b>
       </li>
     </ul>
   </div>
@@ -15,10 +23,43 @@
 
 <script>
   export default {
-    name: "guess"
+    created() {
+
+    },
+    mounted() {
+    },
+    destroyed() {
+    },
+    components: {
+    },
+    computed: {
+
+    },
+    watch: {
+
+    },
+    methods: {
+
+      /**
+       * @disc: 连接跳转
+       * @param urlName
+       * @param parameter
+       * @param type  0:路由跳转 1：外部链接
+       */
+      toUrl(urlName, parameter, type) {
+        if (type === 0) {
+          this.$router.push({
+            name: urlName
+          })
+        } else {
+          window.open(urlName)
+        }
+      },
+
+    }
   }
 </script>
 
-<style scoped>
+<style lang="less">
 
 </style>
