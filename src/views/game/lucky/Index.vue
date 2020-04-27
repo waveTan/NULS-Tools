@@ -1,7 +1,7 @@
 <template>
   <div class="lucky">
     <h2 class="tc">NULS 大转盘</h2>
-    <LuckDraw v-model="currIndex" ref="child"
+    <LuckDraw v-model="currIndex" ref="luckDraw"
               :awards="awards"
               :rate="rate"
               :radius="radius"
@@ -109,6 +109,9 @@
 
     },
     mounted() {
+      setTimeout(()=>{
+        this.$refs.luckDraw.play(3)
+      },1000)
 
     },
     destroyed() {
@@ -183,9 +186,10 @@
         console.log(tAssemble);
         let txhex = await nuls.transactionSerialize(nuls.decrypteOfAES(accountInfo.aesPri, password), accountInfo.pub, tAssemble);
         console.log(txhex);
-        this.transferHash = '256423'
+        this.transferHash = '256423';
         let validateTxhex = await validateAndBroadcast(txhex);
-        console.log(validateTxhex)
+        console.log(validateTxhex);
+        this.$refs.luckDraw.play(3)
       },
 
       /**
@@ -206,7 +210,7 @@
        */
       handleEnd(index) {
         console.log(index);
-        alert('恭喜您抽到大奖, 奖品为' + this.awards[this.currIndex].name)
+        console.log('恭喜您抽到大奖, 奖品为' + this.awards[this.currIndex].name)
       }
     }
   }

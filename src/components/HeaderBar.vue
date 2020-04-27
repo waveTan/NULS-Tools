@@ -21,7 +21,7 @@
           <span class="click" @click="signOut">{{$t('public.signOut')}}</span>
         </p>
       </div>
-      <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? 'En':'中文' }}</div>
+      <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
     </el-col>
   </el-row>
 </template>

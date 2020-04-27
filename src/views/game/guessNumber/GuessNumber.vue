@@ -5,11 +5,11 @@
            :element-loading-text=loadingText
            element-loading-spinner="el-icon-loading"
            element-loading-background="rgba(0, 0, 0, 0.8)">
-        <h2>NULS 猜数字</h2>
+        <h2>NULS 第{{gameCurrentInfo.id}}轮猜数字</h2>
         <div class="explain">
           <p>1、用户选择0-9中的一个数字参与，每轮中奖的用户平分奖池所有（没有中奖奖池累计下一次）</p>
           <p>2、参与游戏将消耗 <span class="fred fW600">2.011</span> NULS</p>
-          <p>3、游戏每<span class="fred"> 20 </span>轮开奖一次，中间间隔<span class="fred"> 10 </span>轮</p>
+          <p>3、游戏每<span class="fred"> 20 </span>块开奖一次，中间间隔<span class="fred"> 10 </span>块</p>
           <p>4、此随机数是基于<span class="fred">NULS随机数</span>开发的绝对公平</p>
         </div>
         <div class="number">
@@ -29,7 +29,11 @@
           <font class="fCN fW600">{{jackpotInfo.balance}}</font> NULS
         </div>
         <!--<div class="font14">本轮截止时间: <span class="fred fW600">52.25</span> 秒</div>-->
-        <div class="font14">本轮截止高度: <span class="fred fW600">{{gameCurrentInfo.endHeight}}</span></div>
+        <div class="font14">
+          <div class="fl">本轮截止高度: <span class="fred fW600">{{gameCurrentInfo.endHeight}}</span></div>
+          <div class="fl">&nbsp;&nbsp;本轮开奖高度: <span class="fred">{{gameCurrentInfo.endHeight + gameCurrentInfo.gameLotteryDelay}}</span>
+          </div>
+        </div>
       </div>
       <div class="fr party">
         <h3>当前参与</h3>
@@ -62,21 +66,21 @@
                 <span class="click" @click="toUrl('address',scope.row.winner,1)">{{scope.row.winner}}</span>
               </template>
             </el-table-column>
+            <el-table-column prop="perPrize" label="奖金" width="120" align="center">
+            </el-table-column>
+            <el-table-column prop="number" label="开奖数" width="120" align="center">
+            </el-table-column>
+            <el-table-column prop="txTime" label="参与时间" width="160" align="center">
+            </el-table-column>
             <el-table-column label="txHash" min-width="180" align="center">
               <template slot-scope="scope">
                 <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="txTime" label="参与时间" width="160" align="center">
-            </el-table-column>
-            <el-table-column prop="perPrize" label="奖金" width="120" align="center">
-            </el-table-column>
           </el-table>
         </el-tab-pane>
         <el-tab-pane label="参与历史" name="second">
           <el-table :data="participantHistoryData" stripe style="width: 100%" border>
-            <el-table-column prop="id" label="序号" width="80" align="center">
-            </el-table-column>
             <el-table-column prop="gameId" label="游戏轮次" width="120" align="center">
             </el-table-column>
             <el-table-column label="参与地址" width="380" align="center">
@@ -84,12 +88,14 @@
                 <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.address}}</span>
               </template>
             </el-table-column>
+            <el-table-column prop="number" label="开奖数" width="160" align="center">
+            </el-table-column>
+            <el-table-column prop="txTime" label="参与时间" width="160" align="center">
+            </el-table-column>
             <el-table-column label="txHash" min-width="180" align="center">
               <template slot-scope="scope">
                 <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
               </template>
-            </el-table-column>
-            <el-table-column prop="txTime" label="参与时间" width="160" align="center">
             </el-table-column>
           </el-table>
         </el-tab-pane>

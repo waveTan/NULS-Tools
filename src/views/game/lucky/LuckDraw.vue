@@ -1,5 +1,5 @@
 <template>
-  <canvas id="canvas"></canvas>
+  <canvas id="canvas" class="ldq-luck"></canvas>
 </template>
 
 <script>
@@ -10,6 +10,7 @@
         ctx: '',
         startRadian: 0, // 初始角度
         canBeClick: true, // 控制抽奖进行中不让再抽奖
+        currIndex: this.value,
       }
     },
     props: {
@@ -32,6 +33,11 @@
       btnRadius: {type: Number, default: 60},              // 按钮半径
       borderColor: {type: String, default: '#d64737'},     // 边框颜色
     },
+    watch: {
+      value(val) {
+        this.currIndex = val
+      }
+    },
     mounted() {
       this.initCanvas()
     },
@@ -45,12 +51,9 @@
         this.ctx = canvas.getContext('2d');
         this.canvas.width = this.radius * 2;
         this.canvas.height = this.radius * 2;
+        this.render();
         this.startRotate()
       },
-
-      /*startBefore(){
-        this.$emit('startBefore');
-      },*/
 
       /**
        * 处理文字换行
@@ -98,7 +101,7 @@
         for (let i = 0; i < awards.length; i++) {
           ctx.save();
           ctx.beginPath();
-          ctx.fillStyle = awards[i].color || (i % 2 === 0 ? '#f8d384' : '#f9e3bb');
+          ctx.fillStyle = awards[i].color || (i % 2 == 0 ? '#f8d384' : '#f9e3bb');
           ctx.moveTo(this.radius, this.radius);
           ctx.arc(this.radius, this.radius, this.radius - 20, startRadian, endRadian, false);
           ctx.fill();
@@ -130,34 +133,41 @@
         }
       },
 
+      // 开始游戏的方法
+      play(index, e) {
+        let dom = document.querySelector('.ldq-luck');
+        const canvas = this.canvas;
+        const ctx = this.ctx;
+        if (index < 0 || index >= this.awards.length) console.error('该索引的奖品不存在!');
+        if (!this.canBeClick || index < 0 || index >= this.awards.length) return false;
+        this.currIndex = index;
+        this.canBeClick = false;
+        let loc = e ? this.windowToCanvas(canvas, e) : { // 模拟点击坐标
+          x: dom.offsetWidth / 2,
+          y: dom.offsetHeight / 2
+        };
+        ctx.beginPath();
+        ctx.arc(this.radius, this.radius, 50, 0, Math.PI * 2, false);
+        if (ctx.isPointInPath(loc.x, loc.y)) {
+          this.$emit('start');
+          // 每次点击抽奖，都将初始化角度重置
+          this.startRadian = -Math.floor(Math.random() * 180);
+          // distance是计算出的将指定奖品旋转到指针处需要旋转的角度距离，distanceToStop下面会又说明
+          const distance = this.distanceToStop();
+          console.log('123')
+          //this.rotatePanel(distance)
+        } else {
+          this.canBeClick = true
+        }
+      },
+
       // 初始化
-      async startRotate() {
+      startRotate() {
         const canvas = this.canvas;
         const ctx = this.ctx;
         const canvasStyle = canvas.getAttribute('style');
         this.render();
-        canvas.addEventListener('mousedown', async(e)=> {
-          // 只要抽奖没有结束，就不让再次抽奖
-          if (this.value < 0 || this.value >= this.awards.length) console.error('该索引的奖品不存在!');
-          if (!this.canBeClick || this.value < 0 || this.value >= this.awards.length) return false;
-          /*let aa = await this.$parent.handStartBefore();
-          console.log(aa);
-          return false;*/
-          this.canBeClick = false;
-          let loc = this.windowToCanvas(canvas, e);
-          ctx.beginPath();
-          ctx.arc(this.radius, this.radius, 50, 0, Math.PI * 2, false);
-          if (ctx.isPointInPath(loc.x, loc.y)) {
-            this.$emit('start');
-            // 每次点击抽奖，都将初始化角度重置
-            this.startRadian = -Math.floor(Math.random() * 180);
-            // distance是计算出的将指定奖品旋转到指针处需要旋转的角度距离，distanceToStop下面会又说明
-            const distance = this.distanceToStop();
-            this.rotatePanel(distance)
-          } else {
-            this.canBeClick = true
-          }
-        });
+        canvas.addEventListener('mousedown', e => this.play(this.currIndex, e));
         canvas.addEventListener('mousemove', e => {
           let loc = this.windowToCanvas(canvas, e);
           ctx.beginPath();
@@ -177,7 +187,7 @@
         this.startRadian += changeRadian;
         // 当最后的目标距离与startRadian之间的差距低于0.05时，就默认奖品抽完了，可以继续抽下一个了。
         if (distance - this.startRadian <= 0.05) {
-          this.$emit('end', this.value);
+          this.$emit('end', this.currIndex);
           return this.canBeClick = true
         }
         this.render();
@@ -230,7 +240,6 @@
         ctx.restore()
       },
 
-      //转盘停止
       distanceToStop() {
         // middleDegrees为奖品块的中间角度（最终停留都是以中间角度进行计算的）距离初始的startRadian的距离，distance就是当前奖品跑到指针位置要转动的距离。
         let middleDegrees = 0, distance = 0;
@@ -240,7 +249,7 @@
           return awardRadian * index + (awardRadian * (index + 1) - awardRadian * index) / 2
         });
         // 此次抽奖应该中的奖品
-        const currentPrizeIndex = this.value;
+        const currentPrizeIndex = this.currIndex;
         middleDegrees = awardsToDegreesList[currentPrizeIndex];
         // 因为指针是垂直向上的，相当坐标系的Math.PI/2,所以这里要进行判断来移动角度
         distance = Math.PI * 3 / 2 - middleDegrees;
@@ -254,7 +263,6 @@
         this.drawPrizeBlock();
         this.drawButton()
       }
-
     }
   }
 </script>
