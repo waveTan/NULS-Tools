@@ -118,7 +118,9 @@
       width: 100%;
       ul {
         width: 100%;
+        background-color: #FFFFFF;
         li {
+          background-color: #FFFFFF;
           float: left;
           width: 25%;
           text-align: center;

@@ -702,6 +702,9 @@
       min-height: 400px;
       .guess {
         width: 600px;
+        @media screen and (max-width: 1000px) {
+          width: 100%;
+        }
         h2 {
           text-align: center;
           margin: 40px 0;
@@ -721,6 +724,12 @@
           .is-circle {
             width: 40px;
             height: 40px;
+            @media screen and (max-width: 1000px) {
+              width: 1.8rem;
+              height: 1.8rem;
+              line-height: 0.9rem;
+              padding: 0.45rem;
+            }
           }
           .is_number {
             background-color: #67C23A;
