@@ -146,7 +146,7 @@
         font-size: 30px;
         @media screen and (max-width: 1024px) {
           margin: 0 auto;
-          line-height: 4rem;
+          line-height: 1.8rem;
         }
       }
     }
@@ -154,7 +154,7 @@
       margin: 20px auto 0;
       font-size: 18px;
       @media screen and (max-width: 1024px) {
-        margin: 1rem 0 0 1rem;
+        margin: 1rem 0 0 0;
         font-size: 0.8rem;
       }
     }
@@ -196,6 +196,11 @@
     }
     @media screen and (max-width: 1024px) {
       width: 100%;
+      .btn {
+        .el-button {
+          width: 14rem;
+        }
+      }
     }
   }
 

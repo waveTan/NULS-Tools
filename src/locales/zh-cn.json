@@ -6,14 +6,17 @@
     "guess": "竞猜",
     "tool": "工具",
     "more": "更多",
-    "login": "登录"
+    "login": "登录",
+    "user": "我的"
   },
   "public": {
     "address": "地址",
     "balance": "余额",
     "signOut": "退出",
     "confirm": "确 定",
-    "cancel": "取 消"
+    "cancel": "取 消",
+    "comingSoon": "敬请期待",
+    "": ""
   },
   "tips": {
     "password0": "请输入密码",

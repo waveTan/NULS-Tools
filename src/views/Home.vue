@@ -39,21 +39,24 @@
     <div class="cb">
       <h6 class="title font18 fW600">娱乐</h6>
       <ul class="dapp-list">
-        <li @click="toUrl('lucky','',0)">
-          <img src="./../assets/logo.png">
-          <b class="font12">大转盘<br/>玩转盘得NULS百分之百中奖</b>
-        </li>
         <li @click="toUrl('guessNumber','',0)">
           <img src="./../assets/logo.png">
-          <b class="font12">猜数字<br/>{{$t('tips.tips2')}}</b>
+          <b class="font12">猜数字<br/>基于NULS随机数的合约猜数游戏</b>
+        </li>
+        <!--<li @click="toUrl('lucky','',0)">-->
+        <li>
+          <img src="./../assets/logo.png">
+          <!-- <b class="font12">大转盘<br/>玩转盘得NULS百分之百中奖</b>-->
+          <b class="font12">大转盘<br/>{{$t('public.comingSoon')}}</b>
+        </li>
+
+        <li>
+          <img src="./../assets/logo.png">
+          <b class="font12">快乐翻牌<br/>{{$t('public.comingSoon')}}</b>
         </li>
         <li>
           <img src="./../assets/logo.png">
-          <b class="font12">快乐翻牌<br/>{{$t('tips.tips2')}}</b>
-        </li>
-        <li>
-          <img src="./../assets/logo.png">
-          <b class="font12">数字华容道<br/>{{$t('tips.tips2')}}</b>
+          <b class="font12">数字华容道<br/>{{$t('public.comingSoon')}}</b>
         </li>
 
       </ul>
@@ -70,14 +73,9 @@
     },
     destroyed() {
     },
-    components: {
-    },
-    computed: {
-
-    },
-    watch: {
-
-    },
+    components: {},
+    computed: {},
+    watch: {},
     methods: {
 
       /**

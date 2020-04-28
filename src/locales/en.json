@@ -6,14 +6,17 @@
     "guess": "Guess",
     "tool": "Tool",
     "more": "More",
-    "login": "Sign In"
+    "login": "Login",
+    "user": "My"
   },
   "public": {
     "address": "Address",
     "balance": "Balance",
     "signOut": "Sign Out",
     "confirm": "Confirm",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "comingSoon": "Coming soon",
+    "": ""
   },
   "tips": {
     "password0": "Please enter your password",

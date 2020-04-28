@@ -48,5 +48,9 @@
   .block_height {
     width: 120px;
     line-height: 40px;
+    @media screen and (max-width: 1000px) {
+      width: auto;
+      margin: 0 0.5rem 0 0;
+    }
   }
 </style>

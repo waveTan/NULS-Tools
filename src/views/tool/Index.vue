@@ -31,15 +31,15 @@
 			<ul class="dapp-list">
 				<li>
 					<img src="@/assets/logo.png">
-					<b class="font12">NULS 粉丝群<br />{{$t('tips.tips2')}}</b>
+					<b class="font12">NULS 粉丝群<br />{{$t('public.comingSoon')}}</b>
 				</li>
 				<li>
 					<img src="@/assets/logo.png">
-					<b class="font12">开发者微信群<br />{{$t('tips.tips2')}}</b>
+					<b class="font12">开发者微信群<br />{{$t('public.comingSoon')}}</b>
 				</li>
 				<li>
 					<img src="@/assets/logo.png">
-					<b class="font12">商务合作<br />{{$t('tips.tips2')}}</b>
+					<b class="font12">商务合作<br />{{$t('public.comingSoon')}}</b>
 				</li>
 			</ul>
 		</div>

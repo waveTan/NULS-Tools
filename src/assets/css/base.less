@@ -95,51 +95,89 @@ a:focus {
 .w1200 {
   width: 1200px;
   margin: 0 auto;
+  @media screen and (max-width: 1000px) {
+    width: 100%;
+  }
 }
 
 .w630 {
   width: 630px;
   margin: 0 auto;
+  @media screen and (max-width: 1000px) {
+    width: 100%;
+  }
 }
 
 .font10 {
   font-size: 10px;
   line-height: 10px;
+  @media screen and (max-width: 1000px) {
+    font-size: 0.5rem;
+    line-height: 0.5rem;
+  }
 }
 
 .font12 {
   font-size: 12px;
   line-height: 12px;
+  @media screen and (max-width: 1000px) {
+    font-size: 0.6rem;
+    line-height: 0.6rem;
+  }
 }
 
 .font14 {
   font-size: 14px;
-  line-height: 16px;
+  line-height: 14px;
+  @media screen and (max-width: 1000px) {
+    font-size: 0.7rem;
+    line-height: 0.7rem;
+  }
 }
 
 .font16 {
   font-size: 16px;
   line-height: 16px;
+  @media screen and (max-width: 1000px) {
+    font-size: 0.8rem;
+    line-height: 0.8rem;
+  }
 }
 
 .font18 {
   font-size: 18px;
   line-height: 18px;
+  @media screen and (max-width: 1000px) {
+    font-size: 0.9rem;
+    line-height: 0.9rem;
+  }
 }
 
 .font20 {
   font-size: 20px;
   line-height: 20px;
+  @media screen and (max-width: 1000px) {
+    font-size: 1rem;
+    line-height: 1rem;
+  }
 }
 
 .font24 {
   font-size: 24px;
   line-height: 24px;
+  @media screen and (max-width: 1000px) {
+    font-size: 1.2rem;
+    line-height: 1.2rem;
+  }
 }
 
 .font30 {
   font-size: 30px;
   line-height: 30px;
+  @media screen and (max-width: 1000px) {
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+  }
 }
 
 .fW400 {
@@ -202,6 +240,11 @@ a:focus {
     border-radius: 4px;
     cursor: pointer;
     color: #c1c1c1;
+    @media screen and (max-width: 1000px) {
+      width: 6.15rem;
+      height: 8rem;
+      margin: 0.5rem 0.15rem 0;
+    }
 
     &:hover {
       border-radius: 2px;
@@ -215,8 +258,12 @@ a:focus {
 
     img {
       height: 40px;
-      opacity: 0.2;
+      opacity: 1;
       margin: 20px 0 0 0;
+      @media screen and (max-width: 1000px) {
+        height: 1.5rem;
+        margin: 1rem 0 0 0;
+      }
     }
 
     b {
@@ -225,6 +272,7 @@ a:focus {
       line-height: 18px;
       display: block;
       text-transform: Uppercase;
+
     }
   }
 }
@@ -260,7 +308,18 @@ a:focus {
   }
 }
 
+.pc {
+  @media screen and (max-width: 1000px) {
+    display: none;
+  }
+}
 
+.mobile {
+  display: none;
+  @media screen and (max-width: 1000px) {
+    display: block;
+  }
+}
 
 
 
