@@ -189,7 +189,7 @@
           url: 'http://192.168.1.40:81',
         },//配置信息
         jackpotInfo: {
-          address: 'tNULSeBaNAUbZGCqnRm2nUD6uak2omChuEueVF',//合约地址
+          address: 'tNULSeBaMwJvR2au5wX4zNcbi5HLix9aBmeF66',//合约地址
           balance: 0,
         },//奖池信息
         gameCurrentInfo: {},//当前游戏信息
@@ -220,6 +220,7 @@
         pageSize: 10, //每页显示条数
         pageIndex: 1,  //当前页
         pageTotal: 0,//总页数
+        guessNumberInterval: null,//定时器
       }
     },
 
@@ -238,14 +239,14 @@
         this.gameHistory();
       }
 
-      setInterval(() => {
+      this.guessNumberInterval = setInterval(() => {
         this.getPrizePool();
         this.gameCurrent();
       }, 10000);
 
     },
     destroyed() {
-      //clearInterval(this.chartInterval);
+      clearInterval(this.guessNumberInterval);
     },
     watch: {},
     components: {

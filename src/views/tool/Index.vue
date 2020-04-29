@@ -1,7 +1,7 @@
 <template>
 	<div class="tool w1200">
 		<div>
-			<h6 class="title font18 fW600">文档</h6>
+			<h6 class="title font18 fW600">{{$t('public.documents')}}</h6>
 			<ul class="dapp-list">
 				<li @click="toUrl('https://docs.nuls.io/zh/Guide/','',1)">
 					<img src="@/assets/logo.png">
@@ -14,7 +14,7 @@
 			</ul>
 		</div>
 		<div class="cb">
-			<h6 class="title font18 fW600">工具</h6>
+			<h6 class="title font18 fW600">{{$t('nav.tool')}}</h6>
 			<ul class="dapp-list">
 				<li @click="toUrl('http://des.mimieye.net:81/','',1)">
 					<img src="@/assets/logo.png">
@@ -27,7 +27,7 @@
 			</ul>
 		</div>
 		<div class="cb">
-			<h6 class="title font18 fW600">交流</h6>
+			<h6 class="title font18 fW600">{{$t('public.interflow')}}</h6>
 			<ul class="dapp-list">
 				<li>
 					<img src="@/assets/logo.png">

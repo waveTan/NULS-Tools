@@ -193,6 +193,9 @@
   .btn-next {
     .btn {
       margin: 20px 0 20px 0;
+      .el-button {
+        width: 280px;
+      }
     }
     @media screen and (max-width: 1024px) {
       width: 100%;

@@ -12,17 +12,20 @@
           <el-menu-item index="more"><i class="iconfont icon-gengduo"></i>{{$t('nav.more')}}</el-menu-item>
         </el-menu>
       </el-col>
-      <el-col :span="6" class="user font14" :class="accountInfo.address ? '':'tr'">
-        <div class="click fl" style="width: 50px" @click="toUrl('newAddress','',0)" v-show="!accountInfo.address">
-          {{$t('nav.login')}}
-        </div>
+      <el-col :span="6" class="user font14" :class="accountInfo.address ? '':''">
         <div class="user-info fl" v-show="accountInfo.address">
           <p class="font12">{{$t('public.address')}}：{{accountInfo.address}}</p>
           <p class="font12">{{$t('public.balance')}}：{{accountInfo.balance}} NULS
             <span class="click" @click="signOut">{{$t('public.signOut')}}</span>
           </p>
         </div>
-        <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
+        <div class="fr">
+          <div class="click fl" style="width: 50px" @click="toUrl('newAddress','',0)" v-show="!accountInfo.address">
+            {{$t('nav.login')}}
+          </div>
+          <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
+        </div>
+
       </el-col>
     </el-row>
     <el-row class="mobile">
@@ -35,7 +38,10 @@
       </div>
       <div class="fr font12 user_info" v-show="accountInfo.address">
         <h6>{{$t('public.address')}}：{{accountInfo.addresss}}</h6>
-        <p>{{$t('public.balance')}}：{{accountInfo.balance}} <span class="fCN">NULS</span></p>
+        <p>
+          {{$t('public.balance')}}：{{accountInfo.balance}}
+          <span class="click fr" @click="signOut">{{$t('public.signOut')}}</span>
+        </p>
       </div>
       <div class="fr font12 click user_login" @click="toUrl('newAddress','',0)" v-show="!accountInfo.address">
         {{$t('nav.login')}}
@@ -61,7 +67,7 @@
       setInterval(() => {
         this.accountInfo = localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {};
         this.accountInfo.addresss = superLong(this.accountInfo.address, 8);
-        this.accountInfo.balance = divisionDecimals(this.accountInfo.balance, 8)
+        this.accountInfo.balance = Number(divisionDecimals(this.accountInfo.balance, 8)).toFixed(3)
       }, 500)
     },
     mounted() {

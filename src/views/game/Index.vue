@@ -1,5 +1,6 @@
 <template>
-  <div class="guess w1200">
+  <div class="guess w1200 cb">
+    <h6 class="title font18 fW600">{{$t('public.zoology')}}</h6>
     <ul class="dapp-list">
       <li @click="toUrl('guessNumber','',0)">
         <img src="@/assets/logo.png">
@@ -34,14 +35,9 @@
     },
     destroyed() {
     },
-    components: {
-    },
-    computed: {
-
-    },
-    watch: {
-
-    },
+    components: {},
+    computed: {},
+    watch: {},
     methods: {
 
       /**
@@ -51,6 +47,7 @@
        * @param type  0:路由跳转 1：外部链接
        */
       toUrl(urlName, parameter, type) {
+        console.log(urlName, parameter, type);
         if (type === 0) {
           this.$router.push({
             name: urlName

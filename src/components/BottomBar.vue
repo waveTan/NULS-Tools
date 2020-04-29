@@ -1,21 +1,31 @@
 <template>
-  <el-row class="bottom w1200 font12">
-    <el-row class="pc info">
-      <el-col class="fl">
-        <el-col>开发者：wave</el-col>
-        <el-col>地址：NULSd6HgaWymKrQ7NdtWossLFzunasJzdwave</el-col>
-      </el-col>
-      <el-col class="fr">
-        <Height>
-        </Height>
-      </el-col>
+  <el-row class="bottom cb">
+    <el-row class="pc">
+      <el-row class="w1200 font12 info">
+        <el-col :span="22">
+          <div>{{$t('public.developer')}}: wave</div>
+          <div>{{$t('public.address')}}: NULSd6HgaWymKrQ7NdtWossLFzunasJzdwave</div>
+        </el-col>
+        <el-col :span="2" class="tr">
+          <Height>
+          </Height>
+        </el-col>
+      </el-row>
     </el-row>
     <el-row class="mobile">
       <ul>
-        <li @click="handleSelect('home')"><i class="iconfont icon-quanbu"></i>{{$t('nav.home')}}</li>
-        <li @click="handleSelect('game')"><i class="iconfont icon-dazhuanpan"></i>{{$t('nav.game')}}</li>
-        <li @click="handleSelect('tool')"><i class="iconfont icon-gongju"></i>{{$t('nav.tool')}}</li>
-        <li @click="handleSelect('more')"><i class="iconfont icon-gengduo"></i>{{$t('nav.more')}}</li>
+        <li @click="handleSelect('home')" :class="activeIndex ==='home' ? 'is_nav':''">
+          <i class="iconfont icon-quanbu"></i>{{$t('nav.home')}}
+        </li>
+        <li @click="handleSelect('game')" :class="activeIndex ==='game' ? 'is_nav':''">
+          <i class="iconfont icon-dazhuanpan"></i>{{$t('nav.game')}}
+        </li>
+        <li @click="handleSelect('tool')" :class="activeIndex ==='tool' ? 'is_nav':''">
+          <i class="iconfont icon-gongju"></i>{{$t('nav.tool')}}
+        </li>
+        <li @click="handleSelect('more')" :class="activeIndex ==='more' ? 'is_nav':''">
+          <i class="iconfont icon-gengduo"></i>{{$t('nav.more')}}
+        </li>
       </ul>
     </el-row>
   </el-row>
@@ -33,11 +43,6 @@
       };
     },
     created() {
-      /*setInterval(() => {
-        this.accountInfo = localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {};
-        this.accountInfo.addresss = superLong(this.accountInfo.address, 8);
-        this.accountInfo.balance = divisionDecimals(this.accountInfo.balance, 8)
-      }, 500)*/
     },
     mounted() {
     },
@@ -103,15 +108,19 @@
 
 <style lang="less">
   .bottom {
-    .info {
+    .pc {
+      border-top: 1px solid #c1c1c1;
+      height: 40px;
       position: fixed;
       bottom: 0;
       background-color: #FFFFFF;
-      padding: 0;
-      line-height: 20px;
-      height: 40px;
-      width: 1200px;
+      width: 100%;
+      .info {
+        padding: 0;
+        line-height: 20px;
+      }
     }
+
     .mobile {
       position: fixed;
       bottom: 0;
@@ -127,6 +136,9 @@
           line-height: 35px;
           border-top: 1px solid #c1c1c1;
           font-size: 0.8rem;
+        }
+        .is_nav {
+          color: #7db46d;
         }
       }
     }

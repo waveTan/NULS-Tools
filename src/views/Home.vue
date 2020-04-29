@@ -21,7 +21,7 @@
       </ul>
     </div>
     <div class="cb">
-      <h6 class="title font18 fW600">生态</h6>
+      <h6 class="title font18 fW600">{{$t('public.zoology')}}</h6>
       <ul class="dapp-list">
         <li @click="toUrl('https://pocm.nuls.io/','',1)">
           <img src="./../assets/logo.png">
@@ -37,7 +37,7 @@
       </ul>
     </div>
     <div class="cb">
-      <h6 class="title font18 fW600">娱乐</h6>
+      <h6 class="title font18 fW600">{{$t('public.recreation')}}</h6>
       <ul class="dapp-list">
         <li @click="toUrl('guessNumber','',0)">
           <img src="./../assets/logo.png">
