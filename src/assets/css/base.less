@@ -197,7 +197,11 @@ a:focus {
 }
 
 .fred {
-  color: red;
+  color: #FF3300;
+}
+
+.fyellow {
+  color: #EE9611;
 }
 
 .bg-white {
@@ -256,23 +260,25 @@ a:focus {
       }
     }
 
-    img {
-      height: 40px;
-      opacity: 1;
+    p {
       margin: 20px 0 0 0;
-      @media screen and (max-width: 1000px) {
-        height: 1.5rem;
-        margin: 1rem 0 0 0;
+      font-weight: bold;
+      line-height: 26px;
+      min-height: 40px;
+      img {
+        height: 40px;
+        opacity: 1;
+        @media screen and (max-width: 1000px) {
+          height: 1.5rem;
+          margin: 1rem 0 0 0;
+        }
       }
     }
-
     b {
       margin: 10px 0 0 0;
       font-weight: 400;
       line-height: 18px;
       display: block;
-      text-transform: Uppercase;
-
     }
   }
 }

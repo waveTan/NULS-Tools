@@ -5,40 +5,61 @@
            :element-loading-text=loadingText
            element-loading-spinner="el-icon-loading"
            element-loading-background="rgba(0, 0, 0, 0.8)">
-        <h2>NULS 第{{gameCurrentInfo.id}}轮猜数字</h2>
+        <h2>NULS {{$t('guessNum.guessNum0')}}{{gameCurrentInfo.id}}{{$t('guessNum.guessNum1')}}</h2>
         <div class="explain">
-          <p>1、用户选择0-9中的一个数字参与，每轮中奖的用户平分奖池所有（没有中奖奖池累计下一次）</p>
-          <p>2、参与游戏将消耗 <span class="fred fW600">2.011</span> NULS</p>
-          <p>3、游戏每<span class="fred"> 20 </span>块开奖一次，中间间隔<span class="fred"> 10 </span>块</p>
-          <p>4、此随机数是基于<span class="fred">NULS随机数</span>开发的绝对公平</p>
+          <p>1、{{$t('guessNum.guessNum2')}}
+            <el-tooltip placement="bottom" style="padding: 0">
+              <div slot="content" class="portion">
+                <ul>
+                  <li>{{$t('guessNum.guessNum3')}} < 10 {{$t('guessNum.guessNum4')}} 20%</li>
+                  <li>{{$t('guessNum.guessNum3')}} < 50 {{$t('guessNum.guessNum4')}} 25%</li>
+                  <li>{{$t('guessNum.guessNum3')}} < 100 {{$t('guessNum.guessNum4')}} 30%</li>
+                  <li>{{$t('guessNum.guessNum3')}} < 200 {{$t('guessNum.guessNum4')}} 35%</li>
+                  <li>{{$t('guessNum.guessNum3')}} < 500 {{$t('guessNum.guessNum4')}} 40%</li>
+                  <li>{{$t('guessNum.guessNum3')}} < 1000 {{$t('guessNum.guessNum4')}} 45%</li>
+                  <li>{{$t('guessNum.guessNum3')}} > 1000 {{$t('guessNum.guessNum4')}} 50%</li>
+                </ul>
+              </div>
+              <el-button type="text">{{$t('guessNum.guessNum5')}}</el-button>
+            </el-tooltip>
+            {{$t('guessNum.guessNum6')}}
+          </p>
+          <p>2、{{$t('guessNum.guessNum7')}} <span class="fred fW600">2.011</span> NULS</p>
+          <p>3、{{$t('guessNum.guessNum8')}}<span class="fred"> 20 </span>{{$t('guessNum.guessNum9')}}<span class="fred"> 10 </span>{{$t('guessNum.guessNum10')}}
+          </p>
+          <p>4、{{$t('guessNum.guessNum11')}} <span class="fred">{{$t('guessNum.guessNum12')}}</span>
+            {{$t('guessNum.guessNum13')}}
+          </p>
         </div>
         <div class="number">
           <el-button circle v-for="item in valueList" :key="item.value" @click="clickNumber(item.value)"
-                     :class="item.value ===numberValue ? 'is_number':''">
+                     :class="item.value.toString() ===numberValue.toString() ? 'is_number':''">
             {{item.label}}
           </el-button>
         </div>
         <div class="submit tc">
-          <el-button type="success" @click="guessStart">{{this.numberValue ==='' ? '请点击数字':'您猜本轮开'}}
+          <el-button type="success" @click="guessStart">{{this.numberValue ==='' ?
+            $t('guessNum.guessNum14'):$t('guessNum.guessNum15')}}
             {{this.numberValue}}
           </el-button>
         </div>
         <div class="jackpot font14">
-          奖池
-          <span class="font12">({{jackpotInfo.address}})</span>:&nbsp;
+          {{$t('guessNum.guessNum3')}}
+          <span class="font12">({{jackpotInfo.address}})</span>:
           <font class="fCN fW600">{{jackpotInfo.balance}}</font> NULS
         </div>
-        <!--<div class="font14">本轮截止时间: <span class="fred fW600">52.25</span> 秒</div>-->
-        <div class="font14">
-          <div class="fl">本轮截止高度: <span class="fred fW600">{{gameCurrentInfo.endHeight}}</span></div>
-          <div class="fl">&nbsp;&nbsp;本轮开奖高度: <span class="fred">{{gameCurrentInfo.endHeight + gameCurrentInfo.gameLotteryDelay}}</span>
+        <div class="font14" v-if="gameCurrentInfo.endHeight">
+          <div class="fl">{{$t('guessNum.guessNum16')}}: <span class="fred fW600">{{gameCurrentInfo.endHeight}}</span>
+          </div>
+          <div class="fl">&nbsp;&nbsp;{{$t('guessNum.guessNum17')}}: <span class="fred">{{gameCurrentInfo.endHeight + gameCurrentInfo.gameLotteryDelay}}</span>
           </div>
         </div>
+        <div class="font14 fyellow" v-else>{{$t('guessNum.guessNum18')}}</div>
       </div>
       <div class="fr party">
-        <h3>当前参与</h3>
+        <h3>{{$t('guessNum.guessNum19')}}</h3>
         <el-table :data="gameDetailInfo.participants" style="width: 100%">
-          <el-table-column label="地址" align="center" width="120">
+          <el-table-column :label="$t('public.address')" align="center" width="120">
             <template slot-scope="scope">
               <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
             </template>
@@ -48,29 +69,29 @@
               <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="txTime" label="时间" align="center" width="160">
+          <el-table-column prop="txTime" :label="$t('public.time')" align="center" width="160">
           </el-table-column>
-          <el-table-column prop="number" label="猜数" align="center" width="70">
+          <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center" width="90">
           </el-table-column>
         </el-table>
       </div>
     </div>
     <div class="footer cb">
       <el-tabs v-model="activeHistory" @tab-click="handleClick">
-        <el-tab-pane label="中奖历史" name="first">
+        <el-tab-pane :label="$t('guessNum.guessNum21')" name="first">
           <el-table :data="participantData" stripe style="width: 100%" border>
-            <el-table-column prop="gameId" label="游戏轮次" width="120" align="center">
+            <el-table-column prop="gameId" :label="$t('guessNum.guessNum22')" width="120" align="center">
             </el-table-column>
-            <el-table-column label="参与地址" width="380" align="center">
+            <el-table-column :label="$t('guessNum.guessNum23')" width="380" align="center">
               <template slot-scope="scope">
                 <span class="click" @click="toUrl('address',scope.row.winner,1)">{{scope.row.winner}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="perPrize" label="奖金" width="120" align="center">
+            <el-table-column prop="perPrize" :label="$t('guessNum.guessNum24')" width="120" align="center">
             </el-table-column>
-            <el-table-column prop="number" label="开奖数" width="120" align="center">
+            <el-table-column prop="number" :label="$t('guessNum.guessNum25')" width="120" align="center">
             </el-table-column>
-            <el-table-column prop="txTime" label="参与时间" width="160" align="center">
+            <el-table-column prop="txTime" :label="$t('guessNum.guessNum26')" width="160" align="center">
             </el-table-column>
             <el-table-column label="txHash" min-width="180" align="center">
               <template slot-scope="scope">
@@ -79,18 +100,18 @@
             </el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="参与历史" name="second">
+        <el-tab-pane :label="$t('guessNum.guessNum27')" name="second">
           <el-table :data="participantHistoryData" stripe style="width: 100%" border>
-            <el-table-column prop="gameId" label="游戏轮次" width="120" align="center">
+            <el-table-column prop="gameId" :label="$t('guessNum.guessNum22')" width="120" align="center">
             </el-table-column>
-            <el-table-column label="参与地址" width="380" align="center">
+            <el-table-column :label="$t('guessNum.guessNum23')" width="380" align="center">
               <template slot-scope="scope">
                 <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.address}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="number" label="开奖数" width="160" align="center">
+            <el-table-column prop="number" :label="$t('guessNum.guessNum25')" width="160" align="center">
             </el-table-column>
-            <el-table-column prop="txTime" label="参与时间" width="160" align="center">
+            <el-table-column prop="txTime" :label="$t('guessNum.guessNum26')" width="160" align="center">
             </el-table-column>
             <el-table-column label="txHash" min-width="180" align="center">
               <template slot-scope="scope">
@@ -99,17 +120,16 @@
             </el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="开奖历史" name="third">
+        <el-tab-pane :label="$t('guessNum.guessNum28')" name="third">
           <el-collapse v-model="activeName" accordion @change="changeColapse()">
             <el-collapse-item v-for="item in historyData"
-                              :title="'第' +item.gameId+'轮 开奖: '+item.number+'  中奖金额: '+item.perPrize + '  开奖时间: '+item.txTime"
+                              :title="$t('guessNum.guessNum0') +item.gameId+$t('guessNum.guessNum29')+$t('guessNum.guessNum30')+':'+item.number+ $t('guessNum.guessNum31')+': '+item.perPrize"
                               :name=item.gameId
-
             >
               <div class="footer_table">
-                <div>参与信息</div>
+                <div>{{$t('guessNum.guessNum32')}}</div>
                 <el-table :data="historyDataIn" style="width: 100%">
-                  <el-table-column label="地址" align="center" width="180">
+                  <el-table-column :label="$t('public.address')" align="center" width="180">
                     <template slot-scope="scope">
                       <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
                     </template>
@@ -119,14 +139,14 @@
                       <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="txTime" label="时间" align="center" width="180">
+                  <el-table-column prop="txTime" :label="$t('public.time')" align="center" width="180">
                   </el-table-column>
-                  <el-table-column prop="number" label="猜数" align="center" width="150">
+                  <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center" width="150">
                   </el-table-column>
                 </el-table>
-                <div>中奖信息</div>
+                <div>{{$t('guessNum.guessNum33')}}</div>
                 <el-table :data="historyDataOut" style="width: 100%">
-                  <el-table-column label="地址" align="center" width="180">
+                  <el-table-column :label="$t('public.address')" align="center" width="180">
                     <template slot-scope="scope">
                       <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
                     </template>
@@ -136,11 +156,11 @@
                       <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="txTime" label="时间" align="center" width="180">
+                  <el-table-column prop="txTime" :label="$t('public.time')" align="center" width="180">
                   </el-table-column>
-                  <el-table-column prop="number" label="猜数" align="center" width="150">
+                  <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center" width="150">
                   </el-table-column>
-                  <el-table-column prop="perPrize" label="中奖金额" align="center" width="150">
+                  <el-table-column prop="perPrize" :label="$t('guessNum.guessNum31')" align="center" width="150">
                   </el-table-column>
                 </el-table>
               </div>
@@ -189,7 +209,7 @@
           url: 'http://192.168.1.40:81',
         },//配置信息
         jackpotInfo: {
-          address: 'tNULSeBaMwJvR2au5wX4zNcbi5HLix9aBmeF66',//合约地址
+          address: 'tNULSeBaNBa4SDZYWBqUm8B2mkkx1yvwHGbJG8',//合约地址
           balance: 0,
         },//奖池信息
         gameCurrentInfo: {},//当前游戏信息
@@ -270,8 +290,8 @@
               this.gameCurrentInfo = resData.data.data;
               this.gameDetail(this.gameCurrentInfo.id);
               //console.log(this.gameCurrentInfo.endHeight < this.$store.getters.getHeight);
-              if (this.gameCurrentInfo.endHeight <= this.$store.getters.getHeight) {
-                this.loadingText = '准备开奖了';
+              if (this.gameCurrentInfo.endHeight && this.gameCurrentInfo.endHeight <= this.$store.getters.getHeight) {
+                this.loadingText = this.$t('tips.tips17');
                 this.loading = true;
               } else {
                 this.loading = false;
@@ -286,7 +306,7 @@
                 txTime: 0,
               };
               this.loading = true;
-              this.loadingText = '正在准备下一轮，请稍等...';
+              this.loadingText = this.$t('tips.tips18');
               this.userLotteryHistory(this.accontInfo.address);
             }
           }
@@ -351,10 +371,10 @@
        */
       async guessStart() {
         if (!localStorage.hasOwnProperty('accountInfo')) {
-          this.$message({message: '请登录', type: 'error'});
+          this.$message({message: this.$t('tips.tips21'), type: 'error'});
           return
         } else if (!this.numberValue) {
-          this.$message({message: '请选择数字', type: 'error'});
+          this.$message({message: this.$t('tips.tips19'), type: 'error'});
           return
         }
         let contractInfo = {
@@ -407,7 +427,7 @@
         let newAccountInfo = await passwordVerification(accountInfo, password);
         //console.log(newAccountInfo);
         if (!newAccountInfo.success) {
-          this.$message({message: '对不起，请输入正确的密码', type: 'error', duration: 3000});
+          this.$message({message: this.$t('tips.tips4'), type: 'error', duration: 3000});
           return;
         }
         let contractInfo = {
@@ -434,7 +454,7 @@
         let balanceInfo = await getBalanceOrNonceByAddress(accountInfo.address, chainInfo.chainId, chainInfo.assetsId);
         //console.log(balanceInfo);
         if (balanceInfo.success && balanceInfo.data.balance < 10000) {
-          this.$message({message: '此账户余额不足，请充值或重新导入!', type: 'error'});
+          this.$message({message: this.$t('tips.tips20'), type: 'error'});
           return {success: false}
         }
         //交易组装
@@ -448,9 +468,9 @@
         let validateTxhex = await validateAndBroadcast(txhex);
         //console.log(validateTxhex);
         if (!validateTxhex.success) {
-          this.$message({message: '验证并广播交易错误：' + JSON.stringify(validateTxhex.data), type: 'error'});
+          this.$message({message: this.$t('tips.tips14') + JSON.stringify(validateTxhex.data), type: 'error'});
         } else {
-          this.$message({message: '交易已经发出，等待区块确认!', type: 'success'});
+          this.$message({message: this.$t('tips.tips15'), type: 'success'});
         }
       },
 
@@ -509,6 +529,7 @@
        * @param args
        */
       async imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args) {
+        //console.log(sender, value, contractAddress, methodName, methodDesc, args);
         let resData = await this.$post('/', 'imputedContractCallGas', [sender, value, contractAddress, methodName, methodDesc, args]);
         //console.log(resData);
         if (!resData.hasOwnProperty('result')) {
@@ -631,17 +652,16 @@
        */
       async gameHistory() {
         let url = this.config.url + '/game/history/' + this.pageIndex;
-        //let data = {page: this.pageIndex, pageSize: this.pageSize};
         let historyData = await axios.get(url);
         //console.log(historyData);
         if (historyData.data.success) {
           this.pageTotal = historyData.data.data.total;
           for (let item of historyData.data.data.list) {
             if (item.number || item.number === 0) {
-              item.perPrize = !item.perPrize ? '流局' : divisionDecimals(item.perPrize, 8);
+              item.perPrize = !item.perPrize ? this.$t('public.flow') : divisionDecimals(item.perPrize, 8);
             } else {
-              item.number = '流局';
-              item.perPrize = '流局';
+              item.number = this.$t('public.flow');
+              item.perPrize = this.$t('public.flow');
             }
             item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
           }
@@ -700,11 +720,16 @@
 <style lang="less">
   .guess_number {
     .top {
-      min-height: 400px;
+      min-height: 480px;
+      @media screen and (max-width: 1000px) {
+        min-height: auto;
+      }
       .guess {
         width: 600px;
         @media screen and (max-width: 1000px) {
           width: 100%;
+          min-height: 36rem;
+          loat: none;
         }
         h2 {
           text-align: center;
@@ -747,6 +772,12 @@
       }
       .party {
         width: 550px;
+        @media screen and (max-width: 1000px) {
+          margin: 0 auto;
+          float: none;
+          clear: none;
+          width: 98%;
+        }
         h3 {
           text-align: left;
           margin: 20px 0 0 0;
@@ -754,9 +785,17 @@
           padding: 0 0 5px 10px;
           font-size: 16px;
           font-weight: bold;
+          @media screen and (max-width: 1000px) {
+            margin: 0 0 0 0 ;
+            padding: 0.5rem 1rem;
+          }
         }
         .el-table {
           margin: 10px 0 0 0;
+          @media screen and (max-width: 1000px) {
+            margin: 0.5rem auto 0;
+            width: 98%;
+          }
           th {
             background-color: #c1c1c1;
           }
@@ -767,6 +806,11 @@
       }
     }
     .footer {
+      margin: 20px auto 80px;
+      @media screen and (max-width: 1000px) {
+        margin: 1rem auto 3rem;
+        width: 98%;
+      }
       .footer_table {
         .el-table {
           margin: 10px 0 0 0;
@@ -792,4 +836,8 @@
     }
   }
 
+  .is-dark {
+    background-color: #FFFFFF !important;
+    border: 1px solid #c1c1c1;
+  }
 </style>
