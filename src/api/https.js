@@ -14,6 +14,7 @@ axios.defaults.headers.put['Content-Type'] = 'application/json';
  * @returns {Promise}
  */
 export function get(url, params = {}) {
+  axios.defaults.baseURL = API_URL;
   return new Promise((resolve, reject) => {
     axios.get(url, {params: params})
       .then(response => {
@@ -34,6 +35,7 @@ export function get(url, params = {}) {
  * @returns {Promise}
  */
 export function post(url, methodName, data = {}) {
+  axios.defaults.baseURL = API_URL;
   data.unshift(chainInfo.chainId);
   const parameter = {"jsonrpc": "2.0", "method": methodName, "params": data, "id": Math.floor(Math.random() * 1000)};
   return new Promise((resolve, reject) => {
@@ -54,6 +56,7 @@ export function post(url, methodName, data = {}) {
  * @returns {Promise}
  */
 export function patch(url, data = {}) {
+  axios.defaults.baseURL = API_URL;
   return new Promise((resolve, reject) => {
     axios.patch(url, data)
       .then(response => {
@@ -72,6 +75,7 @@ export function patch(url, data = {}) {
  * @returns {Promise}
  * */
 export function put(url, data = {}) {
+  axios.defaults.baseURL = API_URL;
   return new Promise((resolve, reject) => {
     axios.put(url, data)
       .then(response => {

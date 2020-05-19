@@ -9,7 +9,7 @@ export const IS_DEV = process.env.NODE_ENV === 'production';
 //链信息
 export const chainInfo = {chainId: 2, assetsId: 1, prefix: 'tNULS'};
 //api正式、测试网络的api
-export let API_URL = IS_DEV ? 'http://public2.nuls.io' : 'https://beta.wallet.nuls.io/api';
+export let API_URL = IS_DEV ? 'https://beta.wallet.nuls.io/api' : 'https://beta.wallet.nuls.io/api';
 //请求最迟时间
 export const API_TIME = IS_DEV ? '9000' : '5000';
 //浏览器连接地址

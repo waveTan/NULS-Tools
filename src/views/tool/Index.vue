@@ -35,7 +35,7 @@
         </li>
         <li>
           <p>{{$t('home.home24')}}</p>
-          <b class="font12">}</b>
+          <b class="font12"></b>
         </li>
         <li>
           <p>{{$t('home.home25')}}</p>

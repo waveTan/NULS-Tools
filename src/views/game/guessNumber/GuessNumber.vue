@@ -206,7 +206,7 @@
       return {
         accontInfo: localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {}, //账户信息
         config: {
-          url: 'http://192.168.1.40:81',
+          url: process.env.NODE_ENV !== 'production' ? 'http://192.168.1.40:81/' : '/',
         },//配置信息
         jackpotInfo: {
           address: 'tNULSeBaNBa4SDZYWBqUm8B2mkkx1yvwHGbJG8',//合约地址
@@ -280,8 +280,9 @@
        * @author: Wave
        */
       async gameCurrent() {
-        let url = this.config.url + '/game/current';
+        let url = this.config.url + 'game/current';
         try {
+          axios.defaults.baseURL = '';
           let resData = await axios.get(url);
           //console.log(resData);
           //console.log(this.$store.getters.getHeight);
@@ -322,8 +323,9 @@
        * @author: Wave
        */
       async gameDetail(gameId, type = 0) {
-        let url = this.config.url + '/game/detail/' + gameId;
+        let url = this.config.url + 'game/detail/' + gameId;
         try {
+          axios.defaults.baseURL = '';
           let resData = await axios.get(url);
           //console.log(resData);
           if (resData.data.success) {
@@ -611,7 +613,8 @@
        * @author: Wave
        */
       async userLotteryHistory(address) {
-        let url = this.config.url + '/game/user/lottery/' + address + '/' + this.pageIndex;
+        let url = this.config.url + 'game/user/lottery/' + address + '/' + this.pageIndex;
+        axios.defaults.baseURL = '';
         let resData = await axios.get(url);
         //console.log(resData);
         if (resData.data.success) {
@@ -632,7 +635,8 @@
        * @author: Wave
        */
       async gameParticipantHistory(address) {
-        let url = this.config.url + '/game/user/participation/' + address + '/' + this.pageIndex;
+        let url = this.config.url + 'game/user/participation/' + address + '/' + this.pageIndex;
+        axios.defaults.baseURL = '';
         let resData = await axios.get(url);
         //console.log(resData);
         if (resData.data.success) {
@@ -651,7 +655,8 @@
        * @author: Wave
        */
       async gameHistory() {
-        let url = this.config.url + '/game/history/' + this.pageIndex;
+        let url = this.config.url + 'game/history/' + this.pageIndex;
+        axios.defaults.baseURL = '';
         let historyData = await axios.get(url);
         //console.log(historyData);
         if (historyData.data.success) {
