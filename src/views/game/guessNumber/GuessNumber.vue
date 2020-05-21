@@ -89,11 +89,11 @@
             </el-table-column>
             <el-table-column prop="perPrize" :label="$t('guessNum.guessNum24')" width="120" align="center">
             </el-table-column>
-            <el-table-column prop="number" :label="$t('guessNum.guessNum25')" width="120" align="center">
+            <el-table-column prop="number" :label="$t('guessNum.guessNum25')" width="130" align="center">
             </el-table-column>
             <el-table-column prop="txTime" :label="$t('guessNum.guessNum26')" width="160" align="center">
             </el-table-column>
-            <el-table-column label="txHash" min-width="180" align="center">
+            <el-table-column label="txHash" min-width="160" align="center">
               <template slot-scope="scope">
                 <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
               </template>
@@ -209,7 +209,7 @@
           url: process.env.NODE_ENV !== 'production' ? 'http://192.168.1.40:81/' : '/',
         },//配置信息
         jackpotInfo: {
-          address: 'tNULSeBaNBa4SDZYWBqUm8B2mkkx1yvwHGbJG8',//合约地址
+          address: '',//合约地址
           balance: 0,
         },//奖池信息
         gameCurrentInfo: {},//当前游戏信息
@@ -245,8 +245,14 @@
     },
 
     created() {
-      this.gameCurrent();
-      this.getPrizePool();
+      this.getGameContract();
+      setTimeout(() => {
+        if (this.jackpotInfo.address) {
+          this.gameCurrent();
+          this.getPrizePool();
+        }
+      }, 800);
+
       //this.getJackpotAmount(this.jackpotInfo.address)
     },
     mounted() {
@@ -275,6 +281,26 @@
     methods: {
 
       /**
+       * @disc: 获取合约地址
+       * @date: 2020-04-20 18:08
+       * @author: Wave
+       */
+      async getGameContract() {
+        let url = this.config.url + 'game/contract';
+        try {
+          axios.defaults.baseURL = '';
+          let resData = await axios.get(url);
+          //console.log(resData);
+          if (resData.data.success) {
+            this.jackpotInfo.address = resData.data.data;
+          }
+        } catch (err) {
+          console.log(err)
+        }
+      },
+
+
+      /**
        * @disc: 获取当前游戏信息
        * @date: 2020-04-20 18:08
        * @author: Wave
@@ -285,12 +311,13 @@
           axios.defaults.baseURL = '';
           let resData = await axios.get(url);
           //console.log(resData);
-          //console.log(this.$store.getters.getHeight);
           if (resData.data.success) {
             if (resData.data.data) {
               this.gameCurrentInfo = resData.data.data;
               this.gameDetail(this.gameCurrentInfo.id);
-              //console.log(this.gameCurrentInfo.endHeight < this.$store.getters.getHeight);
+              /*console.log(this.gameCurrentInfo.endHeight);
+              console.log(this.$store.getters.getHeight);
+              console.log(this.gameCurrentInfo.endHeight < this.$store.getters.getHeight);*/
               if (this.gameCurrentInfo.endHeight && this.gameCurrentInfo.endHeight <= this.$store.getters.getHeight) {
                 this.loadingText = this.$t('tips.tips17');
                 this.loading = true;
