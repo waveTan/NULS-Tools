@@ -268,7 +268,7 @@
       this.guessNumberInterval = setInterval(() => {
         this.getPrizePool();
         this.gameCurrent();
-      }, 10000);
+      }, 5000);
 
     },
     destroyed() {
@@ -298,7 +298,6 @@
           console.log(err)
         }
       },
-
 
       /**
        * @disc: 获取当前游戏信息

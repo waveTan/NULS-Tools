@@ -34,23 +34,61 @@
 <script>
   import Height from './Height.vue'
   import ElRow from "element-ui/packages/row/src/row";
+  import {getAddressInfoByAddress} from '@/api/requestData'
 
   export default {
     data() {
       return {
         activeIndex: 'home',//导航选中项
-        accountInfo: localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {} //账户信息
+        accountInfo: localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {}, //账户信息
+        address: localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')).address : '',
+        bottomInterval: null,
       };
     },
     created() {
     },
     mounted() {
+      this.bottomInterval = setInterval(() => {
+        if (this.accountInfo.address) {
+          this.address = this.accountInfo.address;
+          this.getAddressInfo(this.accountInfo.address);
+        }
+      }, 3000);
+
     },
     components: {
       ElRow,
       Height
     },
+    destroyed() {
+      clearInterval(this.bottomInterval);
+    },
+    watch: {
+      "address": function (val, oldVal) {
+        if (val && val !== oldVal) {
+          clearInterval(this.bottomInterval);
+          this.bottomInterval = setInterval(() => {
+            if (this.accountInfo.address) {
+              this.address = this.accountInfo.address;
+              this.getAddressInfo(this.accountInfo.address);
+            }
+          }, 5000);
+        }
+      }
+    },
     methods: {
+
+      /**
+       * 获取最新高度
+       */
+      async getAddressInfo(address) {
+        let addressInfo = await getAddressInfoByAddress(address);
+        //console.log(addressInfo);
+        if (addressInfo.success) {
+          this.accountInfo.balance = addressInfo.data.balance;
+          localStorage.setItem('accountInfo', JSON.stringify(this.accountInfo));
+        }
+      },
 
       /**
        * 导航跳转
