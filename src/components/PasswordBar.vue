@@ -36,7 +36,7 @@
       return {
         passwordVisible: false,
         passwordForm: {
-          password: 'nuls123456',
+          password: '',
         },
         passwordRules: {
           password: [
@@ -46,6 +46,9 @@
       }
     },
     created() {
+      if (process.env.NODE_ENV !== 'production') {
+        this.passwordForm.password = 'nuls123456'
+      }
     },
     mounted() {
     },
