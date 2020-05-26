@@ -48,7 +48,8 @@
 
 <script>
   import Password from '@/components/PasswordBar'
-  import {copys, passwordVerification} from '@/api/util'
+  import {copys} from '@/api/util'
+  import {passwordVerification} from '@/api/requestData'
 
   export default {
     components: {Password},

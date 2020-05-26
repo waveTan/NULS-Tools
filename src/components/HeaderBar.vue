@@ -100,9 +100,9 @@
        * 退出
        */
       signOut() {
-        this.$confirm('您确定已经备份完成并退出当前账户！', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '去备份',
+        this.$confirm(this.$t('tips.tips22'), this.$t('tips.tips23'), {
+          confirmButtonText: this.$t('tips.tips24'),
+          cancelButtonText: this.$t('tips.tips25'),
           type: 'warning'
         }).then(() => {
           localStorage.removeItem('accountInfo');

@@ -25,9 +25,16 @@
             {{$t('guessNum.guessNum6')}}
           </p>
           <p>2、{{$t('guessNum.guessNum7')}} <span class="fred fW600">2.011</span> NULS</p>
-          <p>3、{{$t('guessNum.guessNum8')}}<span class="fred"> 20 </span>{{$t('guessNum.guessNum9')}}<span class="fred"> 10 </span>{{$t('guessNum.guessNum10')}}
+          <p>
+            3、{{$t('guessNum.guessNum8')}}
+            <span class="fred"> 20 </span>
+            {{$t('guessNum.guessNum9')}}
+            <span class="fred"> 10 </span>
+            {{$t('guessNum.guessNum10')}}
           </p>
-          <p>4、{{$t('guessNum.guessNum11')}} <span class="fred">{{$t('guessNum.guessNum12')}}</span>
+          <p>
+            4、{{$t('guessNum.guessNum11')}}
+            <span class="fred">{{$t('guessNum.guessNum12')}}</span>
             {{$t('guessNum.guessNum13')}}
           </p>
         </div>
@@ -38,8 +45,8 @@
           </el-button>
         </div>
         <div class="submit tc">
-          <el-button type="success" @click="guessStart">{{this.numberValue ==='' ?
-            $t('guessNum.guessNum14'):$t('guessNum.guessNum15')}}
+          <el-button type="success" @click="guessStart">
+            {{this.numberValue ==='' ? $t('guessNum.guessNum14'):$t('guessNum.guessNum15')}}
             {{this.numberValue}}
           </el-button>
         </div>
@@ -49,9 +56,13 @@
           <font class="fCN fW600">{{jackpotInfo.balance}}</font> NULS
         </div>
         <div class="font14" v-if="gameCurrentInfo.endHeight">
-          <div class="fl">{{$t('guessNum.guessNum16')}}: <span class="fred fW600">{{gameCurrentInfo.endHeight}}</span>
+          <div class="fl">
+            {{$t('guessNum.guessNum16')}}:
+            <span class="fred fW600">{{gameCurrentInfo.endHeight}}</span>
           </div>
-          <div class="fl">&nbsp;&nbsp;{{$t('guessNum.guessNum17')}}: <span class="fred">{{gameCurrentInfo.endHeight + gameCurrentInfo.gameLotteryDelay}}</span>
+          <div class="fl">&nbsp;
+            {{$t('guessNum.guessNum17')}}:
+            <span class="fred">{{gameCurrentInfo.endHeight + gameCurrentInfo.gameLotteryDelay}}</span>
           </div>
         </div>
         <div class="font14 fyellow" v-else>{{$t('guessNum.guessNum18')}}</div>
@@ -122,7 +133,7 @@
         </el-tab-pane>
         <el-tab-pane :label="$t('guessNum.guessNum28')" name="third">
           <el-collapse v-model="activeName" accordion @change="changeColapse()">
-            <el-collapse-item v-for="item in historyData"
+            <el-collapse-item v-for="(item,index) in historyData" :key="index"
                               :title="$t('guessNum.guessNum0') +item.gameId+$t('guessNum.guessNum29')+$t('guessNum.guessNum30')+':'+item.number+ $t('guessNum.guessNum31')+': '+item.perPrize"
                               :name=item.gameId
             >

@@ -52,6 +52,10 @@
     "tips19": "Please select a number",
     "tips20": "The balance of this account is insufficient, please recharge or import again!",
     "tips21": "Please import or create an account",
+    "tips22": "Make sure you have completed the backup and logged out of your current account!",
+    "tips23": "Prompt",
+    "tips24": "Confirm",
+    "tips25": "To backup",
     "tips": ""
   },
   "home": {

@@ -1,14 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home'
-import User from './views/user/User.vue'
-import NewAddress from './views/user/NewAddress.vue'
-import BackupsAddress from './views/user/BackupsAddress.vue'
-import Game from './views/game/Index.vue'
-import Lucky from './views/game/lucky/Index.vue'
-import GuessNumber from './views/game/guessNumber/GuessNumber.vue'
-import More from './views/more/Index.vue'
-import Tool from './views/tool/Index.vue'
 
 Vue.use(Router);
 
@@ -18,47 +9,47 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: resolve => require(['@/views/Home'], resolve)
     },
     {
       path: '/user',
       name: 'user',
-      component: User
+      component: resolve => require(['@/views/user/User.vue'], resolve)
     },
     {
       path: '/user/NewAddress',
       name: 'newAddress',
-      component: NewAddress
+      component: resolve => require(['@/views/user/NewAddress.vue'], resolve)
     },
     {
       path: '/user/BackupsAddress',
       name: 'backupsAddress',
-      component: BackupsAddress
+      component: resolve => require(['@/views/user/BackupsAddress.vue'], resolve)
     },
     {
       path: '/game',
       name: 'game',
-      component: Game
+      component: resolve => require(['@/views/game/Index.vue'], resolve)
     },
     {
       path: '/game/lucky',
       name: 'lucky',
-      component: Lucky
+      component: resolve => require(['@/views/game/lucky/Index.vue'], resolve)
     },
     {
       path: '/game/guessNumber',
       name: 'guessNumber',
-      component: GuessNumber
+      component: resolve => require(['@/views/game/guessNumber/GuessNumber.vue'], resolve)
     },
     {
       path: '/more',
       name: 'more',
-      component: More
+      component: resolve => require(['@/views/more/Index.vue'], resolve)
     },
     {
       path: '/tool',
       name: 'tool',
-      component: Tool
+      component: resolve => require(['@/views/tool/Index.vue'], resolve)
     }
   ]
 })
