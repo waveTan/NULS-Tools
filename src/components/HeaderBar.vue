@@ -2,7 +2,7 @@
   <el-row class="header">
     <el-row class="pc">
       <el-col :span="4" class="logo">
-        <img src="./../assets/logo.png">
+        <img :src="logoSvg">
       </el-col>
       <el-col :span="14" class="nav">
         <el-menu :default-active="activeIndex" mode="horizontal" @select="handleSelect" class="nav fl">
@@ -52,12 +52,15 @@
 </template>
 
 <script>
+  import logo from '@/assets/logo.svg'
+  import logoBeta from '@/assets/logo-beta.svg'
   import Height from './Height.vue'
   import {divisionDecimals, superLong} from '@/api/util.js'
 
   export default {
     data() {
       return {
+        logoSvg:logoBeta,
         activeIndex: '1',//导航选中项
         lang: 'en',  //语言
         accountInfo: localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {} //账户信息

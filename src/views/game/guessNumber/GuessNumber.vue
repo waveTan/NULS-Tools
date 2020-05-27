@@ -27,14 +27,14 @@
           <p>2、{{$t('guessNum.guessNum7')}} <span class="fred fW600">2.011</span> NULS</p>
           <p>
             3、{{$t('guessNum.guessNum8')}}
-            <span class="fred"> 20 </span>
+            <span class="fyellow fW600"> 20 </span>
             {{$t('guessNum.guessNum9')}}
-            <span class="fred"> 10 </span>
+            <span class="fyellow fW600"> 5 </span>
             {{$t('guessNum.guessNum10')}}
           </p>
           <p>
             4、{{$t('guessNum.guessNum11')}}
-            <span class="fred">{{$t('guessNum.guessNum12')}}</span>
+            <span class="click">{{$t('guessNum.guessNum12')}}</span>
             {{$t('guessNum.guessNum13')}}
           </p>
         </div>
@@ -62,7 +62,7 @@
           </div>
           <div class="fl">&nbsp;
             {{$t('guessNum.guessNum17')}}:
-            <span class="fred">{{gameCurrentInfo.endHeight + gameCurrentInfo.gameLotteryDelay}}</span>
+            <span class="fred fW600">{{gameCurrentInfo.endHeight + gameCurrentInfo.gameLotteryDelay}}</span>
           </div>
         </div>
         <div class="font14 fyellow" v-else>{{$t('guessNum.guessNum18')}}</div>
