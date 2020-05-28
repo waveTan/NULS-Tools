@@ -49,7 +49,7 @@
     },
     mounted() {
       this.bottomInterval = setInterval(() => {
-        if (this.accountInfo.address) {
+        if (this.accountInfo.address && localStorage.hasOwnProperty('accountInfo')) {
           this.address = this.accountInfo.address;
           this.getAddressInfo(this.accountInfo.address);
         }
@@ -68,7 +68,7 @@
         if (val && val !== oldVal) {
           clearInterval(this.bottomInterval);
           this.bottomInterval = setInterval(() => {
-            if (this.accountInfo.address) {
+            if (this.accountInfo.address  && localStorage.hasOwnProperty('accountInfo')) {
               this.address = this.accountInfo.address;
               this.getAddressInfo(this.accountInfo.address);
             }

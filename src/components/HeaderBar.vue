@@ -1,10 +1,10 @@
 <template>
   <el-row class="header">
-    <el-row class="pc">
-      <el-col :span="4" class="logo">
-        <img :src="logoSvg">
+    <el-row class="pc w1200">
+      <el-col class="logo fl">
+        <img class="click" @click="toUrl('home','',0)" :src="logoSvg">
       </el-col>
-      <el-col :span="14" class="nav">
+      <el-col class="nav fl">
         <el-menu :default-active="activeIndex" mode="horizontal" @select="handleSelect" class="nav fl">
           <el-menu-item index="home"><i class="iconfont icon-quanbu"></i>{{$t('nav.home')}}</el-menu-item>
           <el-menu-item index="game"><i class="iconfont icon-dazhuanpan"></i>{{$t('nav.game')}}</el-menu-item>
@@ -12,8 +12,9 @@
           <el-menu-item index="more"><i class="iconfont icon-gengduo"></i>{{$t('nav.more')}}</el-menu-item>
         </el-menu>
       </el-col>
-      <el-col :span="6" class="user font14" :class="accountInfo.address ? '':''">
-        <div class="user-info fl" v-show="accountInfo.address">
+      <el-col class="user fr font14" :class="accountInfo.address ? '':''">
+        <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
+        <div class="user-info fr" v-show="accountInfo.address">
           <p class="font12">{{$t('public.address')}}：{{accountInfo.address}}</p>
           <p class="font12">{{$t('public.balance')}}：{{accountInfo.balance}} NULS
             <span class="click" @click="signOut">{{$t('public.signOut')}}</span>
@@ -23,7 +24,6 @@
           <div class="click fl" style="width: 50px" @click="toUrl('newAddress','',0)" v-show="!accountInfo.address">
             {{$t('nav.login')}}
           </div>
-          <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
         </div>
 
       </el-col>
@@ -60,7 +60,7 @@
   export default {
     data() {
       return {
-        logoSvg:logoBeta,
+        logoSvg: logoBeta,
         activeIndex: '1',//导航选中项
         lang: 'en',  //语言
         accountInfo: localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {} //账户信息
@@ -141,15 +141,19 @@
     border-bottom: @BD1;
     .pc {
       .logo {
-        width: 150px;
+        width: 100px;
         height: auto;
         margin: 10px 0 0 20px;
+        img {
+          width: 85px;
+        }
       }
       .nav {
-
+        width: 580px;
       }
       .user {
         line-height: 60px;
+        width: 500px;
         .user-info {
           margin: 16px 0 0 0;
           p {
