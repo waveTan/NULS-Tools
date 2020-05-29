@@ -70,17 +70,17 @@
       <div class="fr party">
         <h3>{{$t('guessNum.guessNum19')}}</h3>
         <el-table :data="gameDetailInfo.participants" style="width: 100%">
-          <el-table-column :label="$t('public.address')" align="center" width="120">
+          <el-table-column :label="$t('public.address')" align="center" width="108">
             <template slot-scope="scope">
               <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
             </template>
           </el-table-column>
-          <el-table-column label="txHash" align="center" min-width="80">
+          <el-table-column label="txHash" align="center" min-width="90">
             <template slot-scope="scope">
               <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="txTime" :label="$t('public.time')" align="center" width="160">
+          <el-table-column prop="txTime" :label="$t('public.time')" align="center" width="120">
           </el-table-column>
           <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center" width="90">
           </el-table-column>
@@ -203,7 +203,7 @@
   import sdk from 'nuls-sdk-js/lib/api/sdk'
   import utils from 'nuls-sdk-js/lib/utils/utils'
   import {chainInfo, API_URL} from '@/config'
-  import {divisionDecimals, Times, Plus, getLocalTime, superLong, connectToExplorer} from '@/api/util'
+  import {divisionDecimals, Times, Plus, getLocalTime, superLong, connectToExplorer, IsPC} from '@/api/util'
   import {
     passwordVerification,
     getBalanceOrNonceByAddress,
@@ -217,7 +217,8 @@
       return {
         accontInfo: localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {}, //账户信息
         config: {
-          url: process.env.NODE_ENV !== 'production' ? 'http://192.168.1.40:81/' : '/',
+          //url: process.env.NODE_ENV !== 'production' ? 'http://192.168.1.40:81/' : '/',
+          url: process.env.NODE_ENV !== 'production' ? 'http://111.229.189.176/' : '/',
         },//配置信息
         jackpotInfo: {
           address: '',//合约地址
@@ -325,12 +326,10 @@
             if (resData.data.data) {
               this.gameCurrentInfo = resData.data.data;
               this.gameDetail(this.gameCurrentInfo.id);
-              /*console.log(this.gameCurrentInfo.endHeight);
-              console.log(this.$store.getters.getHeight);
-              console.log(this.gameCurrentInfo.endHeight < this.$store.getters.getHeight);*/
               if (this.gameCurrentInfo.endHeight && this.gameCurrentInfo.endHeight <= this.$store.getters.getHeight) {
                 this.loadingText = this.$t('tips.tips17');
                 this.loading = true;
+                sessionStorage.removeItem(this.gameCurrentInfo.id.toString())
               } else {
                 this.loading = false;
               }
@@ -368,11 +367,13 @@
           if (resData.data.success) {
             for (let item of resData.data.data.participants) {
               item.addresss = superLong(item.address, 4);
-              item.txHashs = superLong(item.txHash, 6);
-              item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
+              item.txHashs = superLong(item.txHash, IsPC() ? 6 : 3);
+              item.txTime = moment(getLocalTime(item.txTime * 1000)).format('MM-DD HH:mm:ss');
             }
             if (type === 0) {
-              this.gameDetailInfo = resData.data.data
+              let newList = sessionStorage.getItem(this.gameCurrentInfo.id.toString());
+              //console.log(newList);
+              this.gameDetailInfo = resData.data.data;
             } else {
               this.historyDataIn = resData.data.data.participants;
               for (let item of resData.data.data.lottery.winners) {
@@ -505,10 +506,18 @@
         //console.log(txhex);
         //验证并广播交易
         let validateTxhex = await validateAndBroadcast(txhex);
-        //console.log(validateTxhex);
+        console.log(validateTxhex);
         if (!validateTxhex.success) {
           this.$message({message: this.$t('tips.tips14') + JSON.stringify(validateTxhex.data), type: 'error'});
         } else {
+          let newlist = sessionStorage.hasOwnProperty(this.gameCurrentInfo.id.toString()) ? JSON.parse(sessionStorage.getItem(this.gameCurrentInfo.id.toString())) : [];
+          newlist.push({
+            address: accountInfo.address,
+            number: this.numberValue,
+            txHash: validateTxhex.hash,
+            txTime: Math.round(new Date() / 1000),
+          });
+          sessionStorage.setItem(this.gameCurrentInfo.id.toString(), JSON.stringify(newlist));
           this.$message({message: this.$t('tips.tips15'), type: 'success'});
         }
       },
@@ -770,12 +779,15 @@
         width: 600px;
         @media screen and (max-width: 1000px) {
           width: 100%;
-          min-height: 36rem;
-          loat: none;
+          min-height: 28.5rem;
+          clear: none;
         }
         h2 {
           text-align: center;
           margin: 40px 0;
+          @media screen and (max-width: 1000px) {
+            margin: 1rem 0;
+          }
         }
         .explain {
           background-color: #c1c1c1;
@@ -800,7 +812,8 @@
             }
           }
           .is_number {
-            background-color: #67C23A;
+            //background-color: #0ede94;
+            background: linear-gradient(to right, #4ef16a, #0ede94) !important;
             color: #FFFFFF;
           }
         }

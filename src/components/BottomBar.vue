@@ -68,7 +68,7 @@
         if (val && val !== oldVal) {
           clearInterval(this.bottomInterval);
           this.bottomInterval = setInterval(() => {
-            if (this.accountInfo.address  && localStorage.hasOwnProperty('accountInfo')) {
+            if (this.accountInfo.address && localStorage.hasOwnProperty('accountInfo')) {
               this.address = this.accountInfo.address;
               this.getAddressInfo(this.accountInfo.address);
             }
@@ -146,6 +146,8 @@
 
 <style lang="less">
   .bottom {
+    background: #FFFFFF;
+    z-index: 9999;
     .pc {
       border-top: 1px solid #c1c1c1;
       height: 40px;

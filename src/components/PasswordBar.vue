@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="$t('tips.password0')" :visible.sync="passwordVisible" top="30vh" width="30rem"
+  <el-dialog :title="$t('tips.password0')" :visible.sync="passwordVisible" top="30vh" :width="width"
              class="password-dialog"
              :close-on-click-modal="false"
              :close-on-press-escape="false"
@@ -23,6 +23,9 @@
 </template>
 
 <script>
+
+  import {IsPC} from '@/api/util'
+
   export default {
     props: {},
     data() {
@@ -43,6 +46,7 @@
             {validator: validatePass, trigger: ['blur', 'change']}
           ]
         },
+        width: IsPC() ? '35%' : '95%',
       }
     },
     created() {
