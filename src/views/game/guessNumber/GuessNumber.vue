@@ -80,9 +80,14 @@
               <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="txTime" :label="$t('public.time')" align="center" width="120">
+          <el-table-column prop="txTime" :label="$t('public.time')" align="center" width="90">
           </el-table-column>
           <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center" width="90">
+          </el-table-column>
+          <el-table-column :label="$t('public.status')" align="center" width="100">
+            <template slot-scope="scope">
+              <span :class="scope.row.status === 0 ? 'fCN':''">{{$t('status.status'+ scope.row.status)}}</span>
+            </template>
           </el-table-column>
         </el-table>
       </div>
@@ -228,6 +233,7 @@
         loading: true,
         loadingText: '',//加载提示语
         gameDetailInfo: {},//当前游戏信息
+        statusList: [],//确认中 data
         valueList: [
           {value: 0, label: 0},
           {value: 1, label: 1},
@@ -355,6 +361,7 @@
       /**
        * @disc: 根据gameId获取当前游戏信息
        * @params: gameId
+       * @params: type
        * @date: 2020-04-20 18:08
        * @author: Wave
        */
@@ -365,14 +372,20 @@
           let resData = await axios.get(url);
           //console.log(resData);
           if (resData.data.success) {
+            let newData = this.statusList.filter(k => k.id === resData.data.data.id);
             for (let item of resData.data.data.participants) {
+              if (newData) {
+                newData.splice(newData.indexOf(newData.find((k) => {
+                  return k.txHash === item.txHash;
+                })), 1);
+              }
               item.addresss = superLong(item.address, 4);
               item.txHashs = superLong(item.txHash, IsPC() ? 6 : 3);
-              item.txTime = moment(getLocalTime(item.txTime * 1000)).format('MM-DD HH:mm:ss');
+              item.txTime = moment(getLocalTime(item.txTime * 1000)).format('HH:mm:ss');
+              item.status = 1;
             }
             if (type === 0) {
-              let newList = sessionStorage.getItem(this.gameCurrentInfo.id.toString());
-              //console.log(newList);
+              resData.data.data.participants = [...resData.data.data.participants, ...newData];
               this.gameDetailInfo = resData.data.data;
             } else {
               this.historyDataIn = resData.data.data.participants;
@@ -506,18 +519,24 @@
         //console.log(txhex);
         //验证并广播交易
         let validateTxhex = await validateAndBroadcast(txhex);
-        console.log(validateTxhex);
+        //console.log(validateTxhex);
         if (!validateTxhex.success) {
           this.$message({message: this.$t('tips.tips14') + JSON.stringify(validateTxhex.data), type: 'error'});
         } else {
-          let newlist = sessionStorage.hasOwnProperty(this.gameCurrentInfo.id.toString()) ? JSON.parse(sessionStorage.getItem(this.gameCurrentInfo.id.toString())) : [];
-          newlist.push({
+          let newList = {
+            id: this.gameCurrentInfo.id,
             address: accountInfo.address,
-            number: this.numberValue,
+            addresss: superLong(accountInfo.address, 4),
             txHash: validateTxhex.hash,
-            txTime: Math.round(new Date() / 1000),
-          });
-          sessionStorage.setItem(this.gameCurrentInfo.id.toString(), JSON.stringify(newlist));
+            txHashs: superLong(validateTxhex.hash, IsPC() ? 6 : 3),
+            txTime: moment(getLocalTime(Math.round(new Date().getTime()))).format('HH:mm:ss'),
+            status: 0,
+            number: this.numberValue,
+          };
+          //console.log(newList);
+          this.statusList.push(newList);
+          //console.log(this.statusList);
+          this.gameDetailInfo.participants.push(newList);
           this.$message({message: this.$t('tips.tips15'), type: 'success'});
         }
       },

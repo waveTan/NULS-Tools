@@ -25,6 +25,13 @@
     "develop": "developing...",
     "design": "designing...",
     "flow": "Flow",
+    "status": "Status",
+    "": ""
+  },
+  "status": {
+    "statusundefined": "",
+    "status0": "Confirming",
+    "status1": "Confirmed",
     "": ""
   },
   "tips": {

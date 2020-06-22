@@ -1,5 +1,5 @@
 import nuls from 'nuls-sdk-js'
-import {chainInfo} from '@/config'
+import {chainInfo, DEV_ADDRESS} from '@/config'
 import {post} from './https'
 import {Plus, Minus} from './util'
 
@@ -66,18 +66,19 @@ export async function inputsOrOutputs(transferInfo, balanceInfo, type = 2) {
     locked: 0,
     nonce: balanceInfo.data.nonce
   }];
-  let outputs = [{
-    address: transferInfo.toAddress,
-    assetsChainId: transferInfo.assetsChainId,
-    assetsId: transferInfo.assetsId,
-    amount: transferInfo.amount,
-    lockTime: 0
-  }];
+  let outputs = [
+    {
+      address: transferInfo.toAddress,
+      assetsChainId: transferInfo.assetsChainId,
+      assetsId: transferInfo.assetsId,
+      amount: transferInfo.amount,
+      lockTime: 0
+    }
+  ];
 
   if (type === 2) {
     outputs[0].amount = Number(Minus(transferInfo.fee, transferInfo.amount))
   }
-
   if (type === 16) {
     if (transferInfo.toAddress) {
       if (transferInfo.value) {
@@ -86,6 +87,8 @@ export async function inputsOrOutputs(transferInfo, balanceInfo, type = 2) {
       }
     }
   }
+  /*console.log(inputs);
+  console.log(outputs);*/
   return {success: true, data: {inputs: inputs, outputs: outputs}};
 }
 
