@@ -111,6 +111,13 @@
         line-height: 26px;
         background-color: #F5F6F9 !important;
         border-color: #c8c7cc;
+        .el-dialog__headerbtn {
+          width: 20px;
+          height: 20px;
+          top: -10px;
+          right: -10px;
+          border-radius: 10px;
+        }
       }
       .el-dialog__body {
         background-color: #F5F6F9 !important;

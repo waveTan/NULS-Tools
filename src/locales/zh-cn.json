@@ -136,6 +136,24 @@
     "guessNum34": "开奖时间",
     "guessNum": "guessNum"
   },
+  "locking":{
+    "locking0":"可自定义锁定时间的转账",
+    "locking1":"付款地址：",
+    "locking2":"资产",
+    "locking3":"收款地址：",
+    "locking4":"请再次确认收款地址（请勿填写交易所充值地址，避免造成您的资产丢失或交易所锁定您账户）",
+    "locking5":"金额：",
+    "locking6":"解锁时间：",
+    "locking7":"选择日期时间",
+    "locking8":"备注：",
+    "locking9":"手续费：",
+    "locking10":"下一步",
+    "locking11":"转账信息确认",
+    "locking12":"收款地址不能为空",
+    "locking13":"请输入正确的NULS地址",
+    "locking14":"金额不能为空",
+    "locking15":"请输入正确的金额（小数点后最多八位）"
+  },
   "newAddress": {
     "newAddress0": "keystore导入",
     "newAddress1": "私钥导入",

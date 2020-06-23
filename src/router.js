@@ -52,9 +52,19 @@ export default new Router({
       component: resolve => require(['@/views/more/Index.vue'], resolve)
     },
     {
+      path: '/more/lockedTransfer',
+      name: 'lockedTransfer',
+      component: resolve => require(['@/views/more/lockedTransfer/Index.vue'], resolve)
+    },
+    {
       path: '/tool',
       name: 'tool',
       component: resolve => require(['@/views/tool/Index.vue'], resolve)
+    },
+    {
+      path: '/dream',
+      name: 'dream',
+      component: resolve => require(['@/views/dream/Index.vue'], resolve)
     }
   ]
 })

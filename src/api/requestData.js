@@ -1,7 +1,7 @@
 import nuls from 'nuls-sdk-js'
-import {chainInfo, DEV_ADDRESS} from '@/config'
+import {chainInfo} from '@/config'
 import {post} from './https'
-import {Plus, Minus} from './util'
+import {Plus} from './util'
 
 /**
  * @disc: 验证密码
@@ -77,9 +77,9 @@ export async function inputsOrOutputs(transferInfo, balanceInfo, type = 2) {
   ];
 
   if (type === 2) {
-    outputs[0].amount = Number(Minus(transferInfo.fee, transferInfo.amount))
-  }
-  if (type === 16) {
+    inputs[0].amount = Number(transferInfo.minValue);
+    outputs[0].lockTime = transferInfo.time ? transferInfo.time/1000 : 0;
+  } else if (type === 16) {
     if (transferInfo.toAddress) {
       if (transferInfo.value) {
         inputs[0].amount = Number(Plus(transferInfo.amount, transferInfo.fee));

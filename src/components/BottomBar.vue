@@ -3,7 +3,7 @@
     <el-row class="pc">
       <el-row class="w1200 font12 info">
         <el-col :span="22">
-          <div>{{$t('public.developer')}}: wave</div>
+          <div>{{$t('public.developer')}}: <span class="click" @click="toUrl('dream','',0)">wave</span></div>
           <div>{{$t('public.address')}}: NULSd6HgaWymKrQ7NdtWossLFzunasJzdwave</div>
         </el-col>
         <el-col :span="2" class="tr">

@@ -136,6 +136,24 @@
     "guessNum34": " lottery time",
     "guessNum": "guessNum"
   },
+  "locking": {
+    "locking0": "Customizable lock time transfers",
+    "locking1": "Payment Address：",
+    "locking2": "Assets：",
+    "locking3": "Collection address：",
+    "locking4": "Please reconfirm the receipt address (please do not fill in the exchange recharge address to avoid losing your assets or locking up your account)",
+    "locking5": "Amount ：",
+    "locking6": "Unlock time：",
+    "locking7": "Select date and time",
+    "locking8": "Remark：",
+    "locking9": "Fee：",
+    "locking10": "Next step",
+    "locking11": "Confirmation of transfer information",
+    "locking12": "The collection address cannot be empty",
+    "locking13": "Please enter the correct NULS address",
+    "locking14": "The amount cannot be empty",
+    "locking15": "Please enter the correct amount (up to eight decimal places)"
+  },
   "newAddress": {
     "newAddress0": "Keystore import",
     "newAddress1": "Key import",
