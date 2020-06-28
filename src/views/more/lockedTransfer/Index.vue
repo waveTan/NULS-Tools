@@ -157,6 +157,10 @@
        * @author: Wave
        */
       submitForm(formName) {
+        if (!this.accontInfo.address) {
+          this.$message({message: this.$t('tips.tips21'), type: 'error'});
+          return
+        }
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.transferForm.times = moment(getLocalTime(this.transferForm.time)).format('YYYY-MM-DD HH:mm:ss');
@@ -349,7 +353,7 @@
                 span {
                   display: block;
                   float: left;
-                  width: 130px;
+                  width: 140px;
                   text-align: right;
                   @media screen and (max-width: 1000px) {
                     width: 5rem;

@@ -875,6 +875,9 @@
           }
           td, th {
             padding: 2px 0;
+            .cell{
+              padding: 0 5px;
+            }
           }
         }
       }

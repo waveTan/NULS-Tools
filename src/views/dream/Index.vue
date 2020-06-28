@@ -1,14 +1,17 @@
 <template>
-  <div class="typer">
-    <div class="typer-content">
+  <div class="w1200 dream">
+
+    <div class="typer-content fl">
       <!-- 动态变化的内容-->
-      <p class="typer-dynamic">
-          <span class="cut">
-            <span class="word" v-for="(letter,index) in words" :key="index">{{letter}}</span>
-          </span>
-        <!-- 模拟光标-->
-        <span class="typer-cursor"></span>
+      <p class="typer-dynamic" v-for="(letter,index) in strList" :key="index">
+        <span class="cut">
+          <span class="word" v-for="(letter,index) in words" :key="index">{{letter}}</span>
+        </span>
       </p>
+    </div>
+
+    <div class="fr typer_img">
+      <img :src="imgUrl" width="300">
     </div>
   </div>
 </template>
@@ -20,13 +23,14 @@
     data() {
       return {
         words: [],//字母数组push，pop的载体
-        str: "",//str初始化
+        strList: [],//str初始化
         letters: [],//str分解后的字母数组
         order: 1,//表示当前是第几句话
+        imgUrl: '',
       }
     },
     created() {
-      this.str = dreamText
+      this.strList = dreamText
     },
     mounted() {
       this.begin()
@@ -51,11 +55,18 @@
     },
     methods: {
       //开始输入的效果动画
-      begin() {
-        this.letters = this.str.split("");
-        for (let i = 0; i < this.letters.length; i++) {
-          setTimeout(this.write(i), i * 1000);
+      async begin() {
+        for (let item of this.strList) {
+          console.log(item);
+          this.imgUrl = item.img;
+          this.letters = item.text.split("");
+          for (let i in this.letters) {
+            setTimeout(await this.write(i), i * 100);
+          }
+          //sleep();
         }
+
+
       },
       //输入字母
       write(i) {
@@ -68,43 +79,39 @@
   }
 </script>
 
-
 <style scoped lang="less">
   @thePink: #c1c1c1;
-  .typer {
-    margin-top: 2%;
-    box-sizing: border-box;
-    width: 650px;
-    height: 400px;
-    position: absolute;
-    z-index: 90;
-    background: url('https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1876884466,1157960341&fm=26&gp=0.jpg') no-repeat fixed top;
+  .dream {
+    margin: 2rem auto 0;
+    /* position: absolute;
+     z-index: 90;
+     background: url('https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1876884466,1157960341&fm=26&gp=0.jpg') no-repeat fixed top;*/
     .typer-content {
-      font-size: 14px;
-      display: flex;
-      flex-direction: row;
-      letter-spacing: 2px;
       z-index: 100;
       position: absolute;
+      width: 66%;
+      .typer-dynamic {
+        position: relative;
+        padding: 1rem 4rem;
+        .cut {
+          color: @thePink;
+          font-size: 13px;
+        }
+        .typer-cursor {
+          position: absolute;
+          height: 20px;
+          width: 3px;
+          background-color: @thePink;
+          animation: flash 1.5s linear infinite;
+        }
+      }
+    }
+    .typer_img {
+      //border: 1px solid #17202e;
+      width: 33%;
+      height: 500px;
     }
   }
 
-  .typer-dynamic {
-    position: relative;
-  }
-
-  .cut {
-    color: @thePink;
-  }
-
-  .typer-cursor {
-    position: absolute;
-    height: 100%;
-    width: 3px;
-    top: 0;
-    right: -10px;
-    background-color: @thePink;
-    animation: flash 1.5s linear infinite;
-  }
 </style>
 

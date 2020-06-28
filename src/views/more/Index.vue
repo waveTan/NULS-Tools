@@ -15,8 +15,8 @@
         <b class="font12">{{$t('home.home13')}}: *****</b>
       </li>
       <li @click="toUrl('lockedTransfer','',0)">
-        <p>自定义锁定时间</p>
-        <b class="font12">可以锁定时间的转账</b>
+        <p>{{$t('locking.locking0')}}</p>
+        <b class="font12">{{$t('locking.locking0')}}</b>
       </li>
     </ul>
   </div>

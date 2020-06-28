@@ -56,11 +56,12 @@
   import logoBeta from '@/assets/logo-beta.svg'
   import Height from './Height.vue'
   import {divisionDecimals, superLong} from '@/api/util.js'
+  import {IS_RUN} from '@/config.js'
 
   export default {
     data() {
       return {
-        logoSvg: logoBeta,
+        logoSvg: IS_RUN ? logo : logoBeta,
         activeIndex: '1',//导航选中项
         lang: 'en',  //语言
         accountInfo: localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {} //账户信息
@@ -70,7 +71,7 @@
       setInterval(() => {
         this.accountInfo = localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {};
         this.accountInfo.addresss = superLong(this.accountInfo.address, 8);
-        this.accountInfo.balance = Number(divisionDecimals(this.accountInfo.balance, 8)).toFixed(3)
+        this.accountInfo.balance = this.accountInfo.balance === 0 ? 0 : Number(divisionDecimals(this.accountInfo.balance, 8)).toFixed(3)
       }, 500)
     },
     mounted() {
