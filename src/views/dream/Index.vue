@@ -3,16 +3,17 @@
 
     <div class="typer-content fl">
       <!-- 动态变化的内容-->
-      <p class="typer-dynamic" v-for="(letter,index) in strList" :key="index">
-        <span class="cut">
-          <span class="word" v-for="(letter,index) in words" :key="index">{{letter}}</span>
-        </span>
-      </p>
+      <div class="typer-dynamic" v-for="(letter,index) in strList" :key="index">
+        <!--{{letter}}-->
+        <div class="cut fl">
+          <span class="word" v-for="(item,keys) in letter.text" :key="keys">{{item}}</span>
+        </div>
+        <div class="fr gif">
+          <img :src="letter.img" width="150">
+        </div>
+      </div>
     </div>
 
-    <div class="fr typer_img">
-      <img :src="imgUrl" width="300">
-    </div>
   </div>
 </template>
 
@@ -80,36 +81,24 @@
 </script>
 
 <style scoped lang="less">
-  @thePink: #c1c1c1;
   .dream {
     margin: 2rem auto 0;
-    /* position: absolute;
-     z-index: 90;
-     background: url('https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1876884466,1157960341&fm=26&gp=0.jpg') no-repeat fixed top;*/
     .typer-content {
       z-index: 100;
       position: absolute;
-      width: 66%;
       .typer-dynamic {
         position: relative;
         padding: 1rem 4rem;
         .cut {
-          color: @thePink;
-          font-size: 13px;
+          color: #999;
+          font-size: 14px;
+          line-height: 22px;
+          width: 80%;
         }
-        .typer-cursor {
-          position: absolute;
-          height: 20px;
-          width: 3px;
-          background-color: @thePink;
-          animation: flash 1.5s linear infinite;
+        .gif {
+          width: 20%;
         }
       }
-    }
-    .typer_img {
-      //border: 1px solid #17202e;
-      width: 33%;
-      height: 500px;
     }
   }
 

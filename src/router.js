@@ -62,6 +62,11 @@ export default new Router({
       component: resolve => require(['@/views/tool/Index.vue'], resolve)
     },
     {
+      path: '/tool/newAddress',
+      name: 'toolNewAddress',
+      component: resolve => require(['@/views/tool/newAddress/Index.vue'], resolve)
+    },
+    {
       path: '/dream',
       name: 'dream',
       component: resolve => require(['@/views/dream/Index.vue'], resolve)

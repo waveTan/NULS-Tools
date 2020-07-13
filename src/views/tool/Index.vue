@@ -24,6 +24,12 @@
           <p>nuls-js-sdk</p>
           <b class="font12">{{$t('home.home22')}}</b>
         </li>
+        <li @click="toUrl('toolNewAddress','',0)">
+          <p>地址生成器</p>
+          <b class="font12">
+            可生成指定后缀的地址
+          </b>
+        </li>
       </ul>
     </div>
     <div class="cb">
