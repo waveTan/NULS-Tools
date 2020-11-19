@@ -37,14 +37,19 @@ export default new Router({
       component: resolve => require(['@/views/game/Index.vue'], resolve)
     },
     {
-      path: '/game/lucky',
-      name: 'lucky',
-      component: resolve => require(['@/views/game/lucky/Index.vue'], resolve)
-    },
-    {
       path: '/game/guessNumber',
       name: 'guessNumber',
       component: resolve => require(['@/views/game/guessNumber/GuessNumber.vue'], resolve)
+    },
+    {
+      path: '/game/goblin',
+      name: 'goblin',
+      component: resolve => require(['@/views/game/goblin/Goblin.vue'], resolve)
+    },
+    {
+      path: '/game/lucky',
+      name: 'lucky',
+      component: resolve => require(['@/views/game/lucky/Index.vue'], resolve)
     },
     {
       path: '/more',

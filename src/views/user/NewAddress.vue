@@ -71,6 +71,7 @@
 <script>
   import nuls from 'nuls-sdk-js'
   import {chainInfo} from '@/config'
+  import {addressSetStorage} from '@/api/util'
   import {passwordVerification, getAddressInfoByAddress} from '@/api/requestData'
   import Password from '@/components/PasswordBar'
 
@@ -160,8 +161,8 @@
         importAddressInfo: {},//私钥导入地址信息
 
         newAddressForm: {
-          pass: '',
-          checkPass: '',
+          pass: 'nuls123456',
+          checkPass: 'nuls123456',
           agreement: false,
         },
         newAddressRules: {
@@ -175,7 +176,6 @@
             {validator: validateAgreement, trigger: 'blur'}
           ],
         },
-        newAddressInfo: {},//创建地址信息
       };
     },
     components: {
@@ -194,12 +194,10 @@
       handleClick(tab) {
         if (tab.name === 'keystoreImport') {
           this.importAddressInfo = {};
-          this.newAddressInfo = {};
           this.$refs['importForm'].resetFields();
           this.$refs['newAddressForm'].resetFields();
         } else if (tab.name === 'keyImport') {
           this.keystoreInfo = {};
-          this.newAddressInfo = {};
           this.$refs['newAddressForm'].resetFields();
         } else {
           this.keystoreInfo = {};
@@ -236,19 +234,10 @@
         let isPassword = passwordVerification(this.keystoreInfo, password);
         if (isPassword.success) {
           this.keystoreInfo.address = isPassword.address;
-          localStorage.setItem('accountInfo', JSON.stringify(this.keystoreInfo));
-          this.toUrl('backupsAddress');
-          let addressInfo = await getAddressInfoByAddress(this.keystoreInfo.address);
-          if (addressInfo.success) {
-            let newAddressInfo = {...this.keystoreInfo, ...addressInfo.data};
-            localStorage.setItem('accountInfo', JSON.stringify(newAddressInfo));
-            this.toUrl('backupsAddress');
-          } else {
-            this.$message({
-              message: this.$t('tips.tips3') + addressInfo.data.error.message,
-              type: 'error',
-              duration: 2000
-            });
+          let addressDataRes = await addressSetStorage(this.keystoreInfo);
+          //console.log(addressDataRes);
+          if (addressDataRes.success) {
+            this.toUrl('user');
           }
         } else {
           this.$message({message: this.$t('tips.tips4'), type: 'error', duration: 2000});
@@ -265,22 +254,16 @@
         this.$refs[formName].validate(async (valid) => {
           if (valid) {
             const keyAddressInfo = nuls.importByKey(chainInfo.chainId, this.importForm.keys, this.importForm.pass, chainInfo.prefix);
-            localStorage.setItem('accountInfo', JSON.stringify(keyAddressInfo));
-            this.toUrl('backupsAddress');
-            let addressInfo = await getAddressInfoByAddress(keyAddressInfo.address);
-            //console.log(addressInfo);
-            if (addressInfo.success) {
-              let newAddressInfo = {...keyAddressInfo, ...addressInfo.data};
-              localStorage.setItem('accountInfo', JSON.stringify(newAddressInfo));
-              this.toUrl('backupsAddress');
-            } else {
-              this.$message({
-                message: this.$t('tips.tips5') + addressInfo.data.error.message,
-                type: 'error',
-                duration: 2000
-              });
+            if (keyAddressInfo.hasOwnProperty('success') && !keyAddressInfo.success) {
+              //console.log(newAddressInfo.data);
+              this.$message({message: keyAddressInfo.data, type: 'error', duration: 3000});
+              return;
             }
-            this.toUrl('backupsAddress');
+            let addressDataRes = await addressSetStorage(keyAddressInfo);
+            //console.log(addressDataRes);
+            if (addressDataRes.success) {
+              this.toUrl('user');
+            }
           } else {
             return false;
           }
@@ -296,10 +279,13 @@
       newAddressSubmitForm(formName) {
         this.$refs[formName].validate(async (valid) => {
           if (valid) {
-            this.newAddressInfo = nuls.newAddress(chainInfo.chainId, this.newAddressForm.pass, chainInfo.prefix);
-            //console.log(this.newAddressInfo);
-            localStorage.setItem('accountInfo', JSON.stringify(this.newAddressInfo));
-            this.toUrl('backupsAddress');
+            let newAddressInfo = nuls.newAddress(chainInfo.chainId, this.newAddressForm.pass, chainInfo.prefix);
+            console.log(newAddressInfo);
+            let addressDataRes = await addressSetStorage(newAddressInfo);
+            console.log(addressDataRes);
+            if (addressDataRes.success) {
+              this.toUrl('backupsAddress');
+            }
           } else {
             return false;
           }

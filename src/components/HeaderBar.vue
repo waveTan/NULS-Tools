@@ -12,42 +12,39 @@
           <el-menu-item index="more"><i class="iconfont icon-gengduo"></i>{{$t('nav.more')}}</el-menu-item>
         </el-menu>
       </el-col>
-      <el-col class="user fr font14" :class="accountInfo.address ? '':''">
+      <el-col class="user fr font14">
         <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
-        <div class="user-info fr" v-show="accountInfo.address">
-          <p class="font12">{{$t('public.address')}}：{{accountInfo.address}}</p>
-          <p class="font12">{{$t('public.balance')}}：{{accountInfo.balance}} NULS
-            <span class="click" @click="signOut">{{$t('public.signOut')}}</span>
-          </p>
-        </div>
-        <div class="fr">
-          <div class="click fl" style="width: 50px" @click="toUrl('newAddress','',0)" v-show="!accountInfo.address">
+        <div>
+          <div v-if="accountList.length !==0">
+            <SelectAddress ref="selectAccount">
+            </SelectAddress>
+          </div>
+          <div v-else class="fr font12 click user_login" @click="toUrl('newAddress','',0)">
             {{$t('nav.login')}}
           </div>
         </div>
-
       </el-col>
     </el-row>
-    <el-row class="mobile">
-      <div class="fl header_height">
-        <div class="fl">
-          <Height>
-          </Height>
-        </div>
-        <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
-      </div>
-      <div class="fr font12 user_info" v-show="accountInfo.address">
-        <h6>{{$t('public.address')}}：{{accountInfo.addresss}}</h6>
-        <p>
-          {{$t('public.balance')}}：{{accountInfo.balance}}
-          <span class="click fr" @click="signOut">{{$t('public.signOut')}}</span>
-        </p>
-      </div>
-      <div class="fr font12 click user_login" @click="toUrl('newAddress','',0)" v-show="!accountInfo.address">
-        {{$t('nav.login')}}
-      </div>
+    <!-- <el-row class="mobile">
+       <div class="fl header_height">
+         <div class="fl">
+           <Height>
+           </Height>
+         </div>
+         <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
+       </div>
+       <div class="fr font12 user_info" v-show="accountInfo.address">
+         <h6>{{$t('public.address')}}：{{accountInfo.addresss}}</h6>
+         <p>
+           {{$t('public.balance')}}：{{accountInfo.balance}}
+           <span class="click fr" @click="signOut">{{$t('public.signOut')}}</span>
+         </p>
+       </div>
+       <div class="fr font12 click user_login" @click="toUrl('newAddress','',0)" v-show="!accountInfo.address">
+         {{$t('nav.login')}}
+       </div>
 
-    </el-row>
+     </el-row>-->
   </el-row>
 </template>
 
@@ -55,7 +52,8 @@
   import logo from '@/assets/logo.svg'
   import logoBeta from '@/assets/logo-beta.svg'
   import Height from './Height.vue'
-  import {divisionDecimals, superLong} from '@/api/util.js'
+  import SelectAddress from '@/components/mobile/SelectAddress'
+  import {divisionDecimals, superLong, accountList} from '@/api/util.js'
   import {IS_RUN} from '@/config.js'
 
   export default {
@@ -64,20 +62,21 @@
         logoSvg: IS_RUN ? logo : logoBeta,
         activeIndex: '1',//导航选中项
         lang: 'en',  //语言
-        accountInfo: localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {} //账户信息
+        accountList: [],//账户列表
+        currentAccount: {},//当前账户信息
+
       };
     },
     created() {
-      setInterval(() => {
-        this.accountInfo = localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {};
-        this.accountInfo.addresss = superLong(this.accountInfo.address, 8);
-        this.accountInfo.balance = this.accountInfo.balance === 0 ? 0 : Number(divisionDecimals(this.accountInfo.balance, 8)).toFixed(3)
-      }, 500)
+      this.accountList = accountList(0);
+      this.currentAccount = accountList(1);
+      console.log(this.accountList);
+      console.log(this.currentAccount);
     },
     mounted() {
     },
     components: {
-      Height
+      Height, SelectAddress
     },
     methods: {
 
@@ -100,20 +99,11 @@
         this.$i18n.locale = this.lang;
       },
 
-      /**
-       * 退出
-       */
-      signOut() {
-        this.$confirm(this.$t('tips.tips22'), this.$t('tips.tips23'), {
-          confirmButtonText: this.$t('tips.tips24'),
-          cancelButtonText: this.$t('tips.tips25'),
-          type: 'warning'
-        }).then(() => {
-          localStorage.removeItem('accountInfo');
-          this.toUrl('newAddress', '', 0)
-        }).catch(() => {
-          this.toUrl('backupsAddress', '', 0)
-        });
+      //获取地址组件选择的地址信息
+      changeAccountInfo() {
+        if (this.$refs.selectAccount.accountInfo) {
+          this.selectAddressInfo = this.$refs.selectAccount.accountInfo;
+        }
       },
 
       /**
@@ -160,6 +150,9 @@
           p {
             line-height: 16px;
           }
+        }
+        .user_login {
+          margin: 22px 30px 0 0;
         }
         .language {
           margin: 0 0 0 10px;

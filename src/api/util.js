@@ -266,4 +266,66 @@ export function IsPC() {
   return flag;
 }
 
+/**
+ * 账户localStorage
+ */
+export function addressSetStorage(newAddressInfo) {
+  //console.log(newAddressInfo);
+  let addressList = [];
+  let res = localStorage.getItem('addressData');
+  let resData = [];
+  if (res) {
+    resData = [...JSON.parse(res), newAddressInfo];
+  } else {
+    resData.push(newAddressInfo);
+  }
+  let obj = {};
+  let newAddressList = resData.reduce((item, next) => {
+    obj[next.address] ? '' : obj[next.address] = true && item.push(next);
+    return item
+  }, []);
+
+  if (newAddressList.length !== 0) {
+    let isAddress = false;
+    for (let item of newAddressList) {
+      item.isCurrent = false;
+      if (item.address === newAddressInfo.address) {
+        isAddress = true;
+        item.isCurrent = true;
+      }
+    }
+    if (isAddress) {
+      newAddressInfo.isCurrent = true;
+      addressList = [...newAddressList]
+    } else {
+      addressList = [...newAddressList]
+    }
+  }
+  //console.log(addressList);
+  localStorage.setItem('addressData', JSON.stringify(addressList));
+  localStorage.setItem('accountInfo', JSON.stringify(newAddressInfo));
+  return {
+    success: true,
+    data: addressList,
+  };
+
+}
+
+/**
+ * 获取地址列表或选择地址
+ * @param type 0:地址列表，1:选中地址
+ * @returns {*}
+ */
+export function accountList(type) {
+  let addressList = localStorage.hasOwnProperty('addressData') ? JSON.parse(localStorage.getItem('addressData')) : [];
+  if (addressList) {
+    if (type === 0) {
+      return addressList
+    } else {
+      return localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : '';
+    }
+  } else {
+    return addressList
+  }
+}
 

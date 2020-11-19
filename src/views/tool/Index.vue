@@ -32,7 +32,7 @@
         </li>
       </ul>
     </div>
-    <div class="cb">
+    <!--<div class="cb">
       <h6 class="title font18 fW600">{{$t('public.interflow')}}</h6>
       <ul class="dapp-list">
         <li>
@@ -48,7 +48,7 @@
           <b class="font12"></b>
         </li>
       </ul>
-    </div>
+    </div>-->
   </div>
 </template>
 

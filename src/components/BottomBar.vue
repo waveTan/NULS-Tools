@@ -8,7 +8,7 @@
             <span class="click" @click="toUrl('dream','',0)">wave</span>
             <!--<span class="click" @click="toUrl('https://www.linkedin.com/in/wave98688/','',1)">wave</span>-->
           </div>
-          <div>{{$t('public.address')}}: NULSd6HgaWymKrQ7NdtWossLFzunasJzdwave</div>
+          <div>{{$t('public.address')}}: NULSd6HgbayXFPacp5zDWiCgs4goxFyy7WAVE</div>
         </el-col>
         <el-col :span="2" class="tr">
           <Height>
