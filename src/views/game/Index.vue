@@ -7,12 +7,8 @@
         <b class="font12">{{$t('home.home10')}}</b>
       </li>
       <li @click="toUrl('goblin','',0)">
-        <img src="@/assets/logo.png">
+        <img src="@/assets/img/goblin-logo.png" width="50">
         <b class="font12">Goblin 助手<br/> 方便、快捷管理多账户 </b>
-      </li>
-      <li>
-        <p>{{$t('home.home26')}}<span class="font12 fW400">({{$t('public.develop')}})</span></p>
-        <b class="font12">{{$t('home.home27')}}</b>
       </li>
       <li>
         <p>{{$t('home.home28')}}<span class="font12 fW400">({{$t('public.design')}}...)</span></p>

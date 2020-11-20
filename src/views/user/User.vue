@@ -54,28 +54,28 @@
       </div>
     </div>
 
-     <div class="mobile bg">
-       <div class="bg3">
-         <BackBar :isBackIcon="isBackIcon" :rightTitle="rightTitle">
-         </BackBar>
+    <div class="mobile bg">
+      <div class="bg3">
+        <BackBar :isBackIcon="isBackIcon" :rightTitle="rightTitle">
+        </BackBar>
 
-         <div class="addrss-list">
-           <SelectAddress :shortAddress="isShort" ref="selectAccount">
-           </SelectAddress>
-         </div>
+        <div class="addrss-list">
+          <SelectAddress :shortAddress="isShort" ref="selectAccount">
+          </SelectAddress>
+        </div>
 
-         <ul class="lis">
-           <li @click="toUrl('newAddress','')">{{$t('newAddress.newAddress2')}} <i class="el-icon-arrow-right"></i></li>
-           <li @click="toUrl('newAddress','')">{{$t('address.address14')}} <i class="el-icon-arrow-right"></i></li>
-           <li @click="toUrl('backupsAddress','')">{{$t('address.address15')}} <i class="el-icon-arrow-right"></i></li>
-           <li @click="toUrl('backupsAddress','')" class="last">{{$t('address.address16')}} <i
-                   class="el-icon-arrow-right"></i></li>
-           <li @click="deleteAddress" class="remove">{{$t('address.address17')}} <i class="el-icon-arrow-right"></i></li>
-           <li @click="cleanAll" class="remove">{{$t('address.address18')}} <i class="el-icon-arrow-right"></i></li>
-         </ul>
-       </div>
+        <ul class="lis">
+          <li @click="toUrl('newAddress','')">{{$t('newAddress.newAddress2')}} <i class="el-icon-arrow-right"></i></li>
+          <li @click="toUrl('newAddress','')">{{$t('address.address14')}} <i class="el-icon-arrow-right"></i></li>
+          <li @click="toUrl('backupsAddress','')">{{$t('address.address15')}} <i class="el-icon-arrow-right"></i></li>
+          <li @click="toUrl('backupsAddress','')" class="last">{{$t('address.address16')}} <i
+                  class="el-icon-arrow-right"></i></li>
+          <li @click="deleteAddress" class="remove">{{$t('address.address17')}} <i class="el-icon-arrow-right"></i></li>
+          <li @click="cleanAll" class="remove">{{$t('address.address18')}} <i class="el-icon-arrow-right"></i></li>
+        </ul>
+      </div>
 
-     </div>
+    </div>
 
     <Password ref="password" @passwordSubmit="passSubmit">
     </Password>
@@ -85,7 +85,8 @@
 <script>
   import nuls from 'nuls-sdk-js'
   import Password from '@/components/PasswordBar'
-  import {timesDecimals, Plus, accountList, passwordVerification} from '@/api/util'
+  import {timesDecimals, Plus, accountList} from '@/api/util'
+  import {passwordVerification} from '@/api/requestData'
   import SelectAddress from '@/components/mobile/SelectAddress'
   import BackBar from '@/components/mobile/BackBar'
 

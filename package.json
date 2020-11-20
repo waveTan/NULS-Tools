@@ -1,6 +1,6 @@
 {
-  "name": "nuls-dapp-nav",
-  "version": "0.1.0",
+  "name": "NULS-Tools",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve-prod": "cross-env NULS_ENV=prod vue-cli-service serve src/main",
@@ -19,6 +19,7 @@
     "bignumber": "^1.1.0",
     "bignumber.js": "^9.0.0",
     "bs58": "^4.0.1",
+    "caniuse-lite": "^1.0.30001159",
     "compression-webpack-plugin": "^4.0.0",
     "copy-to-clipboard": "^3.3.1",
     "electron-builder": "^22.9.1",
@@ -42,19 +43,19 @@
     "@vue/cli-plugin-eslint": "^3.2.0",
     "@vue/cli-service": "^3.2.0",
     "babel-eslint": "^10.0.1",
+    "cross-env": "^6.0.0",
+    "electron": "^4.0.0",
+    "electron-builder": "^20.18.0",
+    "electron-updater": "^4.0.6",
     "element-ui": "^2.4.11",
     "eslint": "^5.8.0",
     "eslint-plugin-vue": "^5.0.0",
     "i18n": "^0.8.3",
     "less-loader": "^4.1.0",
+    "vue-cli-plugin-electron-builder": "^1.2.0",
     "vue-cli-plugin-element": "^1.0.0",
     "vue-cli-plugin-i18n": "^0.5.1",
-    "vue-template-compiler": "^2.5.21",
-    "cross-env": "^6.0.0",
-    "electron": "^4.0.0",
-    "electron-builder": "^20.18.0",
-    "electron-updater": "^4.0.6",
-    "vue-cli-plugin-electron-builder": "^1.2.0"
+    "vue-template-compiler": "^2.5.21"
   },
   "eslintConfig": {
     "root": true,
@@ -81,5 +82,12 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "publish": [
+    {
+      "provider": "generic",
+      "url": "http://file.wallet.nuls.io/download/main"
+    }
+  ],
+  "main": "background.js"
 }

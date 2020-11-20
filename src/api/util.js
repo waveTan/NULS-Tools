@@ -329,3 +329,36 @@ export function accountList(type) {
   }
 }
 
+/**
+ * 获取参数的必填值
+ * @param parameterList
+ * @returns {{allParameter: boolean, args: Array}}
+ */
+export function getArgs(parameterList) {
+  //console.log(parameterList);
+  let newArgs = [];
+  let allParameter = false;
+  if (parameterList.length !== 0) {
+    //循环获取必填参数
+    for (let itme of parameterList) {
+      if (itme.required) {
+        if (itme.value) {
+          allParameter = true;
+          newArgs.push(itme.value)
+        } else {
+          return {allParameter: false, args: newArgs};
+        }
+      } else {
+        allParameter = true;
+        if (!itme.value) {
+          newArgs.push('')
+        } else {
+          newArgs.push(itme.value)
+        }
+      }
+    }
+    return {allParameter: allParameter, args: newArgs};
+  } else {
+    return {allParameter: true, args: newArgs};
+  }
+}

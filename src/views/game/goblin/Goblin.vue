@@ -110,6 +110,7 @@
   import sdk from 'nuls-sdk-js/lib/api/sdk'
   import utils from 'nuls-sdk-js/lib/utils/utils'
   import Password from '@/components/PasswordBar'
+  import {chainInfo} from '@/config.js'
   import {
     timesDecimals,
     divisionDecimals,
@@ -117,14 +118,14 @@
     superLong,
     getArgs,
     Times,
-    chainID,
-    passwordVerification, Plus
+    Plus
   } from '@/api/util'
   import {
-    getNulsBalance,
+    getBalanceOrNonceByAddress,
     countFee,
     inputsOrOutputs,
-    validateAndBroadcast
+    validateAndBroadcast,
+    passwordVerification
   } from '@/api/requestData'
 
   export default {
@@ -420,7 +421,7 @@
             let newArgs = getArgs(methodsInfo[0].params);
             //console.log(this.guijiForm.fromAddress, methodsInfo[0], this.contractAddressCollection, 0, newArgs);
             this.chainMethodCall(this.guijiForm.fromAddress, methodsInfo[0], this.contractAddressCollection, 0, newArgs);
-            this.getBalanceByAddress(chainID(), 1, this.guijiForm.fromAddress);
+            this.getBalanceByAddress(chainInfo.chainId, 1, this.guijiForm.fromAddress);
             this.$refs.password.showPassword(true);
           } else {
             return false;
@@ -443,7 +444,7 @@
         methodsInfo[0].params[0].value = info.id;
         let newArgs = getArgs(methodsInfo[0].params);
         this.chainMethodCall(info.address, methodsInfo[0], this.contractAddress, 0, newArgs);
-        this.getBalanceByAddress(chainID(), 1, info.address);
+        this.getBalanceByAddress(chainInfo.chainId, 1, info.address);
         this.$refs.password.showPassword(true);
         //let resData = await this.chainMethodCall(info.address, methodsInfo[0], this.contractAddressBlackIron, values);
         //console.log(resData);
@@ -485,7 +486,7 @@
         }
         let newArgs = getArgs(methodsInfo[0].params);
         this.chainMethodCall(this.sentInfo.address, methodsInfo[0], this.contractAddress, 0, newArgs);
-        this.getBalanceByAddress(chainID(), 1, this.sentInfo.address);
+        this.getBalanceByAddress(chainInfo.chainId, 1, this.sentInfo.address);
         this.$refs.password.showPassword(true);
         this.typeDialog = false;
       },
@@ -504,7 +505,7 @@
         methodsInfo[0].params[0].value = info.caveType;
         let newArgs = getArgs(methodsInfo[0].params);
         this.chainMethodCall(info.address, methodsInfo[0], this.contractAddressBlackIron, 0, newArgs);
-        this.getBalanceByAddress(chainID(), 1, info.address);
+        this.getBalanceByAddress(chainInfo.chainId, 1, info.address);
         this.$refs.password.showPassword(true);
         //let resData = await this.chainMethodCall(info.address, methodsInfo[0], this.contractAddressBlackIron, values);
         //console.log(resData);
@@ -526,7 +527,7 @@
         methodsInfo[0].params[2].value = info.caveType;
         let newArgs = getArgs(methodsInfo[0].params);
         this.chainMethodCall(info.address, methodsInfo[0], this.contractAddress, 0, newArgs);
-        this.getBalanceByAddress(chainID(), 1, info.address);
+        this.getBalanceByAddress(chainInfo.chainId, 1, info.address);
         this.$refs.password.showPassword(true);
       },
 
@@ -594,7 +595,7 @@
               let newArgs = utils.twoDimensionalArray(args, contractConstructorArgsTypes.data);
               //console.log(newArgs);
               this.contractCallData = {
-                chainId: chainID(),
+                chainId: chainInfo.chainId,
                 sender: sender,
                 contractAddress: contractAddress,
                 value: value,
@@ -642,7 +643,7 @@
        * @param address
        **/
       getBalanceByAddress(assetChainId, assetId, address) {
-        getNulsBalance(assetChainId, assetId, address).then((response) => {
+        getBalanceOrNonceByAddress(assetChainId, assetId, address).then((response) => {
           //console.log(response);
           if (response.success) {
             this.balanceInfo = response.data;
@@ -672,7 +673,7 @@
         let amount = Number(Times(this.contractCallData.gasLimit, this.contractCallData.price));
         let transferInfo = {
           fromAddress: this.contractCallData.sender,
-          assetsChainId: chainID(),
+          assetsChainId: chainInfo.chainId,
           assetsId: 1,
           amount: amount,
           fee: 100000

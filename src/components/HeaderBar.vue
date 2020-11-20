@@ -14,12 +14,29 @@
       </el-col>
       <el-col class="user fr font14">
         <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
-        <div>
-          <div v-if="accountList.length !==0">
-            <SelectAddress ref="selectAccount">
-            </SelectAddress>
-          </div>
-          <div v-else class="fr font12 click user_login" @click="toUrl('newAddress','',0)">
+        <div class="fl">
+          <el-menu :default-active="rightActiveIndex" mode="horizontal" class="fl right-menu" @open="handleOpen"
+                   @close="handleClose">
+            <el-submenu index="userList">
+              <template slot="title">
+                <i class="el-icon-s-custom"></i>
+              </template>
+              <el-menu-item-group>
+                <el-menu-item v-for="item of  accountList " :key="item.address" :index="item.address">{{item.address}}
+                </el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+            <el-submenu index="set">
+              <template slot="title">
+                <i class="el-icon-s-tools"></i>
+              </template>
+              <el-menu-item-group>
+                <el-menu-item index="user">账号管理</el-menu-item>
+                <el-menu-item index="set">系统信息</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+          </el-menu>
+          <div v-show="accountList.length ===0" class="fr font12 click user_login" @click="toUrl('newAddress','',0)">
             {{$t('nav.login')}}
           </div>
         </div>
@@ -49,8 +66,8 @@
 </template>
 
 <script>
-  import logo from '@/assets/logo.svg'
-  import logoBeta from '@/assets/logo-beta.svg'
+  import logo from '@/assets/logo.png'
+  import logoBeta from '@/assets/logo.png'
   import SelectAddress from '@/components/mobile/SelectAddress'
   import {accountList} from '@/api/util.js'
   import {IS_RUN} from '@/config.js'
@@ -60,6 +77,7 @@
       return {
         logoSvg: IS_RUN ? logo : logoBeta,
         activeIndex: '1',//导航选中项
+        rightActiveIndex: 'userList',//右边菜单选择
         lang: 'en',  //语言
         accountList: [],//账户列表
         currentAccount: {},//当前账户信息
@@ -69,8 +87,8 @@
     created() {
       this.accountList = accountList(0);
       this.currentAccount = accountList(1);
-      console.log(this.accountList);
-      console.log(this.currentAccount);
+      /*console.log(this.accountList);
+      console.log(this.currentAccount);*/
     },
     mounted() {
     },
@@ -135,7 +153,7 @@
         height: auto;
         margin: 10px 0 0 20px;
         img {
-          width: 85px;
+          width: 40px;
         }
       }
       .nav {
@@ -143,7 +161,8 @@
       }
       .user {
         line-height: 60px;
-        width: 500px;
+        width: 220px;
+        float: right;
         .user-info {
           margin: 16px 0 0 0;
           p {
@@ -155,6 +174,15 @@
         }
         .language {
           margin: 0 0 0 10px;
+        }
+        .right-menu {
+          .el-menu--horizontal {
+            .el-menu--popup {
+              .el-menu-item {
+                min-width: auto;
+              }
+            }
+          }
         }
       }
     }

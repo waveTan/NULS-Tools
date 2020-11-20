@@ -44,22 +44,14 @@
           <p>{{$t('home.home9')}}</p>
           <b class="font12">{{$t('home.home10')}}</b>
         </li>
-        <li>
-          <p>{{$t('home.home26')}}<span class="font12 fW400">({{$t('public.develop')}})</span></p>
-          <b class="font12">{{$t('home.home27')}}</b>
+        <li @click="toUrl('goblin','',0)">
+          <img src="@/assets/img/goblin-logo.png" width="50">
+          <b class="font12">Goblin 助手<br/> 方便、快捷管理多账户 </b>
         </li>
         <li>
           <p>{{$t('home.home28')}}<span class="font12 fW400">({{$t('public.design')}}...)</span></p>
           <b class="font12">{{$t('home.home29')}}</b>
         </li>
-        <!--<li>
-         <img src="./../assets/logo.png">
-         <b class="font12">快乐翻牌<br/>{{$t('public.comingSoon')}}</b>
-       </li>
-      <li>
-         <img src="./../assets/logo.png">
-         <b class="font12">数字华容道<br/>{{$t('public.comingSoon')}}</b>
-       </li>-->
       </ul>
     </div>
   </div>
