@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <!-- <div class="mobile bg">
+     <div class="mobile bg">
        <div class="bg3">
          <BackBar :isBackIcon="isBackIcon" :rightTitle="rightTitle">
          </BackBar>
@@ -75,7 +75,7 @@
          </ul>
        </div>
 
-     </div>-->
+     </div>
 
     <Password ref="password" @passwordSubmit="passSubmit">
     </Password>

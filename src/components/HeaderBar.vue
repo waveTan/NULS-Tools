@@ -51,9 +51,8 @@
 <script>
   import logo from '@/assets/logo.svg'
   import logoBeta from '@/assets/logo-beta.svg'
-  import Height from './Height.vue'
   import SelectAddress from '@/components/mobile/SelectAddress'
-  import {divisionDecimals, superLong, accountList} from '@/api/util.js'
+  import {accountList} from '@/api/util.js'
   import {IS_RUN} from '@/config.js'
 
   export default {
@@ -76,7 +75,7 @@
     mounted() {
     },
     components: {
-      Height, SelectAddress
+      SelectAddress
     },
     methods: {
 

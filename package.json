@@ -3,9 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "serve-prod": "cross-env NULS_ENV=prod vue-cli-service serve src/main",
+    "serve-beta": "cross-env NULS_ENV=beta vue-cli-service serve src/main",
+    "build-prod": "cross-env NULS_ENV=prod vue-cli-service build src/main",
+    "build-beta": "cross-env NULS_ENV=beta vue-cli-service build src/main",
+    "lint": "vue-cli-service lint",
+    "electron:build": "cross-env NULS_ENV=electron-prod vue-cli-service electron:build",
+    "electron:build-beta": "cross-env NULS_ENV=electron-beta vue-cli-service electron:build",
+    "electron:serve": "cross-env NULS_ENV=electron-prod vue-cli-service electron:serve",
+    "electron:serve-beta": "cross-env NULS_ENV=electron-beta vue-cli-service electron:serve",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps"
   },
   "dependencies": {
     "bignumber": "^1.1.0",
@@ -13,6 +21,7 @@
     "bs58": "^4.0.1",
     "compression-webpack-plugin": "^4.0.0",
     "copy-to-clipboard": "^3.3.1",
+    "electron-builder": "^22.9.1",
     "element-ui": "^2.4.5",
     "file-saver": "^2.0.2",
     "int64-buffer": "^0.99.1007",
@@ -40,7 +49,12 @@
     "less-loader": "^4.1.0",
     "vue-cli-plugin-element": "^1.0.0",
     "vue-cli-plugin-i18n": "^0.5.1",
-    "vue-template-compiler": "^2.5.21"
+    "vue-template-compiler": "^2.5.21",
+    "cross-env": "^6.0.0",
+    "electron": "^4.0.0",
+    "electron-builder": "^20.18.0",
+    "electron-updater": "^4.0.6",
+    "vue-cli-plugin-electron-builder": "^1.2.0"
   },
   "eslintConfig": {
     "root": true,

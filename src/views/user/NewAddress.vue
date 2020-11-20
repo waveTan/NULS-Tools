@@ -72,7 +72,7 @@
   import nuls from 'nuls-sdk-js'
   import {chainInfo} from '@/config'
   import {addressSetStorage} from '@/api/util'
-  import {passwordVerification, getAddressInfoByAddress} from '@/api/requestData'
+  import {passwordVerification} from '@/api/requestData'
   import Password from '@/components/PasswordBar'
 
   export default {
@@ -280,9 +280,9 @@
         this.$refs[formName].validate(async (valid) => {
           if (valid) {
             let newAddressInfo = nuls.newAddress(chainInfo.chainId, this.newAddressForm.pass, chainInfo.prefix);
-            console.log(newAddressInfo);
+            //console.log(newAddressInfo);
             let addressDataRes = await addressSetStorage(newAddressInfo);
-            console.log(addressDataRes);
+            //console.log(addressDataRes);
             if (addressDataRes.success) {
               this.toUrl('backupsAddress');
             }
@@ -304,7 +304,7 @@
             name: urlName
           })
         } else {
-          console.log(name)
+          console.log(name,parameter)
         }
       },
     }

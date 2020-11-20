@@ -118,8 +118,7 @@
     getArgs,
     Times,
     chainID,
-    passwordVerification
-    , Plus
+    passwordVerification, Plus
   } from '@/api/util'
   import {
     getNulsBalance,

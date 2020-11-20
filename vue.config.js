@@ -8,6 +8,16 @@ module.exports = {
       fallbackLocale: 'en',
       localeDir: 'locales',
       enableInSFC: false
+    },
+    electronBuilder: {
+      builderOptions: {
+        win: {
+          icon: 'public/app.png'
+        },
+        mac: {
+          icon: 'public/app.png'
+        },
+      }
     }
   },
 

@@ -15,7 +15,7 @@
     },
     props: {
       value: {type: Number, default: 0},                   // 中奖的索引
-      awards: {type: Array, default: []},                  // 奖品数组
+      //awards: {type: Array, default: []},                  // 奖品数组
       rate: {type: Number, default: 80},                   // 转盘速率
       radius: {type: Number, default: 180},                // 转盘半径
       textFontSize: {type: String, default: '13px'},       // 文字大小
@@ -48,7 +48,7 @@
        */
       initCanvas() {
         this.canvas = document.querySelector('#canvas');
-        this.ctx = canvas.getContext('2d');
+        //this.ctx = canvas.getContext('2d');
         this.canvas.width = this.radius * 2;
         this.canvas.height = this.radius * 2;
         this.render();
@@ -153,7 +153,7 @@
           // 每次点击抽奖，都将初始化角度重置
           this.startRadian = -Math.floor(Math.random() * 180);
           // distance是计算出的将指定奖品旋转到指针处需要旋转的角度距离，distanceToStop下面会又说明
-          const distance = this.distanceToStop();
+          //const distance = this.distanceToStop();
           console.log('123')
           //this.rotatePanel(distance)
         } else {

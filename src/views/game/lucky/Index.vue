@@ -63,7 +63,6 @@
     inputsOrOutputs,
     validateAndBroadcast
   } from '@/api/requestData'
-  import {sleep} from '@/api/util'
   import Password from '@/components/PasswordBar'
   import LuckDraw from './LuckDraw'
 

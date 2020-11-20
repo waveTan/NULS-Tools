@@ -11,13 +11,13 @@
             <el-tooltip placement="bottom" style="padding: 0">
               <div slot="content" class="portion">
                 <ul>
-                  <li>{{$t('guessNum.guessNum3')}} < 10 {{$t('guessNum.guessNum4')}} 20%</li>
-                  <li>{{$t('guessNum.guessNum3')}} < 50 {{$t('guessNum.guessNum4')}} 25%</li>
-                  <li>{{$t('guessNum.guessNum3')}} < 100 {{$t('guessNum.guessNum4')}} 30%</li>
-                  <li>{{$t('guessNum.guessNum3')}} < 200 {{$t('guessNum.guessNum4')}} 35%</li>
-                  <li>{{$t('guessNum.guessNum3')}} < 500 {{$t('guessNum.guessNum4')}} 40%</li>
-                  <li>{{$t('guessNum.guessNum3')}} < 1000 {{$t('guessNum.guessNum4')}} 45%</li>
-                  <li>{{$t('guessNum.guessNum3')}} > 1000 {{$t('guessNum.guessNum4')}} 50%</li>
+                  <li>{{$t('guessNum.guessNum3')}} &lt; 10 {{$t('guessNum.guessNum4')}} 20%</li>
+                  <li>{{$t('guessNum.guessNum3')}} &lt; 50 {{$t('guessNum.guessNum4')}} 25%</li>
+                  <li>{{$t('guessNum.guessNum3')}} &lt; 100 {{$t('guessNum.guessNum4')}} 30%</li>
+                  <li>{{$t('guessNum.guessNum3')}} &lt; 200 {{$t('guessNum.guessNum4')}} 35%</li>
+                  <li>{{$t('guessNum.guessNum3')}} &lt; 500 {{$t('guessNum.guessNum4')}} 40%</li>
+                  <li>{{$t('guessNum.guessNum3')}} &lt; 1000 {{$t('guessNum.guessNum4')}} 45%</li>
+                  <li>{{$t('guessNum.guessNum3')}} &gt; 1000 {{$t('guessNum.guessNum4')}} 50%</li>
                 </ul>
               </div>
               <el-button type="text">{{$t('guessNum.guessNum5')}}</el-button>
@@ -875,7 +875,7 @@
           }
           td, th {
             padding: 2px 0;
-            .cell{
+            .cell {
               padding: 0 5px;
             }
           }
