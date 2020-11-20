@@ -2,19 +2,19 @@
   <div class="goblin w1200">
     <div class="tc title">Goblin 助手</div>
     <el-table :data="addressList" style="width: 100%">
-      <el-table-column label="地址" prop="addresss" align="center">
+      <el-table-column label="地址" prop="addresss" align="center" width="120">
       </el-table-column>
-      <el-table-column label="别名" prop="alias" align="center">
+      <el-table-column label="别名" prop="alias" align="center" width="120">
       </el-table-column>
-      <el-table-column label="余额(nuls)" prop="balance" align="center">
+      <el-table-column label="余额(nuls)" prop="balance" align="center" width="150">
       </el-table-column>
-      <el-table-column label="余额(goblin)" prop="goblinBalance" align="center">
+      <el-table-column label="余额(goblin)" prop="goblinBalance" align="center" width="150">
       </el-table-column>
-      <el-table-column label="余额(black_iron)" prop="blackBalance" align="center">
+      <el-table-column label="余额(black_iron)" prop="blackBalance" align="center" width="150">
       </el-table-column>
-      <el-table-column label="余额(tungsten)" prop="tungstenBalance" align="center">
+      <el-table-column label="余额(tungsten)" prop="tungstenBalance" align="center" width="150">
       </el-table-column>
-      <el-table-column label="余额(platinum)" prop="platinumBalance" align="center">
+      <el-table-column label="余额(platinum)" prop="platinumBalance" align="center" width="150">
       </el-table-column>
 
       <el-table-column label="我的军团" prop="myLegions" align="center">
@@ -44,9 +44,9 @@
               <li class="fl w200">
                 <el-button type="text" :disabled="item.status === '1'" @click="upgrade(item)">升级</el-button>
                 <el-button type="text" :disabled="item.status === '1'" @click="sent(item)">派出</el-button>
-                <!--<el-button type="text">迁回</el-button>-->
                 <el-button type="text" :disabled="item.status !== '1'" @click="acquire(item)">获取</el-button>
                 <el-button type="text" :disabled="item.status !== '1'" @click="backs(item)">迁回</el-button>
+                <el-button type="text" :disabled="item.status !== '1'" @click="acquireAndBacks(item)">获取并迁回</el-button>
               </li>
             </ul>
           </div>
@@ -518,13 +518,32 @@
       },
 
       /**
+       * @disc: 获取并迁回
+       * @params:
+       * @date: 2020-11-19 17:35
+       * @author: Wave
+       */
+      acquireAndBacks(info) {
+        //console.log(info);
+        let name = 'remandAllFromMine';
+        let methodsInfo = this.contractInfo.methods.filter(obj => obj.name === name);
+        //console.log(methodsInfo[0]);
+        methodsInfo[0].params[0].value = this.contractAddressBlackIron;
+        methodsInfo[0].params[1].value = info.caveType;
+        let newArgs = getArgs(methodsInfo[0].params);
+        this.chainMethodCall(info.address, methodsInfo[0], this.contractAddress, 0, newArgs);
+        this.getBalanceByAddress(chainInfo.chainId, 1, info.address);
+        this.$refs.password.showPassword(true);
+      },
+
+      /**
        * @disc: 迁回
        * @params:
        * @date: 2020-11-18 11:45
        * @author: Wave
        */
       async backs(info) {
-        console.log(info);
+        //console.log(info);
         let name = 'remandFromMineCave';
         let methodsInfo = this.contractInfo.methods.filter(obj => obj.name === name);
         console.log(methodsInfo[0]);
@@ -747,7 +766,7 @@
       margin: 0 auto;
       ul {
         li {
-          width: 6rem;
+          width: 5rem;
           text-align: center;
           height: 1.6rem;
           line-height: 1.6rem;
@@ -782,6 +801,9 @@
               .el-form-item__content {
                 .el-select {
                   width: 100%;
+                  .el-input {
+                    width: 100%;
+                  }
                   .el-input__inner {
                     width: 100%;
                   }
