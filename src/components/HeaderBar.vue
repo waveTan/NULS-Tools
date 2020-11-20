@@ -15,14 +15,13 @@
       <el-col class="user fr font14">
         <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
         <div class="fl">
-          <el-menu :default-active="rightActiveIndex" mode="horizontal" class="fl right-menu" @open="handleOpen"
-                   @close="handleClose">
+          <el-menu :default-active="rightActiveIndex" mode="horizontal" class="fl right-menu" @select="handleSelect">
             <el-submenu index="userList">
               <template slot="title">
                 <i class="el-icon-s-custom"></i>
               </template>
               <el-menu-item-group>
-                <el-menu-item v-for="item of  accountList " :key="item.address" :index="item.address">{{item.address}}
+                <el-menu-item v-for="item of accountList" :key="item.address" :index="item.address">{{item.address}}
                 </el-menu-item>
               </el-menu-item-group>
             </el-submenu>
@@ -68,7 +67,6 @@
 <script>
   import logo from '@/assets/logo.png'
   import logoBeta from '@/assets/logo.png'
-  import SelectAddress from '@/components/mobile/SelectAddress'
   import {accountList} from '@/api/util.js'
   import {IS_RUN} from '@/config.js'
 
@@ -93,7 +91,6 @@
     mounted() {
     },
     components: {
-      SelectAddress
     },
     methods: {
 

@@ -253,7 +253,9 @@
       keyImport(formName) {
         this.$refs[formName].validate(async (valid) => {
           if (valid) {
+            //console.log(chainInfo.chainId, this.importForm.keys, this.importForm.pass, chainInfo.prefix);
             const keyAddressInfo = nuls.importByKey(chainInfo.chainId, this.importForm.keys, this.importForm.pass, chainInfo.prefix);
+            //console.log(keyAddressInfo);
             if (keyAddressInfo.hasOwnProperty('success') && !keyAddressInfo.success) {
               //console.log(newAddressInfo.data);
               this.$message({message: keyAddressInfo.data, type: 'error', duration: 3000});

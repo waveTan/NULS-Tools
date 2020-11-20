@@ -14,6 +14,9 @@
       </el-table-column>
       <el-table-column label="余额(tungsten)" prop="tungstenBalance" align="center">
       </el-table-column>
+      <el-table-column label="余额(platinum)" prop="platinumBalance" align="center">
+      </el-table-column>
+
       <el-table-column label="我的军团" prop="myLegions" align="center">
       </el-table-column>
       <el-table-column type="expand">
@@ -112,20 +115,20 @@
   import Password from '@/components/PasswordBar'
   import {chainInfo} from '@/config.js'
   import {
-    timesDecimals,
     divisionDecimals,
+    timesDecimals,
     accountList,
     superLong,
     getArgs,
     Times,
-    Plus
+    Plus, tofix
   } from '@/api/util'
   import {
-    getBalanceOrNonceByAddress,
     countFee,
     inputsOrOutputs,
     validateAndBroadcast,
-    passwordVerification
+    passwordVerification,
+    getBalanceOrNonceByAddress
   } from '@/api/requestData'
 
   export default {
@@ -221,7 +224,7 @@
           item.legionsData = [];*/
           let addressInfo = await this.getAddressInfoByNode(item.address);
           if (addressInfo.success) {
-            item.balance = timesDecimals(addressInfo.data.balance);
+            item.balance = divisionDecimals(addressInfo.data.balance);
             let tokenList = await this.getTokenListByAddress(item.address);
             item.tokens = tokenList.data.list;
             for (let k of addressInfo.data.tokens) {
@@ -229,13 +232,16 @@
               //console.log(newArr);
               if (newArr[1] === 'Goblin') {
                 let goblinInfo = tokenList.data.list.filter(obj => obj.tokenName === newArr[1]);
-                item.goblinBalance = timesDecimals(goblinInfo[0].balance, goblinInfo[0].decimals);
+                item.goblinBalance = divisionDecimals(goblinInfo[0].balance, goblinInfo[0].decimals);
               } else if (newArr[1] === 'black_iron') {
                 let blackInfo = tokenList.data.list.filter(obj => obj.tokenName === newArr[1]);
-                item.blackBalance = timesDecimals(blackInfo[0].balance, blackInfo[0].decimals);
+                item.blackBalance = divisionDecimals(blackInfo[0].balance, blackInfo[0].decimals);
               } else if (newArr[1] === 'tungsten') {
                 let blackInfo = tokenList.data.list.filter(obj => obj.tokenName === newArr[1]);
-                item.tungstenBalance = timesDecimals(blackInfo[0].balance, blackInfo[0].decimals);
+                item.tungstenBalance = divisionDecimals(blackInfo[0].balance, blackInfo[0].decimals);
+              } else if (newArr[1] === 'platinum') {
+                let blackInfo = tokenList.data.list.filter(obj => obj.tokenName === newArr[1]);
+                item.platinumBalance = divisionDecimals(blackInfo[0].balance, blackInfo[0].decimals);
               }
             }
           }
@@ -259,14 +265,12 @@
               methodsInfoTwo[0].params[1].value = item.address;
               let newArgsTwo = getArgs(methodsInfoTwo[0].params);
               let resData = await  this.methodCall(this.contractAddressBlackIron, nameTwo, descTwo, newArgsTwo.args);
-              //console.log(resData);
               if (resData.success) {
-                let goblin = timesDecimals(JSON.parse(resData.data.result)[0]).toFixed(2).toString();
-                let black = timesDecimals(JSON.parse(resData.data.result)[1]).toFixed(2).toString();
-                q.goblinBlack = goblin + '(GOBLIN)' + ' - ' + black + '(' + q.caveType + ')';
+                let goblin = divisionDecimals(JSON.parse(resData.data.result)[0]).toString();
+                let black = divisionDecimals(JSON.parse(resData.data.result)[1]).toString();
+                q.goblinBlack = tofix(goblin, 2, -1) + '(GOBLIN)' + ' - ' + tofix(black, 2, -1) + '(' + q.caveType + ')';
               }
             }
-            //console.log(this.contractInfoBlackIron);
 
           }
 
@@ -381,7 +385,7 @@
         this.assetsList = [];
         for (let item of rowInfo.tokens) {
           //console.log(item.tokenName);
-          item.balances = timesDecimals(item.balance, item.decimals).toString();
+          item.balances = divisionDecimals(item.balance, item.decimals).toString();
           if (item.tokenName === 'black_iron') {
             this.assetsList.push(item)
           } else if (item.tokenName === 'tungsten') {
@@ -417,7 +421,7 @@
             let methodsInfo = this.contractInfoCollection.methods.filter(obj => obj.name === name);
             //console.log(methodsInfo[0]);
             methodsInfo[0].params[0].value = this.guijiForm.toAddress;
-            methodsInfo[0].params[1].value = Number(divisionDecimals(this.guijiForm.amount, this.contractInfoCollection.decimals));
+            methodsInfo[0].params[1].value = Number(timesDecimals(this.guijiForm.amount, this.contractInfoCollection.decimals));
             let newArgs = getArgs(methodsInfo[0].params);
             //console.log(this.guijiForm.fromAddress, methodsInfo[0], this.contractAddressCollection, 0, newArgs);
             this.chainMethodCall(this.guijiForm.fromAddress, methodsInfo[0], this.contractAddressCollection, 0, newArgs);
@@ -483,6 +487,8 @@
           methodsInfo[0].params[3].value = 'BlackIron';
         } else if (this.typeRadio === 2) {
           methodsInfo[0].params[3].value = 'Tungsten';
+        } else if (this.typeRadio === 3) {
+          methodsInfo[0].params[3].value = 'Platinum';
         }
         let newArgs = getArgs(methodsInfo[0].params);
         this.chainMethodCall(this.sentInfo.address, methodsInfo[0], this.contractAddress, 0, newArgs);
@@ -506,7 +512,7 @@
         let newArgs = getArgs(methodsInfo[0].params);
         this.chainMethodCall(info.address, methodsInfo[0], this.contractAddressBlackIron, 0, newArgs);
         this.getBalanceByAddress(chainInfo.chainId, 1, info.address);
-        this.$refs.password.showPassword(true);
+        this.$refs.password.showPassword(true, info.address);
         //let resData = await this.chainMethodCall(info.address, methodsInfo[0], this.contractAddressBlackIron, values);
         //console.log(resData);
       },
@@ -643,10 +649,10 @@
        * @param address
        **/
       getBalanceByAddress(assetChainId, assetId, address) {
-        getBalanceOrNonceByAddress(assetChainId, assetId, address).then((response) => {
+        getBalanceOrNonceByAddress(address, assetChainId, assetId).then((response) => {
           //console.log(response);
           if (response.success) {
-            this.balanceInfo = response.data;
+            this.balanceInfo = response;
           } else {
             this.$message({message: this.$t('public.err2') + response, type: 'error', duration: 3000});
           }
@@ -679,25 +685,9 @@
           fee: 100000
         };
 
-        /*let transferInfo = {
-          fromAddress: this.transferForm.fromAddress,
-          toAddress: this.aliasToAddress ,
-          assetType: this.transferForm.assetType,
-          amount: Number(divisionDecimals(this.transferForm.amount, this.assetsInfo.decimals)),
-          gas: this.transferForm.gas,
-          price: this.transferForm.price,
-          fee: Number(divisionDecimals(this.transferForm.fee, this.defaultInfo.defaultAsset.decimals)),
-          assetsChainId: this.assetsInfo.chainId,
-          assetsId: this.assetsInfo.assetId,
-        };*/
-
         amount = Number(Plus(transferInfo.fee, amount));
-        /*if (this.callForm.values > 0) {
-          transferInfo.toAddress = this.contractAddress;
-          transferInfo.value = Number(divisionDecimals(this.callForm.values));
-          transferInfo.amount = Number(Plus(transferInfo.value, amount))
-        }*/
         let remark = '';
+        //console.log(this.balanceInfo);
         let inOrOutputs = await inputsOrOutputs(transferInfo, this.balanceInfo, 16);
         let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, this.contractCallData);
         let txhex = '';
@@ -717,18 +707,21 @@
         await validateAndBroadcast(txhex).then((response) => {
           //console.log(response);
           if (response.success) {
-            this.$message({message: this.$t('tips.tips0'), type: 'success', duration: 1000});
+            this.$message({message: this.$t('tips.tips15'), type: 'success', duration: 1000});
           } else {
             if (response.data.code === 'err_0014') {
               this.$message({message: response.data.message, type: 'error', duration: 3000});
             } else {
-              this.$message({message: this.$t('error.' + response.data.code), type: 'error', duration: 3000});
+              this.$message({
+                message: this.$t('tips.tips14') + JSON.stringify(response.data),
+                type: 'error',
+                duration: 3000
+              });
             }
           }
         }).catch((err) => {
           this.$message({message: this.$t('public.err1') + err, type: 'error', duration: 3000});
         });
-
       },
 
       /**

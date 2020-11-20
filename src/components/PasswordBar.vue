@@ -13,7 +13,10 @@
       </el-form-item>
     </el-form>
     <!-- <div class="red">此操作将消耗0.01NULS</div>-->
-    <!--<el-radio v-model="radio" label="1">记住密码五分钟</el-radio>-->
+    <!--    <el-checkbox v-model="keepRadio">
+          <span v-if="!keepRadio">记住密码五分钟</span>
+          <span v-else>{{timeLag/1000}}秒后清除记住密码</span>
+        </el-checkbox>-->
     <div slot="footer" class="dialog-footer">
       <el-button @click="passwordClose">{{$t('public.cancel')}}</el-button>
       <el-button type="success" @click="dialogSubmit('passwordForm')" id="passwordInfo">{{$t('public.confirm')}}
@@ -24,7 +27,7 @@
 
 <script>
 
-  import {IsPC} from '@/api/util'
+  import {IsPC, accountList, Minus} from '@/api/util'
 
   export default {
     props: {},
@@ -37,6 +40,8 @@
         }
       };
       return {
+        addressList: [],//账户列表
+        addressInfo: {},//账户信息
         passwordVisible: false,
         passwordForm: {
           password: '',
@@ -46,6 +51,8 @@
             {validator: validatePass, trigger: ['blur', 'change']}
           ]
         },
+        keepRadio: false,//是否记住密码
+        timeLag: 300000,//时差
         width: IsPC() ? '35%' : '95%',
       }
     },
@@ -83,15 +90,46 @@
       passwordClose() {
         this.$refs['passwordForm'].resetFields();
         this.passwordVisible = false;
+        this.timeLag = 300000;
+        this.keepRadio = false;
       },
-      showPassword(boolean) {
+      showPassword(boolean, address) {
+        if (address) {
+          this.addressList = accountList(0);
+          this.addressInfo = this.addressList.filter(obj => obj.address === address)[0];
+          //console.log(this.addressInfo);
+          if (this.addressInfo.keepStart) {
+            let newStart = new Date().getTime();
+            this.timeLag = Number(Minus(newStart, this.addressInfo.keepStart));
+            //console.log(this.timeLag);
+            //60000 *5 =300000
+            if (this.timeLag < 300000) {
+              this.keepRadio = true;
+              this.passwordForm.password = this.addressInfo.password;
+            } else {
+              this.timeLag = 300000;
+              this.keepRadio = false;
+            }
+          }
+        }
         this.passwordVisible = boolean;
+
       },
       //弹出密码输入框
       dialogSubmit(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.$emit('passwordSubmit', this.passwordForm.password);
+            if (this.keepRadio && !this.addressInfo.keepStart) {
+              let keepStart = new Date().getTime();
+              for (let item of this.addressList) {
+                if (item.address === this.addressInfo.address) {
+                  item.keepStart = keepStart;
+                  item.password = this.passwordForm.password;
+                }
+              }
+              localStorage.setItem('addressData', JSON.stringify(this.addressList));
+            }
+            this.$emit('passwordSubmit', this.passwordForm.password, this.keepRadio);
             this.passwordVisible = false;
           } else {
             return false
