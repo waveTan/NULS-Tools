@@ -1,28 +1,28 @@
-# nuls-dapp-nav
+# NULS-Tools
 
 ## Project setup
 ```
-npm install
+npm install or yarn
 ```
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+npm run serve-prod
 ```
 
 ### Compiles and minifies for production
 ```
-npm run build
+npm run build-prod
 ```
 
-### Run your tests
+### Run your electron
 ```
-npm run test
+npm run electron:serve
 ```
 
-### Lints and fixes files
+### Run your electron:build
 ```
-npm run lint
+npm run electron:build
 ```
 
 ### Customize configuration
