@@ -42,11 +42,11 @@
       <ul class="dapp-list">
         <li @click="toUrl('goblin','',0)">
           <img src="@/assets/img/goblin-logo.png" width="50">
-          <b class="font12">Goblin 助手<br/> 方便、快捷管理多账户 </b>
+          <b class="font12">{{$t('goblin.goblin0')}}<br/>{{$t('goblin.goblin1')}}</b>
         </li>
         <!-- <li @click="toUrl('guessNumber','',0)">-->
         <li>
-          <p>{{$t('home.home9')}} 测试中...</p>
+          <p>{{$t('home.home9')}}<span class="font12 fW400">({{$t('public.testing')}})</span></p>
           <b class="font12">{{$t('home.home10')}}</b>
         </li>
         <li>
@@ -59,6 +59,8 @@
 </template>
 
 <script>
+  import {shell} from 'electron';
+
   export default {
     created() {
     },
@@ -83,7 +85,8 @@
             name: urlName
           })
         } else {
-          window.open(urlName)
+          shell.openExternal(urlName);
+          //window.open(urlName)
         }
       },
 

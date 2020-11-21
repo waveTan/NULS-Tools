@@ -28,6 +28,7 @@
     "status": "状态",
     "alias": "别名",
     "copySuccess": "已经复制到剪切板",
+    "testing": "测试中...",
     "": ""
   },
   "status": {
@@ -245,5 +246,13 @@
     "tab36": "名称",
     "tab37": "数量",
     "tab38": "估值"
+  },
+  "goblin": {
+    "goblin0": "Goblin 助手",
+    "goblin1": "方便、快捷管理多账户",
+    "goblin2": "goblin",
+    "goblin3": "goblin",
+    "goblin4": "goblin",
+    "goblin": "goblin"
   }
 }

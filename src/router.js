@@ -7,8 +7,8 @@ export default new Router({
   mode: 'history',
   routes: [
     {
-      path: '/',
-      name: '/*',
+      path: '/*',
+      name: 'home',
       component: resolve => require(['@/views/Home'], resolve)
     },
     {
