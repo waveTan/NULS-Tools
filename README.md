@@ -24,11 +24,3 @@ npm run electron:serve
 ```
 npm run electron:build
 ```
-
-![](C:\Users\Administrator\Desktop\1.png)
-
-![](C:\Users\Administrator\Desktop\2.png)
-
-![](C:\Users\Administrator\Desktop\3.png)
-
-![](C:\Users\Administrator\Desktop\4.png)
