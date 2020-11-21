@@ -1,5 +1,5 @@
 <template>
-    <div class="goblin w1200">
+    <div class="goblin w1200" v-loading="goblinLoading">
         <div class="tc title">Goblin 助手</div>
         <el-table :data="addressList" style="width: 100%">
             <el-table-column label="地址" prop="addresss" align="center" width="120">
@@ -25,7 +25,7 @@
                         <ul class="titles">
                             <li class="fl">名称</li>
                             <li class="fl">ID</li>
-                            <li class="fl">挖矿收益率</li>
+                            <li class="fl">创建时间</li>
                             <li class="fl">等级</li>
                             <li class="fl">状态</li>
                             <li class="fl">矿场</li>
@@ -36,7 +36,7 @@
                         <ul v-for="(item,index) of props.row.legionsData" :key="index" class="cb">
                             <li class="fl">{{item.name}}</li>
                             <li class="fl">{{item.id}}</li>
-                            <li class="fl">{{item.miningSpeed}}</li>
+                            <li class="fl">{{item.createTime}}</li>
                             <li class="fl">{{item.level}}</li>
                             <li class="fl">{{item.status === '1' ? '挖矿':'空闲'}}</li>
                             <li class="fl">{{item.caveType}}</li>
@@ -120,6 +120,7 @@
     import nuls from 'nuls-sdk-js'
     import sdk from 'nuls-sdk-js/lib/api/sdk'
     import utils from 'nuls-sdk-js/lib/utils/utils'
+    import moment from 'moment'
     import Password from '@/components/PasswordBar'
     import {chainInfo} from '@/config.js'
     import {
@@ -129,7 +130,9 @@
         superLong,
         getArgs,
         Times,
-        Plus, tofix
+        Plus,
+        tofix,
+        getLocalTime
     } from '@/api/util'
     import {
         countFee,
@@ -182,17 +185,19 @@
                 typeRadio: 1,//默认黑铁矿
 
                 goblinSetInterval: null,//定时器
+                goblinLoading: true,//加载动画
             };
         },
         components: {
             Password,
         },
         created() {
-            this.addressList = accountList(0);
+            //this.addressList = accountList(0);
+            this.getAddressList();
             this.init();
         },
         mounted() {
-            this.getAddressList();
+
             this.goblinSetInterval = setInterval(() => {
                 this.getAddressList();
             }, 10000);
@@ -224,7 +229,8 @@
              * 获取账户列表
              */
             async getAddressList() {
-                for (let item of this.addressList) {
+                let newAddressData = accountList(0)
+                for (let item of newAddressData) {
                     item.addresss = superLong(item.address, 4);
                     /*item.balance = 0;
                     item.goblinBalance = 0;
@@ -265,7 +271,9 @@
                         item.myLegions = JSON.parse(myLegionsRes.data.result).length;
                         item.legionsData = JSON.parse(myLegionsRes.data.result);
                         for (let q of item.legionsData) {
+                            //console.log(q);
                             q.address = item.address;
+                            q.createTime = moment(getLocalTime(q.createTime * 1000)).format('MM-DD HH:mm');
                             let nameTwo = 'earnedOf';
                             let methodsInfoTwo = this.contractInfoBlackIron.methods.filter(obj => obj.name === nameTwo);
                             let descTwo = methodsInfoTwo[0].desc;
@@ -279,11 +287,11 @@
                                 q.goblinBlack = tofix(goblin, 2, -1) + '(GOBLIN)' + ' - ' + tofix(black, 2, -1) + '(' + q.caveType + ')';
                             }
                         }
-
                     }
-
-                    //console.log(this.addressList);
                 }
+                this.addressList = newAddressData;
+                this.goblinLoading = false;
+                //console.log(this.addressList);
             },
 
             /**
