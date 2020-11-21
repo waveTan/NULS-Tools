@@ -25,5 +25,10 @@ npm run electron:serve
 npm run electron:build
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+![](C:\Users\Administrator\Desktop\1.png)
+
+![](C:\Users\Administrator\Desktop\2.png)
+
+![](C:\Users\Administrator\Desktop\3.png)
+
+![](C:\Users\Administrator\Desktop\4.png)
