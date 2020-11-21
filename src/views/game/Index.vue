@@ -2,13 +2,14 @@
   <div class="guess w1200 cb">
     <h6 class="title font18 fW600">{{$t('public.recreation')}}</h6>
     <ul class="dapp-list">
-      <li @click="toUrl('guessNumber','',0)">
-        <p>{{$t('home.home9')}}</p>
-        <b class="font12">{{$t('home.home10')}}</b>
-      </li>
       <li @click="toUrl('goblin','',0)">
         <img src="@/assets/img/goblin-logo.png" width="50">
         <b class="font12">Goblin 助手<br/> 方便、快捷管理多账户 </b>
+      </li>
+      <!-- <li @click="toUrl('guessNumber','',0)">-->
+      <li>
+        <p>{{$t('home.home9')}} 测试中...</p>
+        <b class="font12">{{$t('home.home10')}}</b>
       </li>
       <li>
         <p>{{$t('home.home28')}}<span class="font12 fW400">({{$t('public.design')}}...)</span></p>
