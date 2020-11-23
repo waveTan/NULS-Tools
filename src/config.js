@@ -14,7 +14,7 @@ export const chainInfo =
 //api正式、测试网络的api
 export let API_URL = IS_RUN ? 'https://public1.nuls.io' : 'https://beta.wallet.nuls.io/api';
 //请求最迟时间
-export const API_TIME = IS_DEV ? '9000' : '5000';
+export const API_TIME = IS_DEV ? '9500' : '8000';
 //浏览器连接地址
 export const EXPLORER_URL = IS_RUN ? 'https://nulscan.io/' : 'http://beta.nulscan.io/';
 //开发者地址

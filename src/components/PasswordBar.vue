@@ -13,10 +13,9 @@
       </el-form-item>
     </el-form>
     <!-- <div class="red">此操作将消耗0.01NULS</div>-->
-    <!--    <el-checkbox v-model="keepRadio">
-          <span v-if="!keepRadio">记住密码五分钟</span>
-          <span v-else>{{timeLag/1000}}秒后清除记住密码</span>
-        </el-checkbox>-->
+    <el-checkbox v-model="keepRadio">
+      <span>记住密码</span>
+    </el-checkbox>
     <div slot="footer" class="dialog-footer">
       <el-button @click="passwordClose">{{$t('public.cancel')}}</el-button>
       <el-button type="success" @click="dialogSubmit('passwordForm')" id="passwordInfo">{{$t('public.confirm')}}
@@ -58,7 +57,7 @@
     },
     created() {
       if (process.env.NODE_ENV !== 'production') {
-        this.passwordForm.password = 'nuls123456'
+        //this.passwordForm.password = 'nuls123456'
       }
     },
     mounted() {
@@ -94,11 +93,16 @@
         this.keepRadio = false;
       },
       showPassword(boolean, address) {
+        //console.log(address);
         if (address) {
           this.addressList = accountList(0);
           this.addressInfo = this.addressList.filter(obj => obj.address === address)[0];
+          if (this.addressInfo.password) {
+            this.passwordForm.password = this.addressInfo.password;
+            this.keepRadio = true;
+          }
           //console.log(this.addressInfo);
-          if (this.addressInfo.keepStart) {
+          /*if (this.addressInfo.keepStart) {
             let newStart = new Date().getTime();
             this.timeLag = Number(Minus(newStart, this.addressInfo.keepStart));
             //console.log(this.timeLag);
@@ -110,7 +114,7 @@
               this.timeLag = 300000;
               this.keepRadio = false;
             }
-          }
+          }*/
         }
         this.passwordVisible = boolean;
 
@@ -119,17 +123,24 @@
       dialogSubmit(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            if (this.keepRadio && !this.addressInfo.keepStart) {
-              let keepStart = new Date().getTime();
+            if (this.keepRadio) {
+              //if (this.keepRadio && !this.addressInfo.keepStart) {
+              //let keepStart = new Date().getTime();
               for (let item of this.addressList) {
                 if (item.address === this.addressInfo.address) {
-                  item.keepStart = keepStart;
+                  //item.keepStart = keepStart;
                   item.password = this.passwordForm.password;
                 }
               }
-              localStorage.setItem('addressData', JSON.stringify(this.addressList));
+            } else {
+              for (let item of this.addressList) {
+                if (item.address === this.addressInfo.address) {
+                  item.password = '';
+                }
+              }
             }
-            this.$emit('passwordSubmit', this.passwordForm.password, this.keepRadio);
+            localStorage.setItem('addressData', JSON.stringify(this.addressList));
+            this.$emit('passwordSubmit', this.passwordForm.password);
             this.passwordVisible = false;
           } else {
             return false
