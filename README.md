@@ -24,3 +24,5 @@ npm run electron:serve
 ```
 npm run electron:build
 ```
+
+欢迎点赞、打赏（一个两也是爱） NULSd6HgYyfqhVRRimWAFecXmQCg7NsAZWave
