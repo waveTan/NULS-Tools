@@ -12,10 +12,10 @@ module.exports = {
     electronBuilder: {
       builderOptions: {
         win: {
-          icon: 'public/app.png'
+          icon: 'public/win.png'
         },
         mac: {
-          icon: 'public/app.png'
+          icon: 'public/mac.png'
         },
       }
     }

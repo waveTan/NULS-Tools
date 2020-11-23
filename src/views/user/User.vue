@@ -20,8 +20,8 @@
           </el-table-column>
           <el-table-column label="操作" align="center" width="370">
             <template slot-scope="scope">
-              <label class="click tab_bn" @click="editPassword(scope.row)">修改密码</label>
-              <span class="tab_line">|</span>
+              <!--<label class="click tab_bn" @click="editPassword(scope.row)">修改密码</label>
+              <span class="tab_line">|</span>-->
               <label class="click tab_bn" @click="backAddress(scope.row)">备份</label>
               <span class="tab_line">|</span>
               <label class="click tab_bn" @click="deleteAddress(scope.row)">移除</label>
