@@ -235,7 +235,6 @@
         if (isPassword.success) {
           this.keystoreInfo.address = isPassword.address;
           let addressDataRes = await addressSetStorage(this.keystoreInfo);
-          //console.log(addressDataRes);
           if (addressDataRes.success) {
             this.toUrl('user');
           }
@@ -306,7 +305,7 @@
             name: urlName
           })
         } else {
-          console.log(name,parameter)
+          console.log(name, parameter)
         }
       },
     }

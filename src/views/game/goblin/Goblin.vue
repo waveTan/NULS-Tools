@@ -4,17 +4,19 @@
     <el-table :data="addressList" row-key="address" style="width: 100%">
       <el-table-column label="地址" prop="addresss" align="center" width="120">
       </el-table-column>
-      <el-table-column label="别名" prop="alias" align="center" width="120">
+      <el-table-column label="别名" prop="alias" align="center" width="80">
       </el-table-column>
-      <el-table-column label="余额(nuls)" prop="balance" align="center" width="150">
+      <el-table-column label="余额(nuls)" prop="balance" align="center" width="130">
       </el-table-column>
-      <el-table-column label="余额(goblin)" prop="goblinBalance" align="center" width="150">
+      <el-table-column label="余额(goblin)" prop="goblinBalance" align="center" width="130">
       </el-table-column>
-      <el-table-column label="余额(black_iron)" prop="blackBalance" align="center" width="150">
+      <el-table-column label="余额(black_iron)" prop="blackBalance" align="center" width="130">
       </el-table-column>
-      <el-table-column label="余额(tungsten)" prop="tungstenBalance" align="center" width="150">
+      <el-table-column label="余额(tungsten)" prop="tungstenBalance" align="center" width="130">
       </el-table-column>
-      <el-table-column label="余额(platinum)" prop="platinumBalance" align="center" width="150">
+      <el-table-column label="余额(platinum)" prop="platinumBalance" align="center" width="130">
+      </el-table-column>
+      <el-table-column label="余额(obsidan)" prop="obsidianBalance" align="center" width="130">
       </el-table-column>
 
       <el-table-column label="我的军团" prop="myLegions" align="center">
@@ -157,6 +159,9 @@
         contractAddressPlacinum: 'NULSd6Hgocjz53UsmRkGJuQiXz993S3vosu81',//合约地址(铂金)
         contractInfoPlacinum: {},//合约详情(铂金)
 
+        contractAddressObsidan: 'NULSd6Hgyb8Tfy9vQcf1Z4QGqdRFkzfYR1M5o',//合约地址(黑耀)
+        contractInfoObsidan: {},//合约详情(黑耀)
+
         contractAddressCollection: 'NULSd6HgnScefpS1jGFvJZeNPnFRtAebwVpJr',//合约地址(归集)
         contractInfoCollection: {},//合约详情(归集)
 
@@ -238,6 +243,12 @@
         if (resDataPlacinum.success) {
           this.contractInfoPlacinum = resDataPlacinum.data;
         }
+
+        let resDataObsidan = await this.contractInfoByAddress(this.contractAddressObsidan);
+        if (resDataObsidan.success) {
+          this.contractInfoObsidan = resDataObsidan.data;
+        }
+
       },
 
       /**
@@ -267,6 +278,9 @@
               } else if (newArr[1] === 'platinum') {
                 let blackInfo = tokenList.data.list.filter(obj => obj.tokenName === newArr[1]);
                 item.platinumBalance = divisionDecimals(blackInfo[0].balance, blackInfo[0].decimals);
+              } else if (newArr[1] === 'obsidan') {
+                let blackInfo = tokenList.data.list.filter(obj => obj.tokenName === newArr[1]);
+                item.obsidianBalance = divisionDecimals(blackInfo[0].balance, blackInfo[0].decimals);
               }
             }
           }
@@ -425,7 +439,7 @@
             this.assetsList.push(item)
           } else if (item.tokenName === 'tungsten') {
             this.assetsList.push(item)
-          } else if (item.tokenName === 'platinum') {
+          } else if (item.tokenName === 'obsidan') {
             this.assetsList.push(item)
           }
         }
@@ -468,6 +482,9 @@
             } else if (this.guijiForm.assets === 'platinum') {
               contractInfo = this.contractInfoPlacinum;
               contractAddress = this.contractAddressPlacinum
+            } else if (this.guijiForm.assets === 'obsidan') {
+              contractInfo = this.contractInfoObsidan;
+              contractAddress = this.contractAddressObsidan
             }
 
             let name = 'transfer';

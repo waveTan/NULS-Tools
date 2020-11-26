@@ -284,7 +284,6 @@ export function addressSetStorage(newAddressInfo) {
     obj[next.address] ? '' : obj[next.address] = true && item.push(next);
     return item
   }, []);
-
   if (newAddressList.length !== 0) {
     let isAddress = false;
     for (let item of newAddressList) {

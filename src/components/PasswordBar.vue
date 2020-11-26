@@ -26,7 +26,7 @@
 
 <script>
 
-  import {IsPC, accountList, Minus} from '@/api/util'
+  import {IsPC, accountList} from '@/api/util'
 
   export default {
     props: {},
@@ -94,27 +94,13 @@
       },
       showPassword(boolean, address) {
         //console.log(address);
+        this.addressList = accountList(0);
         if (address) {
-          this.addressList = accountList(0);
           this.addressInfo = this.addressList.filter(obj => obj.address === address)[0];
           if (this.addressInfo.password) {
             this.passwordForm.password = this.addressInfo.password;
             this.keepRadio = true;
           }
-          //console.log(this.addressInfo);
-          /*if (this.addressInfo.keepStart) {
-            let newStart = new Date().getTime();
-            this.timeLag = Number(Minus(newStart, this.addressInfo.keepStart));
-            //console.log(this.timeLag);
-            //60000 *5 =300000
-            if (this.timeLag < 300000) {
-              this.keepRadio = true;
-              this.passwordForm.password = this.addressInfo.password;
-            } else {
-              this.timeLag = 300000;
-              this.keepRadio = false;
-            }
-          }*/
         }
         this.passwordVisible = boolean;
 
@@ -139,6 +125,7 @@
                 }
               }
             }
+            //console.log(this.addressList);
             localStorage.setItem('addressData', JSON.stringify(this.addressList));
             this.$emit('passwordSubmit', this.passwordForm.password);
             this.passwordVisible = false;
