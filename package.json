@@ -1,6 +1,6 @@
 {
   "name": "NULS-Tools",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "serve-prod": "cross-env NULS_ENV=prod vue-cli-service serve src/main",

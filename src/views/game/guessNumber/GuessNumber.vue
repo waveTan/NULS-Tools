@@ -484,14 +484,14 @@
           return;
         }
         let contractInfo = {
-          value: 201000000,
+          value: 202000000,
           address: this.jackpotInfo.address,
           methodName: 'join',
           methodDesc: '(Long gameId, Integer number) return void',
           args: [this.gameCurrentInfo.id, Number(this.numberValue)], //[gameId,number]
         };
         let contractCallDataInfo = await this.imputedContractCallGas(accountInfo.address, contractInfo.value, contractInfo.address, contractInfo.methodName, contractInfo.methodDesc, contractInfo.args);
-        //console.log(contractCallDataInfo);
+        console.log(contractCallDataInfo);
         let contractCallFee = Number(Times(contractCallDataInfo.data.gasLimit, contractCallDataInfo.data.price));
         let transferInfo = {
           fromAddress: accountInfo.address,
@@ -502,7 +502,7 @@
           fee: Number(Plus(100000, contractCallFee)),
           value: contractInfo.value
         };
-        //console.log(transferInfo);
+        console.log(transferInfo);
         let remark = '';
         let balanceInfo = await getBalanceOrNonceByAddress(accountInfo.address, chainInfo.chainId, chainInfo.assetsId);
         //console.log(balanceInfo);
@@ -512,14 +512,14 @@
         }
         //交易组装
         let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 16);
-        //console.log(inOrOutputs);
+        console.log(inOrOutputs);
         let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, contractCallDataInfo.data);
         //console.log(tAssemble);
         let txhex = await nuls.transactionSerialize(newAccountInfo.pri, newAccountInfo.pub, tAssemble);
         //console.log(txhex);
         //验证并广播交易
         let validateTxhex = await validateAndBroadcast(txhex);
-        //console.log(validateTxhex);
+        console.log(validateTxhex);
         if (!validateTxhex.success) {
           this.$message({message: this.$t('tips.tips14') + JSON.stringify(validateTxhex.data), type: 'error'});
         } else {
@@ -596,9 +596,9 @@
        * @param args
        */
       async imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args) {
-        //console.log(sender, value, contractAddress, methodName, methodDesc, args);
+        console.log(sender, value, contractAddress, methodName, methodDesc, args);
         let resData = await this.$post('/', 'imputedContractCallGas', [sender, value, contractAddress, methodName, methodDesc, args]);
-        //console.log(resData);
+        console.log(resData);
         if (!resData.hasOwnProperty('result')) {
           console.log("预估调用合约交易的gas错误");
           return {success: false, data: resData}
