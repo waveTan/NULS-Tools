@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray cb user-list">
+  <div class="bg-gray cb user-list" v-loading="userLoading">
     <div class="pc w1200">
       <h3 class="title tc">账户管理</h3>
       <div class="w1400">
@@ -81,6 +81,7 @@
         remarkInfo: '',//备注信息
         prefix: 'TNVT',//地址前缀
         isShort: false,
+        userLoading:true,//加载动画
       };
     },
     components: {
@@ -120,6 +121,7 @@
           }
         }
         this.addressList = newAccountData;
+        this.userLoading = false;
         //console.log(this.addressList);
 
         //如果没有账户跳转到创建地址界面
@@ -166,7 +168,7 @@
         this.selectAddressInfo = rowInfo;
         this.$router.push({
           name: "backupsAddress",
-          query: {}
+          query: {address:rowInfo.address}
         })
       },
 

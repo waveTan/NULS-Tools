@@ -2,9 +2,9 @@
     <div class="goblin w1200" v-loading="goblinLoading">
         <div class="tc title">Goblin 助手</div>
         <el-table :data="addressList" row-key="address" style="width: 100%">
-            <el-table-column label="地址" prop="addresss" align="center" width="120">
+            <el-table-column label="地址" prop="addresss" align="center" width="150">
             </el-table-column>
-            <el-table-column label="别名" prop="alias" align="center" width="80">
+            <el-table-column label="别名" prop="alias" align="center" width="50">
             </el-table-column>
             <el-table-column label="余额(nuls)" prop="balance" align="center" width="130">
             </el-table-column>
@@ -16,10 +16,10 @@
             </el-table-column>
             <el-table-column label="余额(platinum)" prop="platinumBalance" align="center" width="130">
             </el-table-column>
-            <el-table-column label="余额(obsidan)" prop="obsidianBalance" align="center" width="130">
+            <el-table-column label="余额(obsidian)" prop="obsidianBalance" align="center" width="130">
             </el-table-column>
 
-            <el-table-column label="我的军团" prop="myLegions" align="center">
+            <el-table-column label="我的军团" prop="myLegions" align="center" width="80">
             </el-table-column>
             <el-table-column type="expand">
                 <template slot-scope="props">
@@ -268,7 +268,7 @@
             async getAddressList() {
                 let newAddressData = accountList(0);
                 for (let item of newAddressData) {
-                    item.addresss = superLong(item.address, 4);
+                    item.addresss = superLong(item.address, 6);
                     let addressInfo = await this.getAddressInfoByNode(item.address);
                     if (addressInfo.success) {
                         item.balance = divisionDecimals(addressInfo.data.balance);
@@ -573,7 +573,7 @@
                 } else if (this.typeRadio === 3) {
                     methodsInfo[0].params[3].value = 'Platinum';
                 } else if (this.typeRadio === 4) {
-                    methodsInfo[0].params[4].value = 'Obsidan';
+                    methodsInfo[0].params[3].value = 'Obsidian';
                 }
                 let newArgs = getArgs(methodsInfo[0].params);
                 this.chainMethodCall(this.sentInfo.address, methodsInfo[0], this.contractAddress, 0, newArgs);
@@ -670,7 +670,13 @@
              */
             async validateContractCall(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args) {
                 //console.log(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args);
-                args[0] = this.contractAddressNew;
+                if (methodName === 'transfer' || methodName === 'levelUp' || methodName === 'claimEarned') {
+                    console.log(args);
+                } else {
+                    args[0] = this.contractAddressNew;
+                }
+                /*console.log(methodName);
+                console.log(args);*/
                 return await this.$post('/', 'validateContractCall', [sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args])
                     .then((response) => {
                         //console.log(response);
@@ -790,7 +796,14 @@
                 let passwordInfo = await passwordVerification(newAddressInfo[0], password);
                 //console.log(passwordInfo);
                 if (!passwordInfo.success) {
-                    this.$message({message: this.$t('address.address13'), type: 'error', duration: 3000});
+                    this.$message({message: this.$t('tips.tips4'), type: 'error', duration: 3000});
+                    for (let item of this.addressList) {
+                        if (item.address === newAddressInfo[0].address) {
+                            item.password = '';
+                        }
+                    }
+                    //console.log(this.addressList);
+                    localStorage.setItem('addressData', JSON.stringify(this.addressList));
                     return;
                 }
 
