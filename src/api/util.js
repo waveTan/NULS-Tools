@@ -1,6 +1,8 @@
 import {BigNumber} from 'bignumber.js'
 import copy from 'copy-to-clipboard'
 import {EXPLORER_URL} from '@/config'
+//import openner from "./opener-web";
+import openner from "./opener-desktop";
 
 /**
  * 10的N 次方
@@ -284,6 +286,8 @@ export function addressSetStorage(newAddressInfo) {
     obj[next.address] ? '' : obj[next.address] = true && item.push(next);
     return item
   }, []);
+
+  //console.log(newAddressList.length);
   if (newAddressList.length !== 0) {
     let isAddress = false;
     for (let item of newAddressList) {
@@ -317,14 +321,10 @@ export function addressSetStorage(newAddressInfo) {
  */
 export function accountList(type) {
   let addressList = localStorage.hasOwnProperty('addressData') ? JSON.parse(localStorage.getItem('addressData')) : [];
-  if (addressList) {
-    if (type === 0) {
-      return addressList
-    } else {
-      return localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : '';
-    }
-  } else {
+  if (type === 0) {
     return addressList
+  } else {
+    return localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : '';
   }
 }
 
@@ -360,4 +360,14 @@ export function getArgs(parameterList) {
   } else {
     return {allParameter: true, args: newArgs};
   }
+}
+
+/**
+ * @disc: 在浏览器中打开 url
+ * @params: newUrl
+ * @date: 2020-11-30 18:19
+ * @author: Wave
+ */
+export function openConnection(newUrl) {
+  openner(newUrl);
 }

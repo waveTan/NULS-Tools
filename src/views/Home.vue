@@ -44,9 +44,8 @@
           <img src="@/assets/img/goblin-logo.png" width="50">
           <b class="font12">{{$t('goblin.goblin0')}}<br/>{{$t('goblin.goblin1')}}</b>
         </li>
-        <!-- <li @click="toUrl('guessNumber','',0)">-->
-        <li>
-          <p>{{$t('home.home9')}}<span class="font12 fW400">({{$t('public.testing')}})</span></p>
+        <li @click="toUrl('guessNumber','',0)">
+          <p>{{$t('home.home9')}}</p>
           <b class="font12">{{$t('home.home10')}}</b>
         </li>
         <li>
@@ -59,7 +58,7 @@
 </template>
 
 <script>
-  import {shell} from 'electron';
+  import {openConnection} from '@/api/util'
 
   export default {
     created() {
@@ -85,8 +84,7 @@
             name: urlName
           })
         } else {
-          shell.openExternal(urlName);
-          //window.open(urlName)
+          openConnection(urlName);
         }
       },
 

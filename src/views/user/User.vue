@@ -26,7 +26,7 @@
               <span class="tab_line">|</span>
               <label class="click tab_bn" @click="deleteAddress(scope.row)">移除</label>
               <span class="tab_line">|</span>
-              <el-link disabled v-if="scope.row.isItem">进入</el-link>
+              <el-link disabled v-if="scope.row.isCurrent">进入</el-link>
               <label class="click tab_bn" @click="selectionAddress(scope.row)" v-else>进入</label>
             </template>
           </el-table-column>
@@ -81,7 +81,7 @@
         remarkInfo: '',//备注信息
         prefix: 'TNVT',//地址前缀
         isShort: false,
-        userLoading:true,//加载动画
+        userLoading: true,//加载动画
       };
     },
     components: {
@@ -168,7 +168,7 @@
         this.selectAddressInfo = rowInfo;
         this.$router.push({
           name: "backupsAddress",
-          query: {address:rowInfo.address}
+          query: {address: rowInfo.address}
         })
       },
 
@@ -199,21 +199,23 @@
        **/
       selectionAddress(rowInfo) {
         //console.log(rowInfo);
-        for (let item  of this.addressList) {
-          //清除选中
-          if (item.isItem) {
-            item.isItem = false;
-          }
+        let newAccountList = accountList(0);
+        for (let item  of newAccountList) {
           //添加选中
+          item.isCurrent = false;
           if (item.address === rowInfo.address) {
-            item.isItem = true;
+            item.isCurrent = true;
+            for (let k of this.addressList) {
+              if (k.address === rowInfo.address) {
+                k.isCurrent = true;
+              } else {
+                k.isCurrent = false;
+              }
+            }
             localStorage.setItem('accountInfo', JSON.stringify(item));
           }
         }
-        localStorage.setItem("addressData", JSON.stringify(this.addressList));
-        this.$router.push({
-          name: 'home',
-        })
+        localStorage.setItem("addressData", JSON.stringify(newAccountList));
       },
 
       /**
@@ -235,7 +237,7 @@
             this.toUrl('newAddress', '');
             localStorage.removeItem('accountInfo');
           } else {
-            this.addressList[0].isItem = true;
+            this.addressList[0].isCurrent = true;
             localStorage.setItem('accountInfo', JSON.stringify(this.addressList[0]));
           }
           this.selectAddressInfo = this.addressList[0];

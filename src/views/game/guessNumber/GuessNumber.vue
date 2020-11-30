@@ -24,17 +24,18 @@
             </el-tooltip>
             {{$t('guessNum.guessNum6')}}
           </p>
-          <p>2、{{$t('guessNum.guessNum7')}} <span class="fred fW600">2.011</span> NULS</p>
+          <p>2、{{$t('guessNum.guessNum7')}} <span class="fred fW600">2.1 </span>NULS + {{$t('locking.locking91')}} </p>
           <p>
             3、{{$t('guessNum.guessNum8')}}
-            <span class="fyellow fW600"> 20 </span>
+            <span class="fyellow fW600"> 60 </span>
             {{$t('guessNum.guessNum9')}}
-            <span class="fyellow fW600"> 5 </span>
+            <span class="fyellow fW600"> 10 </span>
             {{$t('guessNum.guessNum10')}}
           </p>
           <p>
             4、{{$t('guessNum.guessNum11')}}
-            <span class="click">{{$t('guessNum.guessNum12')}}</span>
+            <span class="click"
+                  @click="toUrl('','https://www.8btc.com/article/374354',1)">{{$t('guessNum.guessNum12')}}</span>
             {{$t('guessNum.guessNum13')}}
           </p>
         </div>
@@ -208,19 +209,29 @@
   import sdk from 'nuls-sdk-js/lib/api/sdk'
   import utils from 'nuls-sdk-js/lib/utils/utils'
   import {chainInfo, API_URL} from '@/config'
-  import {divisionDecimals, Times, Plus, getLocalTime, superLong, connectToExplorer, IsPC} from '@/api/util'
+  import {
+    divisionDecimals,
+    Times,
+    Plus,
+    getLocalTime,
+    superLong,
+    connectToExplorer,
+    IsPC,
+    accountList, openConnection
+  } from '@/api/util'
   import {
     passwordVerification,
     getBalanceOrNonceByAddress,
     inputsOrOutputs,
-    validateAndBroadcast
+    validateAndBroadcast,
+    //validateTx
   } from '@/api/requestData'
   import Password from '@/components/PasswordBar'
 
   export default {
     data() {
       return {
-        accontInfo: localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : {}, //账户信息
+        accontInfo: {}, //账户信息
         config: {
           //url: process.env.NODE_ENV !== 'production' ? 'http://192.168.1.40:81/' : '/',
           url: process.env.NODE_ENV !== 'production' ? 'http://111.229.189.176/' : '/',
@@ -259,11 +270,13 @@
         pageIndex: 1,  //当前页
         pageTotal: 0,//总页数
         guessNumberInterval: null,//定时器
+        guessNumberInterval2: null,//定时器
       }
     },
 
     created() {
       this.getGameContract();
+      this.accontInfo = accountList(1);
       setTimeout(() => {
         if (this.jackpotInfo.address) {
           this.gameCurrent();
@@ -288,9 +301,14 @@
         this.gameCurrent();
       }, 5000);
 
+      this.guessNumberInterval2 = setInterval(() => {
+        this.accontInfo = accountList(1);
+      }, 1000);
+
     },
     destroyed() {
       clearInterval(this.guessNumberInterval);
+      clearInterval(this.guessNumberInterval2);
     },
     watch: {},
     components: {
@@ -431,7 +449,7 @@
           return
         }
         let contractInfo = {
-          value: 201000000,
+          value: 210000000,
           address: this.jackpotInfo.address,
           methodName: 'join',
           methodDesc: '(Long gameId, Integer number) return void',
@@ -440,7 +458,7 @@
         let validateContractCallRes = await this.validateContractCall(this.accontInfo.address, contractInfo.value, sdk.CONTRACT_MAX_GASLIMIT, sdk.CONTRACT_MINIMUM_PRICE, contractInfo.address, contractInfo.methodName, contractInfo.methodDesc, contractInfo.args);
         //console.log(validateContractCallRes);
         if (validateContractCallRes.success) {
-          this.$refs.password.showPassword(true);
+          this.$refs.password.showPassword(true, this.accontInfo.address);
         }
       },
 
@@ -456,6 +474,7 @@
        * @param args
        */
       async validateContractCall(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args) {
+        //console.log(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args);
         try {
           let resData = await this.$post('/', 'validateContractCall', [sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args]);
           //console.log(resData);
@@ -484,14 +503,14 @@
           return;
         }
         let contractInfo = {
-          value: 202000000,
+          value: 210000000,
           address: this.jackpotInfo.address,
           methodName: 'join',
           methodDesc: '(Long gameId, Integer number) return void',
           args: [this.gameCurrentInfo.id, Number(this.numberValue)], //[gameId,number]
         };
         let contractCallDataInfo = await this.imputedContractCallGas(accountInfo.address, contractInfo.value, contractInfo.address, contractInfo.methodName, contractInfo.methodDesc, contractInfo.args);
-        console.log(contractCallDataInfo);
+        //console.log(contractCallDataInfo);
         let contractCallFee = Number(Times(contractCallDataInfo.data.gasLimit, contractCallDataInfo.data.price));
         let transferInfo = {
           fromAddress: accountInfo.address,
@@ -502,7 +521,7 @@
           fee: Number(Plus(100000, contractCallFee)),
           value: contractInfo.value
         };
-        console.log(transferInfo);
+        //console.log(transferInfo);
         let remark = '';
         let balanceInfo = await getBalanceOrNonceByAddress(accountInfo.address, chainInfo.chainId, chainInfo.assetsId);
         //console.log(balanceInfo);
@@ -512,14 +531,16 @@
         }
         //交易组装
         let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 16);
-        console.log(inOrOutputs);
+        //console.log(inOrOutputs);
         let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, contractCallDataInfo.data);
         //console.log(tAssemble);
         let txhex = await nuls.transactionSerialize(newAccountInfo.pri, newAccountInfo.pub, tAssemble);
         //console.log(txhex);
         //验证并广播交易
+        /*let validateTxRes = await  validateTx(txhex);
+        console.log(validateTxRes);*/
         let validateTxhex = await validateAndBroadcast(txhex);
-        console.log(validateTxhex);
+        //console.log(validateTxhex);
         if (!validateTxhex.success) {
           this.$message({message: this.$t('tips.tips14') + JSON.stringify(validateTxhex.data), type: 'error'});
         } else {
@@ -596,9 +617,9 @@
        * @param args
        */
       async imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args) {
-        console.log(sender, value, contractAddress, methodName, methodDesc, args);
+        //console.log(sender, value, contractAddress, methodName, methodDesc, args);
         let resData = await this.$post('/', 'imputedContractCallGas', [sender, value, contractAddress, methodName, methodDesc, args]);
-        console.log(resData);
+        //console.log(resData);
         if (!resData.hasOwnProperty('result')) {
           console.log("预估调用合约交易的gas错误");
           return {success: false, data: resData}
@@ -779,8 +800,13 @@
             name: urlName
           })
         } else {
-          let newUrl = connectToExplorer(urlName, parameter);
-          window.open(newUrl)
+          let newUrl = '';
+          if (urlName) {
+            newUrl = connectToExplorer(urlName, parameter);
+          } else {
+            newUrl = parameter
+          }
+          openConnection(newUrl);
         }
       },
     }
