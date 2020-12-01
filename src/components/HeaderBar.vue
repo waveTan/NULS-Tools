@@ -46,7 +46,9 @@
 
       <div class="address-info" v-show="currentAccount.address">
         <div class="ad tr">
-          {{currentAccount.addresss}}<span v-show="alias">({{alias}})</span>
+          {{currentAccount.addresss}}{{currentAccount.node}}
+          <span v-if="alias">({{alias}})</span>
+          <span v-else-if="currentAccount.note">({{currentAccount.note}})</span>
         </div>
         <div class="yue tr">可用：
           <font v-if="!balanceLoading">{{balance}}</font>

@@ -7,18 +7,24 @@
           <i class="el-icon-plus click" @click="toUrl('newAddress')"></i>
         </div>
         <el-table :data="addressList" stripe border>
-          <el-table-column prop="address" label="地址" align="center" min-width="335">
+          <el-table-column prop="address" label="地址" align="center" min-width="340">
           </el-table-column>
           <el-table-column :label="$t('public.alias')" align="center" width="150">
             <template slot-scope="scope">
               <span>{{scope.row.alias }}</span>
             </template>
           </el-table-column>
+          <el-table-column label="备注" align="center" width="150">
+            <template slot-scope="scope">
+              <span v-if="scope.row.note" class="click" @click="setNote(scope.row)">{{scope.row.note}}</span>
+              <i v-else class="el-icon-edit click" @click="setNote(scope.row)"></i>
+            </template>
+          </el-table-column>
           <el-table-column prop="totalLock" label="锁定" align="center" width="150">
           </el-table-column>
           <el-table-column prop="balance" label="可用余额" align="center" width="150">
           </el-table-column>
-          <el-table-column label="操作" align="center" width="370">
+          <el-table-column label="操作" align="center" width="250">
             <template slot-scope="scope">
               <!--<label class="click tab_bn" @click="editPassword(scope.row)">修改密码</label>
               <span class="tab_line">|</span>-->
@@ -26,7 +32,7 @@
               <span class="tab_line">|</span>
               <label class="click tab_bn" @click="deleteAddress(scope.row)">移除</label>
               <span class="tab_line">|</span>
-              <el-link disabled v-if="scope.row.isCurrent">进入</el-link>
+              <label disabled v-if="scope.row.isCurrent">进入</label>
               <label class="click tab_bn" @click="selectionAddress(scope.row)" v-else>进入</label>
             </template>
           </el-table-column>
@@ -60,6 +66,21 @@
 
     </div>
 
+    <el-dialog title="设置备注" :visible.sync="noteDialog" :close-on-click-modal="false" :close-on-press-escape="false">
+      <el-form :model="noteForm" :rules="rulesForm" ref="noteForm">
+        <el-form-item label="地址">
+          <el-input v-model="noteForm.address" autocomplete="off" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="备注" prop="note">
+          <el-input v-model="noteForm.note" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer tc">
+        <el-button @click="resetForm('noteForm')">取 消</el-button>
+        <el-button type="primary" @click="submitForm('noteForm')">确 定</el-button>
+      </div>
+    </el-dialog>
+
     <Password ref="password" @passwordSubmit="passSubmit">
     </Password>
   </div>
@@ -82,7 +103,17 @@
         prefix: 'TNVT',//地址前缀
         isShort: false,
         userLoading: true,//加载动画
-      };
+        noteDialog: false,//设置备注
+        noteForm: {
+          address: '',
+          note: ''
+        },
+        rulesForm: {
+          note: [
+            {min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur'}
+          ],
+        }
+      }
     },
     components: {
       Password
@@ -150,6 +181,71 @@
           .catch((error) => {
             return {success: false, data: error}
           });
+      },
+
+      /**
+       * @disc: 设置备注
+       * @params:
+       * @date: 2020-12-01 15:52
+       * @author: Wave
+       */
+      setNote(addressInfo) {
+        //console.log(addressInfo);
+        if (!addressInfo.note) {
+          addressInfo.note = ''
+        }
+        this.selectAddressInfo = addressInfo;
+        this.noteForm.address = this.selectAddressInfo.address;
+        this.noteForm.note = this.selectAddressInfo.note;
+        this.noteDialog = true;
+      },
+
+      /**
+       * @disc: 设置备注提交
+       * @params:
+       * @date: 2020-12-01 15:54
+       * @author: Wave
+       */
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            console.log(this.noteForm);
+            console.log(this.addressList);
+            for (let item of this.addressList) {
+              if (item.address === this.selectAddressInfo.address) {
+                item.note = this.noteForm.note
+              }
+            }
+
+            let newAccountData = accountList(0);
+            for (let item of newAccountData) {
+              if (item.address === this.selectAddressInfo.address) {
+                item.note = this.noteForm.note
+              }
+            }
+            localStorage.setItem('addressData', JSON.stringify(newAccountData));
+
+            let selectAddressInfo = accountList(1);
+            if (selectAddressInfo.address === this.selectAddressInfo.address) {
+              selectAddressInfo.note = this.noteForm.note;
+              localStorage.setItem('accountInfo', JSON.stringify(selectAddressInfo));
+            }
+            this.noteDialog = false;
+          } else {
+            return false;
+          }
+        });
+      },
+
+      /**
+       * @disc: 取消设置备注
+       * @params:
+       * @date: 2020-12-01 15:54
+       * @author: Wave
+       */
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+        this.noteDialog = false;
       },
 
       /**
