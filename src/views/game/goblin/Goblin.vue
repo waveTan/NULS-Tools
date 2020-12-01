@@ -101,7 +101,7 @@
         <el-form-item label="to地址" prop="toAddress">
           <el-select v-model="guijiForm.toAddress" placeholder="">
             <el-option v-for="(item,index) in addressList" :key="index"
-                       :label="item.address + '('+item.note+')'"
+                       :label="item.labels"
                        :value="item.address">
             </el-option>
           </el-select>
@@ -156,7 +156,7 @@
     validateAndBroadcast,
     passwordVerification,
     getBalanceOrNonceByAddress,
-    validateTx
+    //validateTx
   } from '@/api/requestData'
 
   export default {
@@ -291,6 +291,14 @@
         let newAddressData = accountList(0);
         for (let item of newAddressData) {
           item.addresss = superLong(item.address, 6);
+
+          if(!item.note || item.note.toString() ==='undefined'){
+            item.note ='';
+            item.labels = item.address;
+          }else {
+            item.labels = item.address+ '('+item.note+')';
+          }
+
           let addressInfo = await this.getAddressInfoByNode(item.address);
           if (addressInfo.success) {
             item.balance = parseFloat(tofix(divisionDecimals(addressInfo.data.balance), 4, -1));
@@ -655,6 +663,7 @@
        */
       async guiji(rowInfo) {
         //console.log(rowInfo);
+        this.guiDialog = true;
         this.guijiForm.assets = '';
         this.guijiForm.amount = '';
         this.guijiForm.toAddress = '';
@@ -689,7 +698,6 @@
           this.contractInfoCollection = resDataTungsten.data;
         }
 
-        this.guiDialog = true;
       },
 
       /**
