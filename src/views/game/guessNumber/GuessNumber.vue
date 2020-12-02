@@ -233,8 +233,7 @@
       return {
         accontInfo: {}, //账户信息
         config: {
-          //url: process.env.NODE_ENV !== 'production' ? 'http://192.168.1.40:81/' : '/',
-          url: process.env.NODE_ENV !== 'production' ? 'http://111.229.189.176/' : '/',
+          url: process.env.NODE_ENV !== 'production' ? 'http://111.229.189.176/' : 'http://111.229.189.176/',
         },//配置信息
         jackpotInfo: {
           address: '',//合约地址

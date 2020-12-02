@@ -22,6 +22,11 @@ export default new Router({
       component: resolve => require(['@/views/user/User.vue'], resolve)
     },
     {
+      path: '/set',
+      name: 'set',
+      component: resolve => require(['@/views/user/Set.vue'], resolve)
+    },
+    {
       path: '/user/NewAddress',
       name: 'newAddress',
       component: resolve => require(['@/views/user/NewAddress.vue'], resolve)

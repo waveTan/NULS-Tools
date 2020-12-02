@@ -161,8 +161,8 @@
         importAddressInfo: {},//私钥导入地址信息
 
         newAddressForm: {
-          pass: 'nuls123456',
-          checkPass: 'nuls123456',
+          pass: '',
+          checkPass: '',
           agreement: false,
         },
         newAddressRules: {
