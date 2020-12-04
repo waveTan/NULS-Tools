@@ -57,19 +57,19 @@
                   <el-button>{{item.level}}</el-button>
                 </el-tooltip>-->
               </li>
-              <li class="fl">{{item.status === '1' ? '挖矿':'空闲'}}</li>
+              <li class="fl">{{item.status === 'mining' ? '挖矿':'空闲'}}</li>
               <li class="fl">{{item.caveType}}</li>
               <li class="fl w100">{{item.goblinBlack}}</li>
               <li class="fl w200">
-                <el-button type="text" :disabled="item.status === '1'" @click="upgrade(item)">升级
+                <el-button type="text" :disabled="item.status === 'mining'" @click="upgrade(item)">升级
                 </el-button>
-                <el-button type="text" :disabled="item.status === '1'" @click="sent(item)">派出
+                <el-button type="text" :disabled="item.status === 'mining'" @click="sent(item)">派出
                 </el-button>
-                <el-button type="text" :disabled="item.status !== '1'" @click="acquire(item)">获取
+                <el-button type="text" :disabled="item.status !== 'mining'" @click="acquire(item)">获取
                 </el-button>
-                <el-button type="text" :disabled="item.status !== '1'" @click="backs(item)">迁回
+                <el-button type="text" :disabled="item.status !== 'mining'" @click="backs(item)">迁回
                 </el-button>
-                <el-button type="text" :disabled="item.status !== '1'" @click="acquireAndBacks(item)">
+                <el-button type="text" :disabled="item.status !== 'mining'" @click="acquireAndBacks(item)">
                   获取并迁回
                 </el-button>
               </li>
@@ -187,6 +187,9 @@
         contractAddressCollection: 'NULSd6HgnScefpS1jGFvJZeNPnFRtAebwVpJr',//合约地址(归集)
         contractInfoCollection: {},//合约详情(归集)
 
+        contractAddressV0: 'NULSd6HgoncSA11HYE1nQ2VLVu64XWfGHcsw6',//合约地址(V0 升级)
+        contractInfoV0: {},//合约详情(V0 升级)
+
         contractCallData: {},//调用合约data
 
         balanceInfo: {},//余额信息
@@ -230,7 +233,7 @@
     mounted() {
 
       this.goblinSetInterval = setInterval(() => {
-        this.getAddressList();
+        //this.getAddressList();
       }, 10000);
     },
     beforeDestroy() {
@@ -282,6 +285,11 @@
           this.contractInfoNew = resDataNew.data;
         }
 
+        let resDataV0 = await this.contractInfoByAddress(this.contractAddressV0);
+        if (resDataV0.success) {
+          this.contractInfoV0 = resDataV0.data;
+        }
+
       },
 
       /**
@@ -292,11 +300,11 @@
         for (let item of newAddressData) {
           item.addresss = superLong(item.address, 6);
 
-          if(!item.note || item.note.toString() ==='undefined'){
-            item.note ='';
+          if (!item.note || item.note.toString() === 'undefined') {
+            item.note = '';
             item.labels = item.address;
-          }else {
-            item.labels = item.address+ '('+item.note+')';
+          } else {
+            item.labels = item.address + '(' + item.note + ')';
           }
 
           let addressInfo = await this.getAddressInfoByNode(item.address);
@@ -329,15 +337,16 @@
             }
           }
 
-          let name = 'getRoles';
+          let name = 'getRolesList';
           //console.log(this.contractInfo.methods);
           if (this.contractInfo.methods) {
             let methodsInfo = this.contractInfo.methods.filter(obj => obj.name === 'getRoles');
             let desc = methodsInfo[0].desc;
             methodsInfo[0].params[0].value = item.address;
             let newArgs = getArgs(methodsInfo[0].params);
-            let myLegionsRes = await this.methodCall(this.contractAddress, name, desc, newArgs.args);
-            //console.log(myLegionsRes);
+            console.log(this.contractAddress, name, desc, newArgs.args); //NULSd6Hgkfuo4hKAN5ysFRVP8gynyYD5uRGGE
+            let myLegionsRes = await this.methodCall('NULSd6Hgkfuo4hKAN5ysFRVP8gynyYD5uRGGE', name, desc, newArgs.args);
+            console.log(JSON.parse(myLegionsRes.data.result));
             if (myLegionsRes.success) {
               item.myLegions = JSON.parse(myLegionsRes.data.result).length;
               item.legionsData = JSON.parse(myLegionsRes.data.result);
@@ -792,7 +801,7 @@
        * @author: Wave
        */
       typeSubmit() {
-        let name = 'enterMineCave';
+        let name = 'sendToCave'; //sendToCave
         let methodsInfo = this.contractInfo.methods.filter(obj => obj.name === name);
         //console.log(methodsInfo[0]);
         methodsInfo[0].params[0].value = this.contractAddressBlackIron;
@@ -810,6 +819,7 @@
           methodsInfo[0].params[3].value = 'Cobalt';
         }
         let newArgs = getArgs(methodsInfo[0].params);
+        console.log(newArgs);
         this.chainMethodCall(this.sentInfo.address, methodsInfo[0], this.contractAddress, 0, newArgs);
         this.getBalanceByAddress(chainInfo.chainId, 1, this.sentInfo.address);
         this.$refs.password.showPassword(true, this.sentInfo.address);
@@ -864,15 +874,19 @@
        * @author: Wave
        */
       async backs(info) {
-        //console.log(info);
-        let name = 'remandFromMineCave';
-        let methodsInfo = this.contractInfo.methods.filter(obj => obj.name === name);
-        //console.log(methodsInfo[0]);
-        methodsInfo[0].params[0].value = this.contractAddressBlackIron;
-        methodsInfo[0].params[1].value = info.id;
-        methodsInfo[0].params[2].value = info.caveType;
+        console.log(info);//NULSd6HgvBGqSQBr49QmB9BJia4RnzsAWpjtE   NULSd6HgoncSA11HYE1nQ2VLVu64XWfGHcsw6
+        let name = 'dismissFromCave';// dismissFromCave dismissFromCave
+        console.log(this.contractInfoV0.methods);
+        let methodsInfo = this.contractInfoV0.methods.filter(obj => obj.name === name);
+        console.log(methodsInfo[0]);
+        //methodsInfo[0].params[0].value = this.contractAddressBlackIron;
+        methodsInfo[0].params[0].value = info.id;
+        methodsInfo[0].params[1].value = info.caveType;
+        methodsInfo[0].params[2].value = "1";
+        console.log(methodsInfo[0].params);
         let newArgs = getArgs(methodsInfo[0].params);
-        this.chainMethodCall(info.address, methodsInfo[0], this.contractAddress, 0, newArgs);
+        console.log(newArgs);
+        this.chainMethodCall(info.address, methodsInfo[0], this.contractAddressV0, 0, newArgs);
         this.getBalanceByAddress(chainInfo.chainId, 1, info.address);
         this.$refs.password.showPassword(true, info.address);
       },
@@ -903,17 +917,17 @@
        * @param args
        */
       async validateContractCall(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args) {
-        //console.log(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args);
-        if (methodName === 'transfer' || methodName === 'levelUp' || methodName === 'claimEarned') {
+        console.log(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args);
+        /*if (methodName === 'transfer' || methodName === 'levelUp' || methodName === 'claimEarned' || methodName === 'dismissFromCave') {
           console.log(args);
         } else {
-          args[0] = this.contractAddressNew;
-        }
+          args[0] = this.contractAddressV0;
+        }*/
         /*console.log(methodName);
         console.log(args);*/
         return await this.$post('/', 'validateContractCall', [sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args])
           .then((response) => {
-            //console.log(response);
+            console.log(response);
             if (response.result.success) {
               //return {success: true, data: response.result};
               this.imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args)
