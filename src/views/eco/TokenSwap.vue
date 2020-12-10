@@ -1,6 +1,8 @@
 <template>
   <div class="tokenSwap w1200">
-    <div class="top"></div>
+    <div class="top">
+      <div class="tc font18" style="line-height: 3rem">Token Swap</div>
+    </div>
     <div class="info">
       <div class="fl">
         <div class="title">
@@ -30,7 +32,7 @@
       <div class="fr tl">
         <div class="title">
           <span class="fred">卖出</span>
-          <el-button class="fr" type="danger" size="mini" round>挂卖单</el-button>
+          <el-button @click="showDialog(1)" class="fr" type="danger" size="mini" round>挂卖单</el-button>
         </div>
         <el-table :data="sellData" stripe style="width: 580px">
           <el-table-column prop="address" label="广告方" min-width="160">
@@ -171,7 +173,7 @@
         addressList: [],//地址列表
         addressInfo: {},//选择地址信息
         tokenInfo: {},//token信息
-        contractAddress: 'tNULSeBaNC4QkG1ZAA2GffDdFSDnatewu5PPkK',
+        contractAddress: 'tNULSeBaN7DaLdfqfBfhv6ysZRNrQN4AgYVmCk',
         contractInfo: {},
         contractCallData: {},//调用合约信息
 
@@ -189,9 +191,10 @@
           {address: 'NULSd6...EtCara', token: 'Blackiron', tokenAdress: '', number: '666', amount: '50(NULS)'},
           {address: 'NULSd6...EtCara(wave)', token: 'tungsten', tokenAdress: '', number: '555', amount: '1000(NULS)'},
         ],
-        buyOrSellDialog: true,//买、卖挂单弹框
+        buyOrSellDialog: false,//买、卖挂单弹框
         dialogTitle: '',//弹框标题
         isShowInfo: false,//是否显示弹框左侧信息
+        type: 'buy',//类型（buy:买 sell:卖）
         tokenSwapForm: {
           fromAddress: '',
           assets: '',
@@ -270,12 +273,14 @@
        * @author: Wave
        */
       showDialog(type, info = {}) {
+        this.buyOrSellDialog = true;
+        this.isShowInfo = false;
         if (type === 0) {
-          this.buyOrSellDialog = true;
-          this.isShowInfo = false;
-          this.dialogTitle = '挂买单'
+          this.dialogTitle = '挂买单';
+          this.type = 'buy';
         } else {
-          console.log(info)
+          this.dialogTitle = '挂卖单';
+          this.type = 'sell';
         }
 
       },
@@ -383,9 +388,9 @@
        * @author: Wave
        */
       changeAssets(contractAddress) {
-        console.log(contractAddress);
+        //console.log(contractAddress);
         this.tokenInfo = this.addressInfo.tokens.filter(obj => obj.contractAddress === contractAddress)[0];
-        console.log(this.tokenInfo.contractAddress);
+        //console.log(this.tokenInfo.contractAddress);
       },
 
       //全部
@@ -415,6 +420,7 @@
         this.$refs[formName].validate(async (valid) => {
           if (valid) {
             let name = 'buyOrder';
+            console.log(this.contractInfo);
             let methodsInfo = this.contractInfo.methods.filter(obj => obj.name === name);
             console.log(this.tokenInfo);
             methodsInfo[0].params[0].value = this.tokenInfo.contractAddress;
@@ -463,6 +469,7 @@
         let amount = Number(Times(this.contractCallData.gasLimit, this.contractCallData.price));
         let transferInfo = {
           fromAddress: this.contractCallData.sender,
+          toAddress: this.contractAddress,
           assetsChainId: chainInfo.chainId,
           assetsId: 1,
           amount: amount,
@@ -497,11 +504,11 @@
         console.log(txhex);
 
         //验证交易
-        let validateTxRes = await validateTx(txhex);
-        console.log(validateTxRes);
+        /*let validateTxRes = await validateTx(txhex);
+        console.log(validateTxRes);*/
 
         //验证并广播交易
-        /*await validateAndBroadcast(txhex).then((response) => {
+        await validateAndBroadcast(txhex).then((response) => {
           //console.log(response);
           if (response.success) {
             this.$message({message: this.$t('tips.tips15'), type: 'success', duration: 1000});
@@ -518,7 +525,7 @@
           }
         }).catch((err) => {
           this.$message({message: this.$t('public.err1') + err, type: 'error', duration: 3000});
-        });*/
+        });
       },
 
     }

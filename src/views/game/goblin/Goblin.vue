@@ -295,7 +295,10 @@
             for (let k of addressInfo.data.tokens) {
               let newArr = k.split(',');
               //console.log(newArr);
-              if (newArr[1] === 'Goblin' && newArr[0] === 'NULSd6HgwJmD4SC1NAJXu8tC6NKsWs99P2jpw') {
+              if (newArr[1] === 'Goblin') {
+                console.log(newArr[0]);
+              }
+              if (newArr[1] === 'Goblin' && newArr[0] === this.goblinAddress) {
                 let goblinInfo = tokenList.data.list.filter(obj => obj.tokenName === newArr[1]);
                 item.goblinBalance = parseFloat(tofix(divisionDecimals(goblinInfo[0].balance, goblinInfo[0].decimals), 4, -1));
               } else if (newArr[1] === 'black_iron') {
