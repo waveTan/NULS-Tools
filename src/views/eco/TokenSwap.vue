@@ -11,19 +11,23 @@
         </div>
 
         <el-table :data="buyData" stripe style="width: 580px">
-          <el-table-column prop="address" label="广告方" min-width="160">
+          <el-table-column prop="addresss" label="广告方" min-width="160">
           </el-table-column>
           <el-table-column label="数量" width="130">
             <template slot-scope="scope">
-              {{scope.row.number}}(<span class="click">{{scope.row.token}}</span>)
+              {{scope.row.number}}(<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>)
             </template>
           </el-table-column>
-          <el-table-column prop="amount" label="金额" width="130">
-          </el-table-column>
-          <el-table-column label="操作" width="100" align="right">
+          <el-table-column label="金额" width="130">
             <template slot-scope="scope">
-              <el-button @click="handleClick(scope.row)" class="sell" type="text" size="small">出售</el-button>
-              <el-button @click="handleClick(scope.row)" type="text" size="small">撤销</el-button>
+              {{scope.row.amount}}(<span>NULS</span>)
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="100" align="left">
+            <template slot-scope="scope">
+              <el-button @click="sellClick(scope.row)" class="sell" type="text" size="small">出售</el-button>
+              <el-button @click="undoClick(scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -35,19 +39,23 @@
           <el-button @click="showDialog(1)" class="fr" type="danger" size="mini" round>挂卖单</el-button>
         </div>
         <el-table :data="sellData" stripe style="width: 580px">
-          <el-table-column prop="address" label="广告方" min-width="160">
+          <el-table-column prop="addresss" label="广告方" min-width="160">
           </el-table-column>
           <el-table-column label="数量" width="130">
             <template slot-scope="scope">
-              {{scope.row.number}}(<span class="click">{{scope.row.token}}</span>)
+              {{scope.row.number}}(<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>)
             </template>
           </el-table-column>
-          <el-table-column prop="amount" label="金额" width="130">
-          </el-table-column>
-          <el-table-column label="操作" width="100" align="right">
+          <el-table-column label="金额" width="130">
             <template slot-scope="scope">
-              <el-button @click="handleClick(scope.row)" class="buy" type="text" size="small">买入</el-button>
-              <el-button @click="handleClick(scope.row)" type="text" size="small">撤销</el-button>
+              {{scope.row.amount}}(<span>NULS</span>)
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="100" align="left">
+            <template slot-scope="scope">
+              <el-button @click="buyClick(scope.row)" class="buy" type="text" size="small">买入</el-button>
+              <el-button @click="undoClick(scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -110,10 +118,12 @@
 </template>
 
 <script>
+  import axios from 'axios'
   import nuls from 'nuls-sdk-js'
   import Password from '@/components/PasswordBar'
   import {chainInfo} from '@/config.js'
   import {
+    Division,
     divisionDecimals,
     timesDecimals,
     accountList,
@@ -172,25 +182,15 @@
       return {
         addressList: [],//地址列表
         addressInfo: {},//选择地址信息
+        urls: 'http://129.204.111.201:81',//连接地址
         tokenInfo: {},//token信息
-        contractAddress: 'tNULSeBaN7DaLdfqfBfhv6ysZRNrQN4AgYVmCk',
+        contractAddress: 'tNULSeBaNAQdsP9hxLhZahNU8HhKH1rmP9W7GR',
+        allNRC20List: [],//所有NRC20合约
         contractInfo: {},
         contractCallData: {},//调用合约信息
 
-        buyData: [
-          {address: 'dfsWd...34RWf(张三)', token: 'Goblin', tokenAdress: '', number: '100', amount: '500(NULS)'},
-          {address: 'dfsWd...34RWf', token: 'Blackiron', tokenAdress: '', number: '10', amount: '50(NULS)'},
-          {address: 'dfsWd...34RWf', token: 'tungsten', tokenAdress: '', number: '1000', amount: '1000(NULS)'},
-          {address: 'dfsWd...34RWf', token: 'platinum', tokenAdress: '', number: '1220', amount: '100(NULS)'},
-          {address: 'dfsWd...34RWf', token: 'obsidian', tokenAdress: '', number: '88', amount: '5(NULS)'},
-        ],
-        sellData: [
-          {address: 'NULSd6...EtCara', token: 'platinum', tokenAdress: '', number: '22', amount: '100(NULS)'},
-          {address: 'NULSd6...EtCara', token: 'obsidian', tokenAdress: '', number: '44', amount: '5(NULS)'},
-          {address: 'NULSd6...EtCara', token: 'Goblin', tokenAdress: '', number: '888', amount: '500(NULS)'},
-          {address: 'NULSd6...EtCara', token: 'Blackiron', tokenAdress: '', number: '666', amount: '50(NULS)'},
-          {address: 'NULSd6...EtCara(wave)', token: 'tungsten', tokenAdress: '', number: '555', amount: '1000(NULS)'},
-        ],
+        buyData: [],
+        sellData: [],
         buyOrSellDialog: false,//买、卖挂单弹框
         dialogTitle: '',//弹框标题
         isShowInfo: false,//是否显示弹框左侧信息
@@ -215,13 +215,14 @@
           amount: [
             {validator: checkAmount, trigger: 'blur'}
           ]
-        }
+        },
       }
     },
     components: {
       Password,
     },
     created() {
+      this.addressInfo = accountList(1);
       this.getAddressList()
     },
     mounted() {
@@ -239,9 +240,38 @@
 
       //初始化
       async init() {
+        this.allList();
+        this.getContractAddress();
+        setTimeout(() => {
+          this.getBuyOrdersList();
+          this.getSaleOrdersList();
+        }, 1000);
+
         let resData = await this.contractInfoByAddress(this.contractAddress);
+        //console.log(resData.data);
         if (resData.success) {
           this.contractInfo = resData.data;
+        }
+      },
+
+      /**
+       * @disc:获取合约地址
+       * @params:
+       * @date: 2020-12-15 15:04
+       * @author: Wave
+       */
+      async getContractAddress() {
+        let url = this.urls + '/tokenex/contract';
+        try {
+          let resData = await axios.get(url);
+          //console.log(resData.data);
+          if (resData.data.success) {
+            this.contractAddress = resData.data.data;
+          } else {
+            console.log('获取合约地址失败: ' + JSON.stringify(resData.data))
+          }
+        } catch (err) {
+          console.log('获取合约地址异常: ' + JSON.stringify(err))
         }
       },
 
@@ -266,6 +296,108 @@
       },
 
       /**
+       * @disc: 获取所有list
+       * @params:
+       * @date: 2020-12-15 15:53
+       * @author: Wave
+       */
+      async allList(pageIndex = 1, pageSize = 100) {
+        let resDatas = await this.getAllNRC20(pageIndex, pageSize);
+        //console.log(resDatas);
+        if (resDatas.success) {
+          this.allNRC20List = [...this.allNRC20List, ...resDatas.data.list];
+          if (resDatas.data.totalCount > pageIndex * pageSize) {
+            this.allList(pageIndex + 1, pageSize)
+          }
+        }
+      },
+
+      /**
+       * 获取所有的NRC20合约
+       **/
+      async getAllNRC20(pageIndex = 1, pageSize = 100) {
+        return await this.$post('/', 'getContractList', [pageIndex, pageSize, 1, false])
+          .then((response) => {
+            //console.log(response);
+            if (response.hasOwnProperty("result")) {
+              //this.contractInfo = response.result;
+              return {success: true, data: response.result}
+            } else {
+              return {success: false, data: response}
+            }
+          })
+          .catch((error) => {
+            return {success: false, data: error}
+          });
+      },
+
+      /**
+       * @disc:获取买单列表
+       * @params:
+       * @date: 2020-12-15 15:04
+       * @author: Wave
+       */
+      async getBuyOrdersList(index = '1') {
+        let url = this.urls + '/tokenex/buyOrders/' + index;
+        try {
+          let resData = await axios.get(url);
+          if (resData.data.success) {
+            //console.log(resData.data.data);
+            for (let item of resData.data.data.list) {
+              item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              item.addresss = superLong(item.buyer, 6);
+              item.number = divisionDecimals(item.remainAmount, item.tokenDecimals);
+              item.amount = parseFloat(tofix(Division(item.number, item.rate), 3, 1));
+              if (item.buyer === this.addressInfo.address) {
+                item.isMyOrder = true;
+              } else {
+                item.isMyOrder = false;
+              }
+
+            }
+            this.buyData = resData.data.data.list
+          } else {
+            console.log('获取卖单列表失败: ' + JSON.stringify(resData.data))
+          }
+        } catch (err) {
+          console.log('获取卖单列表异常: ' + JSON.stringify(err))
+        }
+      },
+
+      /**
+       * @disc:获取卖单列表
+       * @params:
+       * @date: 2020-12-15 15:04
+       * @author: Wave
+       */
+      async getSaleOrdersList(index = '1') {
+        let url = this.urls + '/tokenex/saleOrders/' + index;
+        try {
+          let resData = await axios.get(url);
+          if (resData.data.success) {
+            //console.log(resData.data.data);
+            for (let item of resData.data.data.list) {
+              item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              item.addresss = superLong(item.seller, 6);
+              item.number = divisionDecimals(item.remainAmount, item.tokenDecimals);
+              item.amount = Division(item.number, item.rate).toString();
+              if (item.seller === this.addressInfo.address) {
+                item.isMyOrder = true;
+              } else {
+                item.isMyOrder = false;
+              }
+
+            }
+            this.sellData = resData.data.data.list
+          } else {
+            console.log('获取卖单列表失败: ' + JSON.stringify(resData.data))
+          }
+        } catch (err) {
+          console.log('获取卖单列表异常: ' + JSON.stringify(err))
+        }
+      },
+
+      /**
        * @disc: 显示买卖弹框
        * @params: type （0：买单 1：卖单）
        * @params: info 买、卖单信息
@@ -283,6 +415,36 @@
           this.type = 'sell';
         }
 
+      },
+
+      /**
+       * @disc: 出售
+       * @params: info
+       * @date: 2020-12-15 17:46
+       * @author: Wave
+       */
+      sellClick(info) {
+        console.log(info)
+      },
+
+      /**
+       * @disc: 买入
+       * @params: info
+       * @date: 2020-12-15 17:46
+       * @author: Wave
+       */
+      buyClick(info) {
+        console.log(info)
+      },
+
+      /**
+       * @disc: 撤销
+       * @params: info
+       * @date: 2020-12-15 17:48
+       * @author: Wave
+       */
+      undoClick(info) {
+        console.log(info)
       },
 
       /**

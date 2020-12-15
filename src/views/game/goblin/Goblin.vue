@@ -53,25 +53,24 @@
                   <div slot="content">{{item.levelInfo}}</div>
                   <span><i class="el-icon-question"></i></span>
                 </el-tooltip>
-                <!--<el-tooltip content="升级:65B-35P" placement="bottom" effect="light">
-                  <el-button>{{item.level}}</el-button>
-                </el-tooltip>-->
               </li>
               <li class="fl">{{item.status === 'mining' ? '挖矿':'空闲'}}</li>
               <li class="fl">{{item.place ==='def' ? '':item.place}}</li>
               <li class="fl w100">{{item.goblinBlack}}</li>
-              <li class="fl w200">
+              <li class="fl w200" style="text-align: right">
                 <el-button type="text" :disabled="item.status === 'mining'" @click="upgrade(item)">升级
                 </el-button>
                 <el-button type="text" :disabled="item.status === 'mining'" @click="sent(item)">派出
                 </el-button>
-                <el-button type="text" :disabled="item.status !== 'mining'" @click="acquire(item)">获取
+                <el-button type="text" :disabled="item.status !== 'mining'" @click="acquire(item)"
+                           v-if="item.mark ==='1'">获取
                 </el-button>
-                <el-button type="text" :disabled="item.status !== 'mining'" @click="backs(item)">迁回
+                <el-button type="text" :disabled="item.status !== 'mining'" @click="backs(item)"
+                           v-if="item.mark ==='1'">迁回
                 </el-button>
-                <!--<el-button type="text" :disabled="item.status !== 'mining'" @click="acquireAndBacks(item)">
+                <el-button type="text" :disabled="item.status !== 'mining'" @click="acquireAndBacks(item)">
                   获取并迁回
-                </el-button>-->
+                </el-button>
               </li>
             </ul>
           </div>
@@ -115,8 +114,8 @@
     <el-dialog title="选择挖矿类型" :visible.sync="typeDialog">
       <div class="tc">
         <el-radio-group v-model="typeRadio">
-          <el-radio :label="1">黑铁矿</el-radio>
-          <el-radio :label="2" v-show="sentInfo.level >=10">钨矿</el-radio>
+          <el-radio :label="1">黑铁矿(新矿洞)</el-radio>
+          <el-radio :label="2" v-show="sentInfo.level >=10">钨矿(新矿洞)</el-radio>
           <el-radio :label="3" v-show="sentInfo.level >=20">铂金矿</el-radio>
           <el-radio :label="4" v-show="sentInfo.level >=30">黑耀矿</el-radio>
           <el-radio :label="5" v-show="sentInfo.level >=40">钴矿</el-radio>
@@ -140,8 +139,7 @@
   import Password from '@/components/PasswordBar'
   import {chainInfo} from '@/config.js'
   import {
-    divisionDecimals,
-    timesDecimals,
+    divisionDecimals, timesDecimals,
     accountList,
     superLong,
     getArgs,
@@ -151,11 +149,7 @@
     getLocalTime
   } from '@/api/util'
   import {
-    countFee,
-    inputsOrOutputs,
-    validateAndBroadcast,
-    passwordVerification,
-    getBalanceOrNonceByAddress,
+    countFee, inputsOrOutputs, validateAndBroadcast, passwordVerification, getBalanceOrNonceByAddress,
     //validateTx
   } from '@/api/requestData'
 
@@ -179,6 +173,9 @@
         gainAddress: 'NULSd6HguK98JD4yFfjYkDTq8VXfPYDNeFMiL',//获取合约地址
         gainInfo: {},//获取合约详情
 
+        newGainAddress: 'NULSd6HgmbboAkdDvnjHCkKgP8vt46WEcvpc3',//获取合约地址(新)
+        newGainInfo: {},//获取合约详情(新)
+
         blackIronAddress: 'NULSd6HgnScefpS1jGFvJZeNPnFRtAebwVpJr',//黑铁矿合约地址
         blackIronInfo: {},//黑铁矿合约详情
 
@@ -193,7 +190,6 @@
 
         cobaltAddress: 'NULSd6HgkFgtEhbvtFo7pUVRbD5GdHNGkgFUj',//钴矿合约地址
         cobaltInfo: {},//钴矿合约详情
-
 
         contractCallData: {},//调用合约data
 
@@ -237,7 +233,7 @@
     mounted() {
       setTimeout(() => {
         this.getAddressList();
-      }, 500)
+      }, 1000);
       this.goblinSetInterval = setInterval(() => {
         this.getAddressList();
       }, 10000);
@@ -255,7 +251,13 @@
           this.gainInfo = resDataGain.data;
         }
 
+        let resDataNewGain = await this.contractInfoByAddress(this.newGainAddress);
+        if (resDataNewGain.success) {
+          this.newGainInfo = resDataNewGain.data;
+        }
+
         let resDataCorps = await this.contractInfoByAddress(this.corpsAddress);
+        //console.log(resDataCorps);
         if (resDataCorps.success) {
           this.corpsInfo = resDataCorps.data;
         }
@@ -295,9 +297,9 @@
             for (let k of addressInfo.data.tokens) {
               let newArr = k.split(',');
               //console.log(newArr);
-              if (newArr[1] === 'Goblin') {
+              /*if (newArr[1] === 'Goblin') {
                 console.log(newArr[0]);
-              }
+              }*/
               if (newArr[1] === 'Goblin' && newArr[0] === this.goblinAddress) {
                 let goblinInfo = tokenList.data.list.filter(obj => obj.tokenName === newArr[1]);
                 item.goblinBalance = parseFloat(tofix(divisionDecimals(goblinInfo[0].balance, goblinInfo[0].decimals), 4, -1));
@@ -321,6 +323,7 @@
           }
 
           let name = 'getRolesList';
+          //console.log(this.corpsInfo);
           let methodsInfo = this.corpsInfo.methods.filter(obj => obj.name === name);
           let desc = methodsInfo[0].desc;
           methodsInfo[0].params[0].value = item.address;
@@ -335,12 +338,18 @@
               q.address = item.address;
               q.createTime = moment(getLocalTime(q.birthday * 1000)).format('MM-DD HH:mm');
               let nameTwo = 'earnedOf';
-              let methodsInfoTwo = this.gainInfo.methods.filter(obj => obj.name === nameTwo);
+              let methodsInfoTwo = {};
+              if (q.mark === '1') {
+                methodsInfoTwo = this.gainInfo.methods.filter(obj => obj.name === nameTwo);
+              } else {
+                methodsInfoTwo = this.newGainInfo.methods.filter(obj => obj.name === nameTwo);
+              }
               let descTwo = methodsInfoTwo[0].desc;
               methodsInfoTwo[0].params[0].value = q.place;
               methodsInfoTwo[0].params[1].value = item.address;
               let newArgsTwo = getArgs(methodsInfoTwo[0].params);
-              let resData = await this.methodCall(this.gainAddress, nameTwo, descTwo, newArgsTwo.args);
+              let resData = await this.methodCall(q.mark === '1' ? this.gainAddress : this.newGainAddress, nameTwo, descTwo, newArgsTwo.args);
+              //console.log(resData);
               if (resData.success) {
                 let goblin = divisionDecimals(JSON.parse(resData.data.result)[0]).toString();
                 let black = divisionDecimals(JSON.parse(resData.data.result)[1]).toString();
@@ -813,8 +822,10 @@
         methodsInfo[0].params[2].value = '1';
         if (this.typeRadio === 1) {
           methodsInfo[0].params[1].value = 'BlackIron';
+          methodsInfo[0].params[2].value = '0';
         } else if (this.typeRadio === 2) {
           methodsInfo[0].params[1].value = 'Tungsten';
+          methodsInfo[0].params[2].value = '0';
         } else if (this.typeRadio === 3) {
           methodsInfo[0].params[1].value = 'Platinum';
         } else if (this.typeRadio === 4) {
@@ -836,13 +847,20 @@
        * @author: Wave
        */
       async acquire(info) {
-        //console.log(info);
+        console.log(info);
         let name = 'claimEarned';
+        /*let methodsInfo = {};
+        if (info.mark === '1') {
+          methodsInfo = this.gainInfo.methods.filter(obj => obj.name === name);
+        } else {
+          methodsInfo = this.newGainInfo.methods.filter(obj => obj.name === name);
+        }*/
         let methodsInfo = this.gainInfo.methods.filter(obj => obj.name === name);
         //console.log(methodsInfo[0].params);
         methodsInfo[0].params[0].value = info.place;
         let newArgs = getArgs(methodsInfo[0].params);
         this.chainMethodCall(info.address, methodsInfo[0], this.gainAddress, 0, newArgs);
+        //this.chainMethodCall(info.address, methodsInfo[0], info.mark === '1' ? this.gainAddress : this.newGainAddress, 0, newArgs);
         this.getBalanceByAddress(chainInfo.chainId, 1, info.address);
         this.$refs.password.showPassword(true, info.address);
         //let resData = await this.chainMethodCall(info.address, methodsInfo[0], this.contractAddressBlackIron, values);
@@ -876,15 +894,16 @@
        */
       acquireAndBacks(info) {
         //console.log(info);
-        let name = 'remandAllFromMine';
+        //let name = 'remandAllFromMine';
+        let name = 'dismissAllFromCave';
         /*console.log(this.contractInfo);
         console.log(this.contractAddress);*/
-        let methodsInfo = this.contractInfo.methods.filter(obj => obj.name === name);
+        let methodsInfo = this.NFTSendInfo.methods.filter(obj => obj.name === name);
         //console.log(methodsInfo[0]);
-        methodsInfo[0].params[0].value = this.contractAddressBlackIron;
-        methodsInfo[0].params[1].value = info.caveType;
+        methodsInfo[0].params[0].value = info.place;
+        methodsInfo[0].params[1].value = info.mark;
         let newArgs = getArgs(methodsInfo[0].params);
-        this.chainMethodCall(info.address, methodsInfo[0], this.contractAddress, 0, newArgs);
+        this.chainMethodCall(info.address, methodsInfo[0], this.NFTSendAddress, 0, newArgs);
         this.getBalanceByAddress(chainInfo.chainId, 1, info.address);
         this.$refs.password.showPassword(true, info.address);
       },
@@ -915,6 +934,7 @@
        * @param args
        */
       async validateContractCall(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args) {
+        //console.log(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args);
         return await this.$post('/', 'validateContractCall', [sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args])
           .then((response) => {
             //console.log(response);
@@ -930,7 +950,7 @@
             }
           })
           .catch((error) => {
-            this.$message({message: this.$t('call.call7') + error, type: 'error', duration: 3000});
+            this.$message({message: this.$t('tips.tips26') + error, type: 'error', duration: 3000});
           });
       },
 
