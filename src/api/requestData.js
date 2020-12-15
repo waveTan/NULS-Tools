@@ -82,6 +82,10 @@ export async function inputsOrOutputs(transferInfo, balanceInfo, type = 2) {
   }
   if (type === 16) {
     inputs[0].amount = Number(Plus(transferInfo.amount, transferInfo.fee ? transferInfo.fee : 100000));
+    if (transferInfo.value) {
+      inputs[0].amount = Number(Plus(inputs[0].amount, transferInfo.value));
+    }
+
     if (transferInfo.toAddress) {
       if (transferInfo.value) { //向合约地址转nuls
         //inputs[0].amount = transferInfo.amount;

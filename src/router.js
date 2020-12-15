@@ -37,6 +37,11 @@ export default new Router({
       component: resolve => require(['@/views/user/BackupsAddress.vue'], resolve)
     },
     {
+      path: '/eco/tokenSwap',
+      name: 'tokenSwap',
+      component: resolve => require(['@/views/eco/TokenSwap.vue'], resolve)
+    },
+    {
       path: '/game',
       name: 'game',
       component: resolve => require(['@/views/game/Index.vue'], resolve)

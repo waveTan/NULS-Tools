@@ -27,13 +27,14 @@
           <p>POCM</p>
           <b class="font12">{{$t('home.home5')}}</b>
         </li>
-        <!--<li @click="toUrl('https://usdi.co/','',1)">
-          <p><img src="./../assets/img/usdi-logo.svg"></p>
-          <b class="font12">{{$t('home.home6')}}</b>
-        </li>-->
         <li @click="toUrl('https://factory.nuls.io/','',1)">
           <p>{{$t('home.home7')}}</p>
           <b class="font12">{{$t('home.home8')}}</b>
+        </li>
+        <!--<li @click="toUrl('tokenSwap','',0)">-->
+        <li>
+          <p>Token闪兑(开发中....)</p>
+          <b class="font12">NULS生态内的NRC20 Tokon闪兑NULS</b>
         </li>
       </ul>
     </div>
