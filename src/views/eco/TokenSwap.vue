@@ -13,6 +13,8 @@
         <el-table :data="buyData" stripe style="width: 580px">
           <el-table-column prop="addresss" label="广告方" min-width="160">
           </el-table-column>
+          <el-table-column prop="id" label="ID" width="60">
+          </el-table-column>
           <el-table-column label="数量" width="130">
             <template slot-scope="scope">
               {{scope.row.number}}(<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>)
@@ -26,7 +28,7 @@
           <el-table-column label="操作" width="100" align="left">
             <template slot-scope="scope">
               <el-button @click="sellClick(scope.row)" class="sell" type="text" size="small">出售</el-button>
-              <el-button @click="undoClick(scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
+              <el-button @click="undoClick('buy',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
               </el-button>
             </template>
           </el-table-column>
@@ -41,6 +43,8 @@
         <el-table :data="sellData" stripe style="width: 580px">
           <el-table-column prop="addresss" label="广告方" min-width="160">
           </el-table-column>
+          <el-table-column prop="id" label="ID" width="60">
+          </el-table-column>
           <el-table-column label="数量" width="130">
             <template slot-scope="scope">
               {{scope.row.number}}(<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>)
@@ -54,7 +58,7 @@
           <el-table-column label="操作" width="100" align="left">
             <template slot-scope="scope">
               <el-button @click="buyClick(scope.row)" class="buy" type="text" size="small">买入</el-button>
-              <el-button @click="undoClick(scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
+              <el-button @click="undoClick('sell',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
               </el-button>
             </template>
           </el-table-column>
@@ -216,25 +220,28 @@
             {validator: checkAmount, trigger: 'blur'}
           ]
         },
+        tokenSwapSetInterval: null,//定时器
       }
     },
     components: {
       Password,
     },
     created() {
+      console.log(accountList(1));
       this.addressInfo = accountList(1);
       this.getAddressList()
     },
     mounted() {
       this.init();
       //this.getAddressList()
-      /*this.goblinSetInterval = setInterval(() => {
-        this.getAddressList();
-      }, 10000);*/
+      this.tokenSwapSetInterval = setInterval(() => {
+        // this.addressInfo = accountList(1);
+      }, 1000);
     },
+    watch: {},
     beforeDestroy() {
       //离开界面清除定时器
-      //clearInterval(this.goblinSetInterval);
+      clearInterval(this.tokenSwapSetInterval);
     },
     methods: {
 
@@ -414,7 +421,6 @@
           this.dialogTitle = '挂卖单';
           this.type = 'sell';
         }
-
       },
 
       /**
@@ -439,12 +445,49 @@
 
       /**
        * @disc: 撤销
+       * @params: type
        * @params: info
        * @date: 2020-12-15 17:48
        * @author: Wave
        */
-      undoClick(info) {
-        console.log(info)
+      undoClick(type, info) {
+        console.log(type, info);
+
+        let infos = '您确定要撤销ID:' + info.id + '的订单';
+        let newInfo = type === 'buy' ? '买' : '卖';
+        let title = '撤销' + newInfo + '订单ID:' + info.id;
+        this.$confirm(infos, title, {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          let name = this.type === 'buy' ? 'cancelBuyOrder' : 'cancelSaleOrder';
+          //console.log(this.contractInfo);
+          let methodsInfo = this.contractInfo.methods.filter(obj => obj.name === name);
+          //console.log(this.tokenInfo);
+          methodsInfo[0].params[0].value = this.tokenInfo.contractAddress;
+          methodsInfo[0].params[1].value = info.totalAmount;
+          let newArgs = getArgs(methodsInfo[0].params);
+          console.log(newArgs);
+          if (!newArgs.allParameter) {
+            console.log('arges 错误：' + newArgs.allParameter);
+            return;
+          }
+          console.log(accountList(1));
+          this.addressInfo = accountList(1);
+          console.log(this.addressInfo.address, methodsInfo[0], this.contractAddress, 0, newArgs.args);
+          let resData = await chainMethodCall(this.addressInfo.address, methodsInfo[0], this.contractAddress, 0, newArgs.args);
+          console.log(resData);
+          if (!resData.success) {
+            console.log('验证合约错误：' + resData.data);
+            return;
+          }
+          this.contractCallData = resData.data;
+
+          this.$refs.password.showPassword(true, this.addressInfo.address);
+        }).catch(() => {
+
+        });
       },
 
       /**
@@ -540,6 +583,7 @@
         this.addressInfo = newAddressData[0];
         if (this.addressInfo.tokens && this.addressInfo.tokens.length !== 0) {
           this.tokenSwapForm.assets = this.addressInfo.tokens[0].contractAddress;
+          this.tokenInfo = this.addressInfo.tokens.filter(obj => obj.contractAddress === this.tokenSwapForm.assets)[0];
         }
       },
 
@@ -581,24 +625,31 @@
       submitForm(formName) {
         this.$refs[formName].validate(async (valid) => {
           if (valid) {
-            let name = 'buyOrder';
+            let name = this.type === 'buy' ? 'buyOrder' : 'saleOrder';
             console.log(this.contractInfo);
             let methodsInfo = this.contractInfo.methods.filter(obj => obj.name === name);
             console.log(this.tokenInfo);
             methodsInfo[0].params[0].value = this.tokenInfo.contractAddress;
-            methodsInfo[0].params[1].value = this.tokenSwapForm.number;
+            if (this.type === 'buy') {
+              methodsInfo[0].params[1].value = Number(Division(this.tokenSwapForm.number, this.tokenSwapForm.amount));
+            } else {
+              methodsInfo[0].params[1].value = this.tokenSwapForm.number;
+              methodsInfo[0].params[2].value = this.tokenSwapForm.number;
+            }
             let newArgs = getArgs(methodsInfo[0].params);
+            console.log(newArgs);
             if (!newArgs.allParameter) {
               console.log('arges 错误：' + newArgs.allParameter);
               return;
             }
             let resData = await chainMethodCall(this.addressInfo.address, methodsInfo[0], this.contractAddress, this.tokenSwapForm.amount, newArgs.args);
-            //console.log(resData);
+            console.log(resData);
             if (!resData.success) {
               console.log('验证合约错误：' + resData.data);
               return;
             }
             this.contractCallData = resData.data;
+
             this.$refs.password.showPassword(true, this.addressInfo.address);
           } else {
             return false;
