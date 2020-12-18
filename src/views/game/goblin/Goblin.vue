@@ -1,5 +1,7 @@
 <template>
-  <div class="goblin w1200" v-loading="goblinLoading">
+  <div class="goblin w1200" v-loading="goblinLoading" element-loading-text="正在为您查询矿信息，大概耗时10秒..."
+       element-loading-spinner="el-icon-loading"
+       element-loading-background="rgba(0, 0, 0, 0.8)">
     <div class="tc title">Goblin 助手</div>
     <el-table :data="addressList" row-key="address" style="width: 100%">
       <el-table-column label="地址" prop="addresss" align="center" width="150">
@@ -65,9 +67,9 @@
                 <el-button type="text" :disabled="item.status !== 'mining'" @click="acquire(item)"
                            v-if="item.mark ==='1'">获取
                 </el-button>
-                <el-button type="text" :disabled="item.status !== 'mining'" @click="backs(item)"
+                <!--<el-button type="text" :disabled="item.status !== 'mining'" @click="backs(item)"
                            v-if="item.mark ==='1'">迁回
-                </el-button>
+                </el-button>-->
                 <el-button type="text" :disabled="item.status !== 'mining'" @click="acquireAndBacks(item)">
                   获取并迁回
                 </el-button>
@@ -111,14 +113,14 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="选择挖矿类型" :visible.sync="typeDialog">
+    <el-dialog title="选择挖矿类型" :visible.sync="typeDialog" width="70%" @open="openTypeDialog">
       <div class="tc">
         <el-radio-group v-model="typeRadio">
-          <el-radio :label="1">黑铁矿(新矿洞)</el-radio>
-          <el-radio :label="2" v-show="sentInfo.level >=10">钨矿(新矿洞)</el-radio>
-          <el-radio :label="3" v-show="sentInfo.level >=20">铂金矿</el-radio>
-          <el-radio :label="4" v-show="sentInfo.level >=30">黑耀矿</el-radio>
-          <el-radio :label="5" v-show="sentInfo.level >=40">钴矿</el-radio>
+          <el-radio v-for="(item,index) in mineData" :key="index" :label="item._caveName"
+                    v-show="item.isClick && item._caveName !=='Titanium'">
+            {{item._caveName}}
+            <span v-show="item._caveStatus" class="fCN">(New)</span>
+          </el-radio>
         </el-radio-group>
       </div>
       <div slot="footer" class="dialog-footer tc" style="margin: 20px 0 0 0">
@@ -152,6 +154,7 @@
     countFee, inputsOrOutputs, validateAndBroadcast, passwordVerification, getBalanceOrNonceByAddress,
     //validateTx
   } from '@/api/requestData'
+  import {methodCall} from '@/api/contractCall'
 
   export default {
     data() {
@@ -217,7 +220,8 @@
 
         sentInfo: {},//派出信息
         typeDialog: false,//选择矿池
-        typeRadio: 1,//默认黑铁矿
+        typeRadio: 'BlackIron',//默认黑铁矿
+        mineData: [],//矿洞列表
 
         goblinSetInterval: null,//定时器
         goblinLoading: true,//加载动画
@@ -271,6 +275,9 @@
         if (resDataNFTLevelUp.success) {
           this.NFTLevelUpInfo = resDataNFTLevelUp.data;
         }
+
+        //this.getMineList(this.gainAddress, 'getCaveList', '() return Ljava/util/List;', []);
+        this.getNewMineList(this.newGainAddress, 'getMinesList', '() return String', [])
 
       },
 
@@ -328,7 +335,7 @@
           let desc = methodsInfo[0].desc;
           methodsInfo[0].params[0].value = item.address;
           let newArgs = getArgs(methodsInfo[0].params);
-          let myLegionsRes = await this.methodCall(this.corpsAddress, name, desc, newArgs.args);
+          let myLegionsRes = await methodCall(this.corpsAddress, name, desc, newArgs.args);
           if (myLegionsRes.success) {
             item.myLegions = JSON.parse(myLegionsRes.data.result).length;
             item.legionsData = JSON.parse(myLegionsRes.data.result);
@@ -801,6 +808,28 @@
         //console.log(info);
         this.sentInfo = info;
         if (Number(info.level) >= 10) {
+          console.log(this.mineData);
+          for (let item of this.mineData) {
+            item.isClick = false;
+            if (item._caveName === 'BlackIron') {
+              item.isClick = true;
+            } else if (item._caveName === 'Tungsten' && Number(info.level) >= 10) {
+              item.isClick = true;
+            } else if (item._caveName === 'Platinum' && Number(info.level) >= 20) {
+              item.isClick = true;
+            } else if (item._caveName === 'Obsidian' && Number(info.level) >= 30) {
+              item.isClick = true;
+            } else if (item._caveName === 'Cobalt' && Number(info.level) >= 40) {
+              item.isClick = true;
+            } else if (item._caveName === 'Titanium' && Number(info.level) >= 40) {
+              item.isClick = true;
+            }
+          }
+
+          /* <el-radio :label="2" v-show="sentInfo.level >=10">钨矿(新矿洞)</el-radio>
+               <el-radio :label="3" v-show="sentInfo.level >=20">铂金矿(新矿洞)</el-radio>
+               <el-radio :label="4" v-show="sentInfo.level >=30">黑耀矿</el-radio>
+               <el-radio :label="5" v-show="sentInfo.level >=40">钴矿</el-radio>-->*/
           this.typeDialog = true;
         } else {
           this.typeSubmit()
@@ -814,25 +843,14 @@
        * @author: Wave
        */
       typeSubmit() {
+        //console.log(this.typeRadio);
         let name = 'sendToCave'; //sendToCave
         let methodsInfo = this.NFTSendInfo.methods.filter(obj => obj.name === name);
         //console.log(methodsInfo[0]);
         methodsInfo[0].params[0].value = this.sentInfo.tokenId;
-        methodsInfo[0].params[1].value = 'BlackIron';
-        methodsInfo[0].params[2].value = '1';
-        if (this.typeRadio === 1) {
-          methodsInfo[0].params[1].value = 'BlackIron';
-          methodsInfo[0].params[2].value = '0';
-        } else if (this.typeRadio === 2) {
-          methodsInfo[0].params[1].value = 'Tungsten';
-          methodsInfo[0].params[2].value = '0';
-        } else if (this.typeRadio === 3) {
-          methodsInfo[0].params[1].value = 'Platinum';
-        } else if (this.typeRadio === 4) {
-          methodsInfo[0].params[1].value = 'Obsidian';
-        } else if (this.typeRadio === 5) {
-          methodsInfo[0].params[1].value = 'Cobalt';
-        }
+        methodsInfo[0].params[1].value = this.typeRadio;
+        let newInfo = this.mineData.filter(obj => obj._caveName === this.typeRadio)[0];
+        methodsInfo[0].params[2].value = newInfo._caveStatus ? '0' : '1';
         let newArgs = getArgs(methodsInfo[0].params);
         this.chainMethodCall(this.sentInfo.address, methodsInfo[0], this.NFTSendAddress, 0, newArgs);
         this.getBalanceByAddress(chainInfo.chainId, 1, this.sentInfo.address);
@@ -847,14 +865,8 @@
        * @author: Wave
        */
       async acquire(info) {
-        console.log(info);
+        //console.log(info);
         let name = 'claimEarned';
-        /*let methodsInfo = {};
-        if (info.mark === '1') {
-          methodsInfo = this.gainInfo.methods.filter(obj => obj.name === name);
-        } else {
-          methodsInfo = this.newGainInfo.methods.filter(obj => obj.name === name);
-        }*/
         let methodsInfo = this.gainInfo.methods.filter(obj => obj.name === name);
         //console.log(methodsInfo[0].params);
         methodsInfo[0].params[0].value = info.place;
@@ -1050,6 +1062,10 @@
        **/
       async passSubmit(password) {
         //console.log(password);
+        if (!this.contractCallData.sender) {
+          this.$message({message: "您慢点，调用验证合约未完成，过几秒再试一下", type: 'warning', duration: 3000});
+          return;
+        }
         let newAddressInfo = this.addressList.filter(obj => obj.address === this.contractCallData.sender);
         let passwordInfo = await passwordVerification(newAddressInfo[0], password);
         //console.log(passwordInfo);
@@ -1108,15 +1124,12 @@
           if (response.success) {
             this.$message({message: this.$t('tips.tips15'), type: 'success', duration: 1000});
           } else {
-            if (response.data.code === 'err_0014') {
-              this.$message({message: response.data.message, type: 'error', duration: 3000});
-            } else {
-              this.$message({
-                message: this.$t('tips.tips14') + JSON.stringify(response.data),
-                type: 'error',
-                duration: 3000
-              });
-            }
+            this.$message({
+              message: '对不起发生错误了，您可以再试一下 --.--' + JSON.stringify(response.data.error.message),
+              type: 'error',
+              duration: 3000
+            });
+
           }
         }).catch((err) => {
           this.$message({message: this.$t('public.err1') + err, type: 'error', duration: 3000});
@@ -1134,6 +1147,40 @@
           name: name,
           query: {'address': param}
         })
+      },
+
+      /**
+       * @disc: 获取矿洞列表
+       * @params:
+       * @date: 2020-12-18 14:27
+       * @author: Wave
+       */
+      async getMineList(contractAddress, methodName, methodDesc, args) {
+        let resData = await methodCall(contractAddress, methodName, methodDesc, args);
+        //console.log(resData);
+        if (resData.success) {
+          let newData = JSON.parse(resData.data.result);
+          for (let item of newData) {
+            let newArr = {caveName: item._caveName, isNew: false};
+            this.mineData.push(newArr)
+          }
+        }
+      },
+
+      /**
+       * @disc: 获取新矿洞列表
+       * @params:
+       * @date: 2020-12-18 14:27
+       * @author: Wave
+       */
+      async getNewMineList(contractAddress, methodName, methodDesc, args) {
+        let resData = await methodCall(contractAddress, methodName, methodDesc, args);
+        this.mineData = JSON.parse(resData.data.result);
+        let x = 2, y = 3;
+        this.mineData.splice(x - 1, 1, ... this.mineData.splice(y - 1, 1, this.mineData[x - 1]));
+        let a = 5, b = 6;
+        this.mineData.splice(a - 1, 1, ... this.mineData.splice(b - 1, 1, this.mineData[a - 1]));
+        //console.log(this.mineData);
       },
     }
   }
