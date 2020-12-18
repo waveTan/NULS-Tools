@@ -67,6 +67,41 @@
 
     </div>
 
+    <div class="cb bottom">
+      <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane label="我的卖单" name="first">
+          <el-table :data="mySellData">
+            <el-table-column prop="address" label="地址" width="200">
+            </el-table-column>
+            <el-table-column prop="id" label="ID" width="60" align="center">
+            </el-table-column>
+            <el-table-column label="数量" width="150" align="center">
+              <template slot-scope="scope">
+                {{scope.row.number}}(<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>)
+              </template>
+            </el-table-column>
+            <el-table-column prop="amount" label="金额(NULS)" width="150" align="center">
+            </el-table-column>
+            <el-table-column prop="txHashs" label="TXHash" width="220" align="center">
+              <template slot-scope="scope">
+                <span class="click">{{scope.row.txHashs}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="txTime" label="创建时间" width="160" align="center">
+            </el-table-column>
+            <el-table-column label="操作" min-width="100" align="center">
+              <template slot-scope="scope">
+                <el-button @click="handleClick(scope.row)" type="text" size="small">修改</el-button>
+                <el-button type="text" size="small">撤销</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+
+        </el-tab-pane>
+        <el-tab-pane label="我的买单" name="second">我的挂单(买单)</el-tab-pane>
+        <el-tab-pane label="历史记录" name="third">历史记录 （我的买单，我的卖单）</el-tab-pane>
+      </el-tabs>
+    </div>
     <el-dialog class="token-dialog" width="50rem" @close="closeTokenDialog"
                :title="dialogTitle"
                :visible.sync="buyOrSellDialog"
@@ -124,6 +159,7 @@
 </template>
 
 <script>
+  import moment from 'moment'
   import axios from 'axios'
   import nuls from 'nuls-sdk-js'
   import Password from '@/components/PasswordBar'
@@ -223,6 +259,9 @@
             {validator: checkAmount, trigger: 'blur'}
           ]
         },
+
+        activeName: 'first',
+        mySellData: [],//我的卖单列表
         tokenSwapSetInterval: null,//定时器
       }
     },
@@ -262,6 +301,10 @@
         //console.log(resData.data);
         if (resData.success) {
           this.contractInfo = resData.data;
+        }
+
+        if (this.addressInfo.address) {
+          this.tabData(this.activeName, this.addressInfo.address, 1);
         }
       },
 
@@ -697,7 +740,7 @@
               console.log(this.changeInfo);
               methodsInfo[0].params[0].value = this.changeInfo.seller;
               methodsInfo[0].params[1].value = this.changeInfo.token;
-              value = timesDecimals(this.tokenSwapForm.amount, this.changeInfo.tokenDecimals).toString();
+              value = this.tokenSwapForm.amount;
             }
             let newArgs = getArgs(methodsInfo[0].params);
             console.log(newArgs);
@@ -804,6 +847,84 @@
         });
       },
 
+      /**
+       * @disc: tab 切换
+       * @params:
+       * @date: 2020-12-18 11:27
+       * @author: Wave
+       */
+      handleClick(tab) {
+        this.activeName = tab.name;
+      },
+
+      /**
+       * @disc: tab 数据加载
+       * @params: tabName
+       * @date: 2020-12-18 11:29
+       * @author: Wave
+       */
+      tabData(tabName, address, pageIndex = 1) {
+        if (tabName === 'first') {
+          this.getMyBuyList(address, pageIndex)
+        } else if (tabName === 'second') {
+          this.getMySellList(address, pageIndex)
+        } else if (tabName === 'third') {
+          console.log('third');
+          //this.getMyBuyList(address,pageIndex)
+        }
+      },
+
+      /**
+       * @disc: 获取我的买单
+       * @params: address
+       * @params: pageIndex
+       * @date: 2020-12-15 15:04
+       * @author: Wave
+       */
+      async getMyBuyList(address, pageIndex) {
+        let url = this.urls + '/tokenex/buyOrdersByCreator/' + address + '/' + pageIndex;
+        try {
+          let resData = await axios.get(url);
+          console.log(resData.data);
+          if (resData.data.success) {
+            for (let item of resData.data.data.list) {
+              console.log(item);
+              //item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              item.address = superLong(item.buyer, 6);
+              item.txHashs = superLong(item.txHash, 8);
+              item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
+            }
+            this.mySellData = resData.data.data.list;
+          } else {
+            console.log('获取我的买单失败: ' + JSON.stringify(resData.data))
+          }
+        } catch (err) {
+          console.log('获取我的买单异常: ' + JSON.stringify(err))
+        }
+      },
+
+      /**
+       * @disc: 获取我的卖单
+       * @params: address
+       * @params: pageIndex
+       * @date: 2020-12-15 15:04
+       * @author: Wave
+       */
+      async getMySellList(address, pageIndex) {
+        let url = this.urls + '/tokenex/saleOrdersByCreator/' + address + '/' + pageIndex;
+        try {
+          let resData = await axios.get(url);
+          console.log(resData.data);
+          if (resData.data.success) {
+            //this.contractAddress = resData.data.data;
+          } else {
+            console.log('获取我的买卖失败: ' + JSON.stringify(resData.data))
+          }
+        } catch (err) {
+          console.log('获取我的买卖异常: ' + JSON.stringify(err))
+        }
+      },
+
     }
 
   }
@@ -815,6 +936,7 @@
       height: 5rem;
     }
     .info {
+      height: 450px;
       .title {
         line-height: 2rem;
         height: 2rem;

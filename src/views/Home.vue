@@ -31,8 +31,8 @@
           <p>{{$t('home.home7')}}</p>
           <b class="font12">{{$t('home.home8')}}</b>
         </li>
-        <li @click="toUrl('tokenSwap','',0)">
-        <!--<li>-->
+        <!-- <li @click="toUrl('tokenSwap','',0)">-->
+        <li>
           <p>Token闪兑(开发中....)</p>
           <b class="font12">NULS生态内的NRC20 Tokon闪兑NULS</b>
         </li>
