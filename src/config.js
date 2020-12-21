@@ -7,7 +7,7 @@
 //开发模式
 export const IS_DEV = process.env.NODE_ENV === 'production';
 //运行模式
-export const IS_RUN = true;
+export const IS_RUN = false;
 //链信息
 export const chainInfo =
   IS_RUN ? {chainId: 1, assetsId: 1, prefix: 'NULS'} : {chainId: 2, assetsId: 1, prefix: 'tNULS'};

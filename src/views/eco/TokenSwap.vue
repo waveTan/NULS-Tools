@@ -28,8 +28,8 @@
           <el-table-column label="操作" width="100" align="left">
             <template slot-scope="scope">
               <el-button @click="sellClick(scope.row)" class="sell" type="text" size="small">出售</el-button>
-              <el-button @click="undoClick('buy',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
-              </el-button>
+              <!--<el-button @click="undoClick('buy',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
+              </el-button>-->
             </template>
           </el-table-column>
         </el-table>
@@ -58,8 +58,8 @@
           <el-table-column label="操作" width="100" align="left">
             <template slot-scope="scope">
               <el-button @click="buyClick(scope.row)" class="buy" type="text" size="small">买入</el-button>
-              <el-button @click="undoClick('sell',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
-              </el-button>
+              <!--<el-button @click="undoClick('sell',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
+              </el-button>-->
             </template>
           </el-table-column>
         </el-table>
@@ -92,14 +92,71 @@
             <el-table-column label="操作" min-width="100" align="center">
               <template slot-scope="scope">
                 <el-button @click="handleClick(scope.row)" type="text" size="small">修改</el-button>
-                <el-button type="text" size="small">撤销</el-button>
+                <el-button type="text" @click="undoClick('sell',scope.row)" size="small">撤销</el-button>
               </template>
             </el-table-column>
           </el-table>
-
         </el-tab-pane>
-        <el-tab-pane label="我的买单" name="second">我的挂单(买单)</el-tab-pane>
-        <el-tab-pane label="历史记录" name="third">历史记录 （我的买单，我的卖单）</el-tab-pane>
+        <el-tab-pane label="我的买单" name="second">
+          <el-table :data="myBuyData">
+            <el-table-column prop="address" label="地址" width="200">
+            </el-table-column>
+            <el-table-column prop="id" label="ID" width="60" align="center">
+            </el-table-column>
+            <el-table-column label="数量" width="150" align="center">
+              <template slot-scope="scope">
+                {{scope.row.number}}(<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>)
+              </template>
+            </el-table-column>
+            <el-table-column prop="amount" label="金额(NULS)" width="150" align="center">
+            </el-table-column>
+            <el-table-column prop="txHashs" label="TXHash" width="220" align="center">
+              <template slot-scope="scope">
+                <span class="click">{{scope.row.txHashs}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="txTime" label="创建时间" width="160" align="center">
+            </el-table-column>
+            <el-table-column label="操作" min-width="100" align="center">
+              <template slot-scope="scope">
+                <el-button @click="handleClick(scope.row)" type="text" size="small">修改</el-button>
+                <el-button type="text" @click="undoClick('buy',scope.row)" size="small">撤销</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="历史记录" name="third">
+          <el-table :data="historyData">
+            <el-table-column prop="txHashs" label="TXHash" min-width="220" align="center">
+              <template slot-scope="scope">
+                <span class="click">{{scope.row.txHashs}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="id" label="ID" width="100" align="center">
+            </el-table-column>
+            <el-table-column label="数量" width="180" align="center">
+              <template slot-scope="scope">
+                {{scope.row.number}}<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="amount" label="金额" width="180" align="center">
+              <template slot-scope="scope">
+                {{scope.row.amount}}
+                <span>{{scope.row.amountSymbol}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="类型" width="100" align="center">
+              <template slot-scope="scope">
+                <span v-if="scope.row.type ===1">卖单</span>
+                <span v-else-if="scope.row.type ===2">买单</span>
+                <span v-else-if="scope.row.type ===3">卖出</span>
+                <span v-else-if="scope.row.type ===4">买入</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="txTime" label="交易时间" width="200" align="center">
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
       </el-tabs>
     </div>
     <el-dialog class="token-dialog" width="50rem" @close="closeTokenDialog"
@@ -262,6 +319,13 @@
 
         activeName: 'first',
         mySellData: [],//我的卖单列表
+        myBuyData: [],//我的买单列表
+        historyData: [],//历史记录
+        pager: {
+          total: 0,
+          page: 1,
+          rows: 15,
+        },
         tokenSwapSetInterval: null,//定时器
       }
     },
@@ -304,7 +368,7 @@
         }
 
         if (this.addressInfo.address) {
-          this.tabData(this.activeName, this.addressInfo.address, 1);
+          this.tabData(this.activeName);
         }
       },
 
@@ -401,7 +465,7 @@
               item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
               item.addresss = superLong(item.buyer, 6);
               item.amount = divisionDecimals(item.remainAmount, item.tokenDecimals).toString();
-              item.number = Times(item.rate, item.amount).toString();
+              item.number = divisionDecimals(item.rate, item.tokenDecimals).toString();
               //item.amount =   parseFloat(tofix(Division(item.number, item.rate), 3, 1));
               if (item.buyer === this.addressInfo.address) {
                 item.isMyOrder = true;
@@ -411,10 +475,10 @@
             }
             this.buyData = resData.data.data.list
           } else {
-            console.log('获取卖单列表失败: ' + JSON.stringify(resData.data))
+            console.log('获取买单列表失败: ' + JSON.stringify(resData.data))
           }
         } catch (err) {
-          console.log('获取卖单列表异常: ' + JSON.stringify(err))
+          console.log('获取买单列表异常: ' + JSON.stringify(err))
         }
       },
 
@@ -428,6 +492,7 @@
         let url = this.urls + '/tokenex/saleOrders/' + index;
         try {
           let resData = await axios.get(url);
+          //console.log(resData);
           if (resData.data.success) {
             //console.log(resData.data.data);
             for (let item of resData.data.data.list) {
@@ -461,6 +526,7 @@
       showDialog(type, info = {}) {
         this.buyOrSellDialog = true;
         this.isShowInfo = false;
+        console.log(type, info);
         if (type === 0) {
           this.dialogTitle = '挂买单';
           this.type = 'buy';
@@ -478,6 +544,7 @@
        */
       closeTokenDialog() {
         this.addressInfo = accountList(1);
+        this.getAddressList();
       },
 
       /**
@@ -487,18 +554,21 @@
        * @author: Wave
        */
       sellClick(info) {
-        console.log(info);
+        //console.log(info);
+        let newAssetsInfo = this.addressInfo.tokens.filter(obj => obj.contractAddress === info.token);
+        if (newAssetsInfo.length === 0) {
+          this.$message({message: "对不起！改账户没有 " + info.symbol + " token", type: 'error', duration: 3000});
+          return;
+        }
+
         this.changeInfo = info;
         this.buyOrSellDialog = true;
         this.isShowInfo = true;
         this.type = 'selling';
         this.dialogTitle = '出售给ID:' + info.id;
 
-        let newAssetsInfo = this.addressInfo.tokens.filter(obj => obj.contractAddress === info.token)[0];
-        if (newAssetsInfo.contractAddress) {
-          this.tokenSwapForm.assets = newAssetsInfo.contractAddress;
-          this.tokenInfo = newAssetsInfo;
-        }
+        this.tokenSwapForm.assets = newAssetsInfo[0].contractAddress;
+        this.tokenInfo = newAssetsInfo;
         this.tokenSwapForm.fromAddress = this.addressInfo.address.toString();
 
       },
@@ -574,7 +644,7 @@
       async getAddressList() {
         let newAddressData = accountList(0);
         for (let item of newAddressData) {
-
+          //console.log(item);
           if (!item.note || item.note.toString() === 'undefined') {
             item.note = '';
             item.labels = item.address;
@@ -583,7 +653,8 @@
           }
 
 
-          let addressInfo = await this.getAddressInfoByNode(item.address);
+          let addressInfo = await this.getAddressInfo(item.address);
+          //console.log(addressInfo);
           if (addressInfo.success) {
             item.balance = parseFloat(tofix(divisionDecimals(addressInfo.data.balance), 4, -1));
             let tokenList = await this.getTokenListByAddress(item.address);
@@ -614,7 +685,8 @@
        * 获取地址网络信息
        * @param address
        **/
-      async getAddressInfoByNode(address) {
+      async getAddressInfo(address) {
+        //console.log(address);
         return await this.$post('/', 'getAccount', [address])
           .then((response) => {
             //console.log(response);
@@ -855,6 +927,7 @@
        */
       handleClick(tab) {
         this.activeName = tab.name;
+        this.tabData(this.activeName);
       },
 
       /**
@@ -863,43 +936,15 @@
        * @date: 2020-12-18 11:29
        * @author: Wave
        */
-      tabData(tabName, address, pageIndex = 1) {
+      tabData(tabName) {
         if (tabName === 'first') {
-          this.getMyBuyList(address, pageIndex)
+          this.getMySellList(this.addressInfo.address, this.pager.page)
         } else if (tabName === 'second') {
-          this.getMySellList(address, pageIndex)
+          this.getMyBuyList(this.addressInfo.address, this.pager.page)
         } else if (tabName === 'third') {
-          console.log('third');
+          this.historyData = [];
+          this.getMySellOrder(this.addressInfo.address, this.pager.page)
           //this.getMyBuyList(address,pageIndex)
-        }
-      },
-
-      /**
-       * @disc: 获取我的买单
-       * @params: address
-       * @params: pageIndex
-       * @date: 2020-12-15 15:04
-       * @author: Wave
-       */
-      async getMyBuyList(address, pageIndex) {
-        let url = this.urls + '/tokenex/buyOrdersByCreator/' + address + '/' + pageIndex;
-        try {
-          let resData = await axios.get(url);
-          console.log(resData.data);
-          if (resData.data.success) {
-            for (let item of resData.data.data.list) {
-              console.log(item);
-              //item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
-              item.address = superLong(item.buyer, 6);
-              item.txHashs = superLong(item.txHash, 8);
-              item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
-            }
-            this.mySellData = resData.data.data.list;
-          } else {
-            console.log('获取我的买单失败: ' + JSON.stringify(resData.data))
-          }
-        } catch (err) {
-          console.log('获取我的买单异常: ' + JSON.stringify(err))
         }
       },
 
@@ -912,11 +957,19 @@
        */
       async getMySellList(address, pageIndex) {
         let url = this.urls + '/tokenex/saleOrdersByCreator/' + address + '/' + pageIndex;
+        //console.log(url);
         try {
           let resData = await axios.get(url);
-          console.log(resData.data);
+          //console.log(resData.data);
           if (resData.data.success) {
-            //this.contractAddress = resData.data.data;
+            for (let item of resData.data.data.list) {
+              //console.log(item);
+              //item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              item.address = superLong(item.seller, 6);
+              item.txHashs = superLong(item.txHash, 8);
+              item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
+            }
+            this.mySellData = resData.data.data.list;
           } else {
             console.log('获取我的买卖失败: ' + JSON.stringify(resData.data))
           }
@@ -925,6 +978,168 @@
         }
       },
 
+      /**
+       * @disc: 获取我的买单
+       * @params: address
+       * @params: pageIndex
+       * @date: 2020-12-15 15:04
+       * @author: Wave
+       */
+      async getMyBuyList(address, pageIndex) {
+        let url = this.urls + '/tokenex/buyOrdersByCreator/' + address + '/' + pageIndex;
+        //console.log(url);
+        try {
+          let resData = await axios.get(url);
+          //console.log(resData.data);
+          if (resData.data.success) {
+            for (let item of resData.data.data.list) {
+              //console.log(item);
+              //item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              item.address = superLong(item.buyer, 6);
+              item.txHashs = superLong(item.txHash, 8);
+              item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
+              item.number = parseFloat(divisionDecimals(item.rate, item.tokenDecimals).toString());
+              item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              item.amountSymbol = 'NULS';
+              item.amount = parseFloat(divisionDecimals(item.remainAmount, item.tokenDecimals).toString());
+            }
+            this.myBuyData = resData.data.data.list;
+          } else {
+            console.log('获取我的买单失败: ' + JSON.stringify(resData.data))
+          }
+        } catch (err) {
+          console.log('获取我的买单异常: ' + JSON.stringify(err))
+        }
+      },
+
+      /**
+       * @disc: 用户吃单记录-卖单
+       * @params:
+       * @date: 2020-12-21 16:28
+       * @author: Wave
+       */
+      async getMySellOrder(address, pageIndex) {
+        let url = this.urls + '/tokenex/takeSaleOrders/' + address + '/' + pageIndex;
+        //console.log(url);
+        try {
+          let resData = await axios.get(url);
+          //console.log(resData.data);
+          if (resData.data.success) {
+            for (let item of resData.data.data.list) {
+              item.txHashs = superLong(item.txHash, 10);
+              item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
+              item.number = parseFloat(divisionDecimals(item.buyAmountOfToken, 8).toString());
+              item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              item.amountSymbol = 'NULS';
+              item.amount = parseFloat(divisionDecimals(item.payAmountOfNuls, 8).toString());
+              item.type = 1;
+            }
+            this.historyData = [...this.historyData, ...resData.data.data.list];
+            this.getMyBuyOrder(address, pageIndex);
+          } else {
+            console.log('获取用户吃单记录-卖单失败: ' + JSON.stringify(resData.data))
+          }
+        } catch (err) {
+          console.log('获取用户吃单记录-卖单异常: ' + JSON.stringify(err))
+        }
+      },
+
+      /**
+       * @disc: 用户吃单记录-买单
+       * @params:
+       * @date: 2020-12-21 16:28
+       * @author: Wave
+       */
+      async getMyBuyOrder(address, pageIndex) {
+        let url = this.urls + '/tokenex/takeBuyOrders/' + address + '/' + pageIndex;
+        //console.log(url);
+        try {
+          let resData = await axios.get(url);
+          //console.log(resData.data);
+          if (resData.data.success) {
+            for (let item of resData.data.data.list) {
+              item.txHashs = superLong(item.txHash, 10);
+              item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
+              item.number = parseFloat(divisionDecimals(item.buyAmountOfToken, 8).toString());
+              item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              item.amountSymbol = 'NULS';
+              item.amount = parseFloat(divisionDecimals(item.payAmountOfNuls, 8).toString());
+              item.type = 2;
+            }
+            //this.myBuyData = resData.data.data.list;
+            this.historyData = [...this.historyData, ...resData.data.data.list];
+            this.getMyOrderSell(address, pageIndex);
+          } else {
+            console.log('获取用户吃单记录-买单失败: ' + JSON.stringify(resData.data))
+          }
+        } catch (err) {
+          console.log('获取用户吃单记录-买单异常: ' + JSON.stringify(err))
+        }
+      },
+
+      /**
+       * @disc: 用户创建的卖单的被吃记录
+       * @params:
+       * @date: 2020-12-21 16:28
+       * @author: Wave
+       */
+      async getMyOrderSell(address, pageIndex) {
+        let url = this.urls + '/tokenex/takeSaleOrdersByCreator/' + address + '/' + pageIndex;
+        //console.log(url);
+        try {
+          let resData = await axios.get(url);
+          //console.log(resData.data);
+          if (resData.data.success) {
+            for (let item of resData.data.data.list) {
+              item.txHashs = superLong(item.txHash, 10);
+              item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
+              item.number = parseFloat(divisionDecimals(item.buyAmountOfToken, 8).toString());
+              item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              item.amountSymbol = 'NULS';
+              item.amount = parseFloat(divisionDecimals(item.payAmountOfNuls, 8).toString());
+              item.type = 3;
+            }
+            this.historyData = [...this.historyData, ...resData.data.data.list];
+            this.getMyOrderBuy(address, pageIndex);
+          } else {
+            console.log('获取用户创建的卖单的被吃记录失败: ' + JSON.stringify(resData.data))
+          }
+        } catch (err) {
+          console.log('获取用户创建的卖单的被吃记录异常: ' + JSON.stringify(err))
+        }
+      },
+
+      /**
+       * @disc: 用户创建的买单的被吃记录
+       * @params:
+       * @date: 2020-12-21 16:28
+       * @author: Wave
+       */
+      async getMyOrderBuy(address, pageIndex) {
+        let url = this.urls + '/tokenex/takeBuyOrdersByCreator/' + address + '/' + pageIndex;
+        //console.log(url);
+        try {
+          let resData = await axios.get(url);
+          //console.log(resData.data);
+          if (resData.data.success) {
+            for (let item of resData.data.data.list) {
+              item.txHashs = superLong(item.txHash, 10);
+              item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
+              item.number = parseFloat(divisionDecimals(item.payAmountOfToken, 8).toString());
+              item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              item.amountSymbol = 'NULS';
+              item.amount = parseFloat(divisionDecimals(item.buyAmountOfNuls, 8).toString());
+              item.type = 4;
+            }
+            this.historyData = [...this.historyData, ...resData.data.data.list];
+            console.log(this.historyData);
+          } else {
+            console.log('获取用户创建的买单的被吃记录失败: ' + JSON.stringify(resData.data))
+          }
+        } catch (err) {
+          console.log('获取用户创建的买单的被吃记录异常: ' + JSON.stringify(err))
+        }
+      },
     }
 
   }
