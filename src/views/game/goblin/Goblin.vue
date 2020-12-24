@@ -12,7 +12,7 @@
       <div v-else class="font12 fr" style="margin: 20px 0 0 0">数据异步加载中（可继续操作）...</div>
     </div>
 
-    <el-table :data="addressList" row-key="address" style="width: 100%">
+    <el-table :data="addressList" show-summary row-key="address" style="width: 100%">
       <el-table-column label="地址" prop="addresss" align="center" width="150">
       </el-table-column>
       <el-table-column label="备注" prop="note" align="center" width="80">
@@ -334,18 +334,15 @@
           item.cobaltBalance === '' ? 0 : item.cobaltBalance;
 
           let addressInfo = await this.getAddressInfoByNode(item.address);
+          //console.log(addressInfo);
           if (addressInfo.success) {
             item.balance = parseFloat(tofix(divisionDecimals(addressInfo.data.balance), 4, -1));
             let tokenList = await this.getTokenListByAddress(item.address);
             item.tokens = tokenList.data.list;
             for (let k of addressInfo.data.tokens) {
               let newArr = k.split(',');
-              //console.log(newArr);
-              /*if (newArr[1] === 'Goblin') {
-                console.log(newArr[0]);
-              }*/
               if (newArr[1] === 'Goblin' && newArr[0] === this.goblinAddress) {
-                let goblinInfo = tokenList.data.list.filter(obj => obj.tokenName === newArr[1]);
+                let goblinInfo = tokenList.data.list.filter(obj => obj.tokenName === newArr[1] && obj.contractAddress === this.goblinAddress);
                 item.goblinBalance = parseFloat(tofix(divisionDecimals(goblinInfo[0].balance, goblinInfo[0].decimals), 4, -1));
               } else if (newArr[1] === 'black_iron') {
                 let blackInfo = tokenList.data.list.filter(obj => obj.tokenName === newArr[1]);
@@ -739,6 +736,7 @@
        */
       async guiji(rowInfo) {
         //console.log(rowInfo);
+        this.contractCallData = {};
         this.guiDialog = true;
         this.guijiForm.assets = '';
         this.guijiForm.amount = '';
@@ -829,6 +827,7 @@
        */
       upgrade(info) {
         //console.log(info);
+        this.contractCallData = {};
         let name = 'upgrade';
         let methodsInfo = this.NFTLevelUpInfo.methods.filter(obj => obj.name === name);
         //console.log(methodsInfo[0].params);
@@ -847,6 +846,7 @@
        */
       sent(info) {
         //console.log(info);
+        this.contractCallData = {};
         this.sentInfo = info;
         if (Number(info.level) >= 10) {
           //console.log(this.mineData);
@@ -907,6 +907,7 @@
        */
       async acquire(info) {
         //console.log(info);
+        this.contractCallData = {};
         let name = 'claimEarned';
         let methodsInfo = {};
         if (info.mark === '0') {
@@ -933,6 +934,7 @@
        */
       async backs(info) {
         //console.log(info);
+        this.contractCallData = {};
         let name = 'dismissFromCave';
         let methodsInfo = this.NFTSendInfo.methods.filter(obj => obj.name === name);
         methodsInfo[0].params[0].value = info.tokenId;
@@ -952,6 +954,7 @@
        */
       acquireAndBacks(info) {
         //console.log(info);
+        this.contractCallData = {};
         //let name = 'remandAllFromMine';
         let name = 'dismissAllFromCave';
         /*console.log(this.contractInfo);
@@ -1109,7 +1112,7 @@
       async passSubmit(password) {
         //console.log(password);
         if (!this.contractCallData.sender) {
-          this.$message({message: "您慢点，调用验证合约未完成，过几秒再试一下", type: 'warning', duration: 3000});
+          this.$message({message: "请在输入密码框稍等几秒，调用验证合约未完成!", type: 'warning', duration: 3000});
           return;
         }
         let newAddressInfo = this.addressList.filter(obj => obj.address === this.contractCallData.sender);
