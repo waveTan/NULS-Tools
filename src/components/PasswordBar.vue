@@ -18,7 +18,10 @@
     </el-checkbox>
     <div slot="footer" class="dialog-footer">
       <el-button @click="passwordClose">{{$t('public.cancel')}}</el-button>
-      <el-button type="success" @click="dialogSubmit('passwordForm')" id="passwordInfo">{{$t('public.confirm')}}
+
+      <el-button :type="isDisabled ? 'info': 'success'" @click="dialogSubmit('passwordForm')" :disabled="isDisabled"
+                 id="passwordInfo">
+        <span> {{disabledInfo}}</span>
       </el-button>
     </div>
   </el-dialog>
@@ -53,6 +56,9 @@
         keepRadio: false,//是否记住密码
         timeLag: 300000,//时差
         width: IsPC() ? '35%' : '95%',
+        isDisabled: false,
+        disabledValue: 0,
+        disabledInfo: '',
       }
     },
     created() {
@@ -82,10 +88,6 @@
           this.dialogSubmit(formName);
         }
       },
-
-      //密码框显示执行事件
-      passwordShow() {
-      },
       passwordClose() {
         this.$refs['passwordForm'].resetFields();
         this.passwordVisible = false;
@@ -100,6 +102,18 @@
           if (this.addressInfo.password) {
             this.passwordForm.password = this.addressInfo.password;
             this.keepRadio = true;
+            this.disabledValue = 3;
+            this.isDisabled = true;
+            this.disabledInfo = "合约参数验证中:" + this.disabledValue;
+            let interval = setInterval(() => {
+              this.disabledValue = this.disabledValue - 1;
+              this.disabledInfo = "合约参数验证中:" + this.disabledValue;
+              if (this.disabledValue === 0) {
+                clearInterval(interval);
+                this.isDisabled = false;
+                this.disabledInfo = this.$t('public.confirm')
+              }
+            }, 1000);
           }
         }
         this.passwordVisible = boolean;

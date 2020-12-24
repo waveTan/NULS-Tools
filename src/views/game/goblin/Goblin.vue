@@ -6,13 +6,14 @@
       Goblin 助手
       <div class="font12 fr" style="margin: 20px 0 0 0" v-if="countDownValue !==0">
         数据
-        <CountDown :remainTime="countDownValue"></CountDown>
+        <CountDown :remainTime="countDownValue">
+        </CountDown>
         秒后刷新
       </div>
       <div v-else class="font12 fr" style="margin: 20px 0 0 0">数据异步加载中（可继续操作）...</div>
     </div>
 
-    <el-table :data="addressList" show-summary row-key="address" style="width: 100%">
+    <el-table :data="addressList" :summary-method="getSummaries" show-summary row-key="address" style="width: 100%">
       <el-table-column label="地址" prop="addresss" align="center" width="150">
       </el-table-column>
       <el-table-column label="备注" prop="note" align="center" width="80">
@@ -681,6 +682,40 @@
           .catch((error) => {
             return {success: false, data: error}
           });
+      },
+
+      //统计方法
+      getSummaries(param) {
+        const {columns, data} = param;
+        const sums = [];
+        columns.forEach((column, index) => {
+          //console.log(index);
+          if (index === 0) {
+            sums[index] = '合计';
+            return;
+          } else if (index === 1) {
+            sums[index] = '';
+            return;
+          } else if (index === 9) {
+            sums[index] = '';
+            return;
+          }
+          const values = data.map(item => Number(item[column.property]));
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return Number(parseFloat(Plus(prev, curr).toString()));
+              } else {
+                return prev;
+              }
+            }, 0);
+            sums[index] += '';
+          } else {
+            sums[index] = '';
+          }
+        });
+        return sums;
       },
 
       /**
