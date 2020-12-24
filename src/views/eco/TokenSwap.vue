@@ -7,7 +7,12 @@
       <div class="fl">
         <div class="title">
           <span style="color: #0ede94 ">买入</span>
-          <el-button @click="showDialog(0)" class="fr" type="success" size="mini" round>挂买单</el-button>
+          <el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="success" size="mini"
+                     round>
+            导入/创建账户
+          </el-button>
+          <el-button @click="showDialog(0)" v-else class="fr" type="success" size="mini" round>挂买单</el-button>
+
         </div>
 
         <el-table :data="buyData" stripe style="width: 580px">
@@ -27,7 +32,7 @@
           </el-table-column>
           <el-table-column label="操作" width="100" align="left">
             <template slot-scope="scope">
-              <el-button @click="sellClick(scope.row)" class="sell" type="text" size="small">出售</el-button>
+              <el-button @click="sellClick(scope.row)" v-if="addressInfo.address" class="sell" type="text" size="small">出售</el-button>
               <!--<el-button @click="undoClick('buy',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
               </el-button>-->
             </template>
@@ -38,7 +43,12 @@
       <div class="fr tl">
         <div class="title">
           <span class="fred">卖出</span>
-          <el-button @click="showDialog(1)" class="fr" type="danger" size="mini" round>挂卖单</el-button>
+
+          <el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="danger" size="mini"
+                     round>
+            导入/创建账户
+          </el-button>
+          <el-button @click="showDialog(1)" v-else class="fr" type="danger" size="mini" round>挂卖单</el-button>
         </div>
         <el-table :data="sellData" stripe style="width: 580px">
           <el-table-column prop="addresss" label="广告方" min-width="160">
@@ -57,7 +67,7 @@
           </el-table-column>
           <el-table-column label="操作" width="100" align="left">
             <template slot-scope="scope">
-              <el-button @click="buyClick(scope.row)" class="buy" type="text" size="small">买入</el-button>
+              <el-button @click="buyClick(scope.row)" v-if="addressInfo.address" class="buy" type="text" size="small">买入</el-button>
               <!--<el-button @click="undoClick('sell',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
               </el-button>-->
             </template>
@@ -67,7 +77,7 @@
 
     </div>
 
-    <div class="cb bottom">
+    <div class="cb bottom" v-if="addressInfo.address">
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="我的卖单" name="first">
           <el-table :data="mySellData" stripe>
@@ -164,6 +174,7 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+
     <el-dialog class="token-dialog" width="50rem" @close="closeTokenDialog"
                :title="dialogTitle"
                :visible.sync="buyOrSellDialog"
@@ -188,7 +199,7 @@
             <el-input v-model="tokenSwapForm.fromAddress" autocomplete="off" disabled="true">
             </el-input>
           </el-form-item>
-          <div class="balance" v-if="!isShowInfo">{{addressInfo.balance}} <span class="fCN">NULS</span></div>
+          <div class="balance">{{addressInfo.balance}} <span class="fCN">NULS</span></div>
           <el-form-item label="资产" prop="assets">
             <el-select v-model="tokenSwapForm.assets" filterable placeholder="请选择资产" @change="changeAssets"
                        v-if="addressInfo.tokens" :disabled="isShowInfo || type === 'editBuy' || type ==='editSell'">
@@ -200,12 +211,12 @@
             </el-select>
           </el-form-item>
           <el-form-item :label="'数量('+tokenInfo.tokenSymbol+')'" prop="number">
-            <el-input v-model="tokenSwapForm.number" autocomplete="off">
+            <el-input v-model="tokenSwapForm.number" autocomplete="off" @input="changeNumber">
               <el-button slot="append" @click="changeAll">Max</el-button>
             </el-input>
           </el-form-item>
           <el-form-item label="金额(NULS)" prop="amount">
-            <el-input v-model="tokenSwapForm.amount" autocomplete="off">
+            <el-input v-model="tokenSwapForm.amount" autocomplete="off" @input="changeAmount">
             </el-input>
           </el-form-item>
         </el-form>
@@ -270,18 +281,25 @@
       let checkNumber = (rule, value, callback) => {
         if (!value) {
           return callback(new Error('数量不能为空'));
-        }/* else if (!Number.isInteger(value)) {
-          callback(new Error('请输入数字值'));
-        } */ else {
+        } else {
+
+          if (this.type === 'selling' || this.type === 'buying') {
+            if (Number(value) > Number(this.changeInfo.number)) {
+              return callback(new Error('数量最大为:' + this.changeInfo.number));
+            }
+          }
           callback();
         }
       };
       let checkAmount = (rule, value, callback) => {
         if (!value) {
           return callback(new Error('数量不能为空'));
-        } /*else if (!Number.isInteger(value)) {
-          callback(new Error('请输入数字值'));
-        } */ else {
+        } else {
+          if (this.type === 'selling' || this.type === 'buying') {
+            if (Number(value) > Number(this.changeInfo.amount)) {
+              return callback(new Error('金额最大为:' + this.changeInfo.amount));
+            }
+          }
           callback();
         }
       };
@@ -315,10 +333,10 @@
             {validator: checkAssets, trigger: 'blur'}
           ],
           number: [
-            {validator: checkNumber, trigger: 'blur'}
+            {validator: checkNumber, trigger: ['blur', 'change']}
           ],
           amount: [
-            {validator: checkAmount, trigger: 'blur'}
+            {validator: checkAmount, trigger: ['blur', 'change']}
           ]
         },
         activeName: 'first',
@@ -573,11 +591,11 @@
         try {
           let resData = await axios.get(url);
           if (resData.data.success) {
-            console.log(resData.data.data);
+            //console.log(resData.data.data);
             for (let item of resData.data.data.list) {
               item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
               item.addresss = superLong(item.buyer, 6);
-              item.amount = divisionDecimals(item.remainAmount, item.tokenDecimals).toString();
+              item.amount = divisionDecimals(item.remainAmount, 8).toString();
               item.number = Times(item.rate, item.amount).toString();
               //item.amount =   parseFloat(tofix(Division(item.number, item.rate), 3, 1));
               if (item.buyer === this.addressInfo.address) {
@@ -655,6 +673,7 @@
        * @author: Wave
        */
       closeTokenDialog() {
+        this.$refs['tokenSwapForm'].resetFields();
         this.tokenSwapForm.number = '';
         this.tokenSwapForm.amount = '';
       },
@@ -902,12 +921,37 @@
       //全部
       changeAll() {
         if (this.type === 'selling') {
-          this.tokenSwapForm.number = this.changeInfo.number
+          this.tokenSwapForm.number = this.changeInfo.number;
+          this.changeNumber();
+        } else if (this.type === 'buying') {
+          if (this.addressInfo.balance > this.changeInfo.amount) {
+            this.tokenSwapForm.number = this.changeInfo.number;
+            this.tokenSwapForm.amount = this.changeInfo.amount;
+            this.changeNumber();
+          } else {
+            this.tokenSwapForm.amount = this.addressInfo.balance;
+            this.changeAmount();
+          }
         } else {
           let newTokenData = this.addressInfo.tokens.filter(obj => obj.contractAddress === this.tokenSwapForm.assets);
           this.tokenSwapForm.number = newTokenData[0].balances
         }
+      },
 
+      //token数量发生变化
+      changeNumber() {
+        console.log(this.changeInfo, this.type);
+        if (this.type === 'selling' || this.type === 'buying') {
+          this.tokenSwapForm.amount = Division(Number(this.tokenSwapForm.number), Number(this.changeInfo.rate)).toString();
+        }
+      },
+
+      //NULS 金额发生变化
+      changeAmount() {
+        console.log(this.changeInfo, this.type);
+        if (this.type === 'selling' || this.type === 'buying') {
+          this.tokenSwapForm.number = Times(Number(this.tokenSwapForm.amount), Number(this.changeInfo.rate)).toString();
+        }
       },
 
       /**
@@ -957,9 +1001,10 @@
             if (this.type === 'buy') {
               value = this.tokenSwapForm.amount;
               methodsInfo[0].params[0].value = this.tokenInfo.contractAddress;
-              console.log(timesDecimals(this.tokenSwapForm.number, this.tokenInfo.decimals).toString());
-              console.log(timesDecimals(this.tokenSwapForm.amount, 8).toString());
-              methodsInfo[0].params[1].value = Division(timesDecimals(this.tokenSwapForm.number, this.tokenInfo.decimals).toString(), timesDecimals(this.tokenSwapForm.amount, 8).toString()).toString();
+              let newNumber = timesDecimals(this.tokenSwapForm.number, this.tokenInfo.decimals).toString();
+              let newAmount = timesDecimals(this.tokenSwapForm.amount, 8).toString();
+              console.log(newNumber, newAmount);
+              methodsInfo[0].params[1].value = Division(newNumber, newAmount).toString();
             } else if (this.type === 'sell') {
               methodsInfo[0].params[0].value = this.tokenInfo.contractAddress;
               methodsInfo[0].params[1].value = timesDecimals(this.tokenSwapForm.number, this.tokenInfo.decimals).toString();
@@ -1035,12 +1080,13 @@
           value: timesDecimals(this.tokenSwapForm.amount).toString()
         };
 
-        if (this.type = 'approve') {
+        if (this.type === 'approve') {
           transferInfo.toAddress = '';
         }
 
         amount = Number(Plus(transferInfo.fee, amount));
         let remark = '';
+        console.log(transferInfo);
         //console.log(this.balanceInfo);
         let resData = await getBalanceOrNonceByAddress(this.addressInfo.address, chainInfo.chainId, 1);
         //console.log(resData);
@@ -1144,12 +1190,11 @@
               item.amountSymbol = 'NULS';
               item.amount = parseFloat(Division(item.number, item.rate).toString());
             }
-            this.mySellData = resData.data.data.list;
+            this.mySellData = resData.data.data.list.filter(obj => Number(obj.amount) > 0);
           } else {
             console.log('获取我的卖单失败: ' + JSON.stringify(resData.data))
           }
         } catch (err) {
-          console.log(err);
           console.log('获取我的卖单异常: ' + JSON.stringify(err))
         }
       },
@@ -1174,12 +1219,12 @@
               item.address = superLong(item.buyer, 6);
               item.txHashs = superLong(item.txHash, 8);
               item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
-              item.number = parseFloat(divisionDecimals(item.rate, item.tokenDecimals).toString());
               item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
               item.amountSymbol = 'NULS';
-              item.amount = parseFloat(divisionDecimals(item.remainAmount, item.tokenDecimals).toString());
+              item.amount = divisionDecimals(item.remainAmount, 8).toString();
+              item.number = Times(item.rate, item.amount).toString();
             }
-            this.myBuyData = resData.data.data.list;
+            this.myBuyData = resData.data.data.list.filter(obj => Number(obj.amount) > 0);
           } else {
             console.log('获取我的买单失败: ' + JSON.stringify(resData.data))
           }
@@ -1314,6 +1359,22 @@
           }
         } catch (err) {
           console.log('获取用户创建的买单的被吃记录异常: ' + JSON.stringify(err))
+        }
+      },
+
+      /**
+       * 连接跳转
+       * @param urlName
+       * @param parameter
+       * @param type  0:路由跳转 1：外部链接
+       */
+      toUrl(urlName, parameter, type) {
+        if (type === 0) {
+          this.$router.push({
+            name: urlName
+          })
+        } else {
+          window.open(urlName)
         }
       },
     }
