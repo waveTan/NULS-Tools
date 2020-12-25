@@ -14,10 +14,6 @@
         <p>{{$t('home.home15')}}</p>
         <b class="font12">{{$t('home.home13')}}: *****</b>
       </li>
-      <li @click="toUrl('lockedTransfer','',0)">
-        <p>{{$t('locking.locking0')}}</p>
-        <b class="font12">{{$t('locking.locking0')}}</b>
-      </li>
     </ul>
   </div>
 </template>

@@ -12,8 +12,7 @@
         </el-input>
       </el-form-item>
     </el-form>
-    <!-- <div class="red">此操作将消耗0.01NULS</div>-->
-    <el-checkbox v-model="keepRadio">
+    <el-checkbox v-if="isShowKeep" v-model="keepRadio">
       <span>记住密码</span>
     </el-checkbox>
     <div slot="footer" class="dialog-footer">
@@ -32,7 +31,12 @@
   import {IsPC, accountList} from '@/api/util'
 
   export default {
-    props: {},
+    props: {
+      isTime: {
+        type: Boolean,
+        default: false
+      },
+    },
     data() {
       let validatePass = (rule, value, callback) => {
         if (value === '') {
@@ -53,6 +57,7 @@
             {validator: validatePass, trigger: ['blur', 'change']}
           ]
         },
+        isShowKeep: false,//是否显示记住密码
         keepRadio: false,//是否记住密码
         timeLag: 300000,//时差
         width: IsPC() ? '35%' : '95%',
@@ -98,6 +103,7 @@
         //console.log(address);
         this.addressList = accountList(0);
         if (address) {
+          this.isShowKeep = true;
           this.addressInfo = this.addressList.filter(obj => obj.address === address)[0];
           if (this.addressInfo.password) {
             this.passwordForm.password = this.addressInfo.password;
@@ -115,6 +121,10 @@
               }
             }, 1000);
           }
+        } else {
+          this.isShowKeep = false;
+          this.isDisabled = false;
+          this.disabledInfo = this.$t('public.confirm')
         }
         this.passwordVisible = boolean;
 

@@ -1,6 +1,6 @@
 <template>
   <div class="home cb w1200">
-    <div class="cb">
+    <div class="cb" style="display: none">
       <h6 class="title font18 fW600">NULS </h6>
       <ul class="dapp-list">
         <li @click="toUrl('https://wallet.nuls.io/','',1)">
@@ -23,17 +23,17 @@
     <div class="cb">
       <h6 class="title font18 fW600">{{$t('public.zoology')}}</h6>
       <ul class="dapp-list">
-        <li @click="toUrl('https://pocm.nuls.io/','',1)">
+        <!--<li @click="toUrl('https://pocm.nuls.io/','',1)">
           <p>POCM</p>
           <b class="font12">{{$t('home.home5')}}</b>
         </li>
         <li @click="toUrl('https://factory.nuls.io/','',1)">
           <p>{{$t('home.home7')}}</p>
           <b class="font12">{{$t('home.home8')}}</b>
-        </li>
+        </li>-->
         <li @click="toUrl('tokenSwap','',0)">
           <!--<li>-->
-          <p>Token闪兑(开发中....)</p>
+          <p>Token闪兑(测试中....)</p>
           <b class="font12">NULS生态内的NRC20 Tokon闪兑NULS</b>
         </li>
       </ul>
@@ -52,6 +52,29 @@
         <li>
           <p>{{$t('home.home28')}}<span class="font12 fW400">({{$t('public.design')}}...)</span></p>
           <b class="font12">{{$t('home.home29')}}</b>
+        </li>
+      </ul>
+    </div>
+    <div class="cb">
+      <h6 class="title font18 fW600">{{$t('nav.tool')}}</h6>
+      <ul class="dapp-list">
+        <li @click="toUrl('http://des.mimieye.net:81/','',1)">
+          <p>NULS {{$t('home.home20')}}</p>
+          <b class="font12">{{$t('home.home21')}}</b>
+        </li>
+        <li @click="toUrl('toolNewAddress','',0)">
+          <p>地址生成器</p>
+          <b class="font12">
+            可生成指定后缀的地址
+          </b>
+        </li>
+        <li @click="toUrl('lockedTransfer','',0)">
+          <p>{{$t('locking.locking0')}}</p>
+          <b class="font12">{{$t('locking.locking0')}}</b>
+        </li>
+        <li @click="toUrl('oneToMore','',0)">
+          <p>一对多转账交易</p>
+          <b class="font12">可以一对多转NULS交易</b>
         </li>
       </ul>
     </div>

@@ -6,12 +6,12 @@
     <div class="info">
       <div class="fl">
         <div class="title">
-          <span style="color: #0ede94 ">买入</span>
+          <span style="color: #0ede94 ">我要卖Token</span>
           <el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="success" size="mini"
                      round>
             导入/创建账户
           </el-button>
-          <el-button @click="showDialog(0)" v-else class="fr" type="success" size="mini" round>挂买单</el-button>
+          <el-button @click="showDialog(0)" v-else class="fr" type="success" size="mini" round>挂卖单</el-button>
 
         </div>
 
@@ -32,7 +32,9 @@
           </el-table-column>
           <el-table-column label="操作" width="100" align="left">
             <template slot-scope="scope">
-              <el-button @click="sellClick(scope.row)" v-if="addressInfo.address" class="sell" type="text" size="small">出售</el-button>
+              <el-button @click="sellClick(scope.row)" v-if="addressInfo.address" class="sell" type="text" size="small">
+                出售
+              </el-button>
               <!--<el-button @click="undoClick('buy',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
               </el-button>-->
             </template>
@@ -42,13 +44,13 @@
 
       <div class="fr tl">
         <div class="title">
-          <span class="fred">卖出</span>
+          <span class="fred">我要买Token</span>
 
           <el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="danger" size="mini"
                      round>
             导入/创建账户
           </el-button>
-          <el-button @click="showDialog(1)" v-else class="fr" type="danger" size="mini" round>挂卖单</el-button>
+          <el-button @click="showDialog(1)" v-else class="fr" type="danger" size="mini" round>挂买单</el-button>
         </div>
         <el-table :data="sellData" stripe style="width: 580px">
           <el-table-column prop="addresss" label="广告方" min-width="160">
@@ -67,7 +69,9 @@
           </el-table-column>
           <el-table-column label="操作" width="100" align="left">
             <template slot-scope="scope">
-              <el-button @click="buyClick(scope.row)" v-if="addressInfo.address" class="buy" type="text" size="small">买入</el-button>
+              <el-button @click="buyClick(scope.row)" v-if="addressInfo.address" class="buy" type="text" size="small">
+                买入
+              </el-button>
               <!--<el-button @click="undoClick('sell',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
               </el-button>-->
             </template>
@@ -184,13 +188,14 @@
         <ul>
           <li>广告方:<span class="click">{{changeInfo.buyer ? changeInfo.buyer: changeInfo.seller}}</span></li>
           <li>数量:<span>{{changeInfo.number}}({{changeInfo.symbol}})</span></li>
-          <li>金额:<span>{{changeInfo.amount}}(NULS)</span></li>
+          <li>单价:<span>{{changeInfo.rate}}(NULS)</span></li>
+          <li>总金额:<span>{{changeInfo.amount}}(NULS)</span></li>
           <li>合约地址:<span class="click">{{changeInfo.token}}</span></li>
         </ul>
       </div>
       <div :class="isShowInfo ? 'fr':''">
         <el-form :model="tokenSwapForm" status-icon :rules="tokenSwapRules" ref="tokenSwapForm" class="tokenSwap-form">
-          <el-form-item label="账户" prop="fromAddress">
+          <el-form-item label="账户: " prop="fromAddress">
             <!--<el-select v-model="tokenSwapForm.fromAddress" filterable placeholder="请选择地址" @change="changeAddress"
                        :disabled="type === 'editBuy' || type ==='editSell'">
               <el-option v-for="item in addressList" :key="item.address" :label="item.labels" :value="item.address">
@@ -199,9 +204,9 @@
             <el-input v-model="tokenSwapForm.fromAddress" autocomplete="off" disabled="true">
             </el-input>
           </el-form-item>
-          <div class="balance">{{addressInfo.balance}} <span class="fCN">NULS</span></div>
-          <el-form-item label="资产" prop="assets">
-            <el-select v-model="tokenSwapForm.assets" filterable placeholder="请选择资产" @change="changeAssets"
+          <!--<div class="balance">{{addressInfo.balance}} <span class="fCN">NULS</span></div>-->
+          <el-form-item label="Token: " prop="assets">
+            <el-select v-model="tokenSwapForm.assets" filterable placeholder="请选择Token" @change="changeAssets"
                        v-if="addressInfo.tokens" :disabled="isShowInfo || type === 'editBuy' || type ==='editSell'">
               <el-option v-for="item in addressInfo.tokens"
                          :key="item.contractAddress"
@@ -210,15 +215,18 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item :label="'数量('+tokenInfo.tokenSymbol+')'" prop="number">
+          <el-form-item label="数量: " prop="number">
             <el-input v-model="tokenSwapForm.number" autocomplete="off" @input="changeNumber">
               <el-button slot="append" @click="changeAll">Max</el-button>
             </el-input>
           </el-form-item>
-          <el-form-item label="金额(NULS)" prop="amount">
+          <el-form-item
+                  :label="'单价('+tokenSwapForm.number+' '+tokenInfo.tokenSymbol+'兑换 '+tokenSwapForm.amount+' NULS):' "
+                  prop="amount">
             <el-input v-model="tokenSwapForm.amount" autocomplete="off" @input="changeAmount">
             </el-input>
           </el-form-item>
+          <div class="font14">成交额: {{tokenSwapForm.number*tokenSwapForm.amount}} <span class="fCN">NULS</span></div>
         </el-form>
       </div>
       <div class="cb"></div>
@@ -1456,6 +1464,9 @@
               .el-input__inner {
                 height: 2rem;
                 line-height: 2rem;
+                .el-input__icon {
+                  line-height: 2rem;
+                }
               }
             }
             .el-select {
