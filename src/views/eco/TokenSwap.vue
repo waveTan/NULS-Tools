@@ -7,30 +7,36 @@
       <div class="fl">
         <div class="title">
           <span style="color: #0ede94 ">我要卖Token</span>
+          <Search :allData="allNRC20List" type="buy" v-if="allNRC20List.length > 130">
+          </Search>
           <el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="success" size="mini"
                      round>
             导入/创建账户
           </el-button>
           <el-button @click="showDialog(0)" v-else class="fr" type="success" size="mini" round>挂卖单</el-button>
-
         </div>
 
         <el-table :data="buyData" stripe style="width: 580px">
-          <el-table-column prop="addresss" label="广告方" min-width="160">
+          <el-table-column prop="addresss" label="广告方" min-width="140">
           </el-table-column>
-          <el-table-column prop="id" label="ID" width="60">
+          <el-table-column prop="id" label="ID" width="40" align="center">
           </el-table-column>
-          <el-table-column label="数量" width="130">
+          <el-table-column label="数量" width="110" align="center">
             <template slot-scope="scope">
               {{scope.row.number}}<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
             </template>
           </el-table-column>
-          <el-table-column label="金额" width="130">
+          <el-table-column label="单价(NULS)" width="110" align="center">
             <template slot-scope="scope">
-              {{scope.row.amount}}<span>NULS</span>
+              {{scope.row.rate}}
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="100" align="left">
+          <el-table-column label="总额(NULS)" width="110" align="center">
+            <template slot-scope="scope">
+              {{scope.row.amount}}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="50" align="center">
             <template slot-scope="scope">
               <el-button @click="sellClick(scope.row)" v-if="addressInfo.address" class="sell" type="text" size="small">
                 出售
@@ -45,7 +51,8 @@
       <div class="fr tl">
         <div class="title">
           <span class="fred">我要买Token</span>
-
+          <Search :allData="allNRC20List" type="sell" v-if="allNRC20List.length > 130">
+          </Search>
           <el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="danger" size="mini"
                      round>
             导入/创建账户
@@ -53,21 +60,26 @@
           <el-button @click="showDialog(1)" v-else class="fr" type="danger" size="mini" round>挂买单</el-button>
         </div>
         <el-table :data="sellData" stripe style="width: 580px">
-          <el-table-column prop="addresss" label="广告方" min-width="160">
+          <el-table-column prop="addresss" label="广告方" min-width="140">
           </el-table-column>
-          <el-table-column prop="id" label="ID" width="60">
+          <el-table-column prop="id" label="ID" width="40" align="center">
           </el-table-column>
-          <el-table-column label="数量" width="130">
+          <el-table-column label="数量" width="110" align="center">
             <template slot-scope="scope">
               {{scope.row.number}}<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
             </template>
           </el-table-column>
-          <el-table-column label="金额" width="130">
+          <el-table-column label="单价(NULS)" width="110" align="center">
             <template slot-scope="scope">
-              {{scope.row.amount}}<span>NULS</span>
+              {{scope.row.rate}}
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="100" align="left">
+          <el-table-column label="总额(NULS)" width="110" align="center">
+            <template slot-scope="scope">
+              {{scope.row.amount}}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="50" align="center">
             <template slot-scope="scope">
               <el-button @click="buyClick(scope.row)" v-if="addressInfo.address" class="buy" type="text" size="small">
                 买入
@@ -246,6 +258,7 @@
   import axios from 'axios'
   import nuls from 'nuls-sdk-js'
   import Password from '@/components/PasswordBar'
+  import Search from '@/views/eco/Search'
   import {chainInfo} from '@/config.js'
   import {
     Division,
@@ -358,10 +371,11 @@
         },
         tokenSwapSetInterval: null,//定时器
         tokenSwapSetIntervalTwo: null,//定时器
+        searchValue: '',//搜索内容
       }
     },
     components: {
-      Password,
+      Password, Search
     },
     created() {
       this.addressInfo = accountList(1);
@@ -376,10 +390,7 @@
         }
       }, 1000);
 
-      this.tokenSwapSetInterval = setInterval(() => {
-        this.getBuyOrdersList();
-        this.getSaleOrdersList();
-      }, 10000);
+      this.setInterval();
     },
     watch: {
       "addressInfo.address": function (val, oldVal) {
@@ -402,11 +413,22 @@
         this.allList();
         this.getContractAddress();
         setTimeout(() => {
-          this.getBuyOrdersList();
-          this.getSaleOrdersList();
+          this.getBuyOrdersList('', this.pager.page);
+          this.getSaleOrdersList('', this.pager.page);
         }, 1000);
+      },
 
-
+      /**
+       * @disc: 设置定时获取数据
+       * @params:
+       * @date: 2020-12-28 11:54
+       * @author: Wave
+       */
+      setInterval(buyToken = '', sellToken = '', index = 1) {
+        this.tokenSwapSetInterval = setInterval(() => {
+          this.getBuyOrdersList(buyToken, index);
+          this.getSaleOrdersList(sellToken, index);
+        }, 10000);
       },
 
       /**
@@ -482,9 +504,12 @@
       async getAllNRC20(pageIndex = 1, pageSize = 100) {
         return await this.$post('/', 'getContractList', [pageIndex, pageSize, 1, false])
           .then((response) => {
-            //console.log(response);
+            console.log(response);
             if (response.hasOwnProperty("result")) {
               //this.contractInfo = response.result;
+              for (let item of response.result.list) {
+                item.value = item.symbol
+              }
               return {success: true, data: response.result}
             } else {
               return {success: false, data: response}
@@ -590,12 +615,21 @@
 
       /**
        * @disc:获取买单列表
-       * @params:
+       * @params: token
+       * @params: index
        * @date: 2020-12-15 15:04
        * @author: Wave
        */
-      async getBuyOrdersList(index = '1') {
-        let url = this.urls + '/tokenex/buyOrders/' + index;
+      async getBuyOrdersList(token, index = '1') {
+        let url = '';
+        if (token) {
+          url = this.urls + '/tokenex/buyOrders/' + token + '/' + index;
+        } else {
+          url = this.urls + '/tokenex/buyOrders/' + index;
+        }
+        clearInterval(this.tokenSwapSetInterval);
+        this.setInterval(token, '', index);
+        //console.log(url);
         try {
           let resData = await axios.get(url);
           if (resData.data.success) {
@@ -623,12 +657,20 @@
 
       /**
        * @disc:获取卖单列表
-       * @params:
+       * @params: token
+       * @params: index
        * @date: 2020-12-15 15:04
        * @author: Wave
        */
-      async getSaleOrdersList(index = '1') {
-        let url = this.urls + '/tokenex/saleOrders/' + index;
+      async getSaleOrdersList(token, index = '1') {
+        let url = '';
+        if (token) {
+          url = this.urls + '/tokenex/saleOrders/' + token + '/' + index;
+        } else {
+          url = this.urls + '/tokenex/saleOrders/' + index;
+        }
+        clearInterval(this.tokenSwapSetInterval);
+        this.setInterval('', token, index);
         try {
           let resData = await axios.get(url);
           //console.log(resData);
@@ -1401,6 +1443,11 @@
         line-height: 2rem;
         height: 2rem;
         padding: 0;
+        span {
+          display: block;
+          float: left;
+        }
+
         .el-button--mini {
           width: auto;
         }
