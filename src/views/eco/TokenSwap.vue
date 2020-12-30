@@ -13,7 +13,7 @@
                      round>
             导入/创建账户
           </el-button>
-          <el-button @click="showDialog(0)" v-else class="fr" type="success" size="mini" round>挂卖单</el-button>
+          <el-button @click="showDialog(1)" v-else class="fr" type="success" size="mini" round>挂卖单</el-button>
         </div>
 
         <el-table :data="buyData" stripe style="width: 580px">
@@ -28,7 +28,7 @@
           </el-table-column>
           <el-table-column label="单价(NULS)" width="110" align="center">
             <template slot-scope="scope">
-              {{scope.row.rate}}
+              {{scope.row.price}}
             </template>
           </el-table-column>
           <el-table-column label="总额(NULS)" width="110" align="center">
@@ -57,7 +57,7 @@
                      round>
             导入/创建账户
           </el-button>
-          <el-button @click="showDialog(1)" v-else class="fr" type="danger" size="mini" round>挂买单</el-button>
+          <el-button @click="showDialog(0)" v-else class="fr" type="danger" size="mini" round>挂买单</el-button>
         </div>
         <el-table :data="sellData" stripe style="width: 580px">
           <el-table-column prop="addresss" label="广告方" min-width="140">
@@ -71,7 +71,7 @@
           </el-table-column>
           <el-table-column label="单价(NULS)" width="110" align="center">
             <template slot-scope="scope">
-              {{scope.row.rate}}
+              {{scope.row.price}}
             </template>
           </el-table-column>
           <el-table-column label="总额(NULS)" width="110" align="center">
@@ -106,9 +106,11 @@
                 {{scope.row.number}} <span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="金额" width="150" align="center">
+            <el-table-column prop="price" label="单价(NULS)" width="150" align="center">
+            </el-table-column>
+            <el-table-column label="金额(NULS)" width="150" align="center">
               <template slot-scope="scope">
-                {{scope.row.amount}} <span>{{scope.row.amountSymbol}}</span>
+                {{scope.row.amount}}
               </template>
             </el-table-column>
             <el-table-column prop="txHashs" label="TXHash" width="220" align="center">
@@ -199,9 +201,9 @@
       <div class="fl" v-if="isShowInfo">
         <ul>
           <li>广告方:<span class="click">{{changeInfo.buyer ? changeInfo.buyer: changeInfo.seller}}</span></li>
-          <li>数量:<span>{{changeInfo.number}}({{changeInfo.symbol}})</span></li>
-          <li>单价:<span>{{changeInfo.rate}}(NULS)</span></li>
-          <li>总金额:<span>{{changeInfo.amount}}(NULS)</span></li>
+          <li>{{type==='selling' ? '可卖出':'可买入'}}数量:<span>{{changeInfo.number}}({{changeInfo.symbol}})</span></li>
+          <li>单价:<span>{{changeInfo.price}}(NULS)</span></li>
+          <li>预计总共需支付金额:<span>{{changeInfo.amount}}(NULS)</span></li>
           <li>合约地址:<span class="click">{{changeInfo.token}}</span></li>
         </ul>
       </div>
@@ -217,7 +219,7 @@
             </el-input>
           </el-form-item>
           <!--<div class="balance">{{addressInfo.balance}} <span class="fCN">NULS</span></div>-->
-          <el-form-item label="Token: " prop="assets">
+          <el-form-item :label="type.includes('sell') ? '卖出Token:':'买入Token:'" prop="assets">
             <el-select v-model="tokenSwapForm.assets" filterable placeholder="请选择Token" @change="changeAssets"
                        v-if="addressInfo.tokens" :disabled="isShowInfo || type === 'editBuy' || type ==='editSell'">
               <el-option v-for="item in addressInfo.tokens"
@@ -227,18 +229,21 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="数量: " prop="number">
+          <el-form-item
+                  :label="type.includes('sell') ? '卖出数量('+tokenInfo.tokenSymbol+'):':'买入数量('+tokenInfo.tokenSymbol+'):'"
+                  prop="number">
             <el-input v-model="tokenSwapForm.number" autocomplete="off" @input="changeNumber">
               <el-button slot="append" @click="changeAll">Max</el-button>
             </el-input>
           </el-form-item>
-          <el-form-item
-                  :label="'单价('+tokenSwapForm.number+' '+tokenInfo.tokenSymbol+'兑换 '+tokenSwapForm.amount+' NULS):' "
-                  prop="amount">
-            <el-input v-model="tokenSwapForm.amount" autocomplete="off" @input="changeAmount">
+          <el-form-item prop="price"
+                        :label="'单价( 1 '+tokenInfo.tokenSymbol+'兑换 '+tokenSwapForm.price+' NULS):' ">
+            <el-input v-model="tokenSwapForm.price" autocomplete="off" @input="changeAmount"
+                      :disabled="type ==='buying' || type ==='selling'">
             </el-input>
           </el-form-item>
-          <div class="font14">成交额: {{tokenSwapForm.number*tokenSwapForm.amount}} <span class="fCN">NULS</span></div>
+          <div class="font14">预计{{type.includes('sell') ? '收入':'支出'}}金额: {{tokenSwapForm.number*tokenSwapForm.price}}
+            <span class="fCN">NULS</span></div>
         </el-form>
       </div>
       <div class="cb"></div>
@@ -314,13 +319,13 @@
       };
       let checkAmount = (rule, value, callback) => {
         if (!value) {
-          return callback(new Error('数量不能为空'));
+          return callback(new Error('单价不能为空'));
         } else {
-          if (this.type === 'selling' || this.type === 'buying') {
+          /*if (this.type === 'selling' || this.type === 'buying') {
             if (Number(value) > Number(this.changeInfo.amount)) {
-              return callback(new Error('金额最大为:' + this.changeInfo.amount));
+              return callback(new Error('单价最大为:' + this.changeInfo.amount));
             }
-          }
+          }*/
           callback();
         }
       };
@@ -343,8 +348,9 @@
         tokenSwapForm: {
           fromAddress: '',
           assets: '',
-          number: '100',
-          amount: '1'
+          number: '',
+          price: '',
+          amount: ''
         },
         tokenSwapRules: {
           fromAddress: [
@@ -356,7 +362,7 @@
           number: [
             {validator: checkNumber, trigger: ['blur', 'change']}
           ],
-          amount: [
+          price: [
             {validator: checkAmount, trigger: ['blur', 'change']}
           ]
         },
@@ -591,8 +597,9 @@
           let methodsInfo = contractInfo.data.methods.filter(obj => obj.name === name);
           let value = 0;
           //console.log(this.tokenInfo);
+          console.log(contractInfo.decimals);
           methodsInfo[0].params[0].value = this.contractAddress;
-          methodsInfo[0].params[1].value = timesDecimals(100000000, contractInfo.decimals).toString();
+          methodsInfo[0].params[1].value = timesDecimals('1000000000000000000', contractInfo.decimals).toFormat();
           let newArgs = getArgs(methodsInfo[0].params);
           console.log(newArgs);
           if (!newArgs.allParameter) {
@@ -639,6 +646,7 @@
               item.addresss = superLong(item.buyer, 6);
               item.amount = divisionDecimals(item.remainAmount, 8).toString();
               item.number = Times(item.rate, item.amount).toString();
+              item.price = parseFloat(tofix(Division(1, item.rate), 6, -1));
               //item.amount =   parseFloat(tofix(Division(item.number, item.rate), 3, 1));
               if (item.buyer === this.addressInfo.address) {
                 item.isMyOrder = true;
@@ -681,6 +689,7 @@
               item.addresss = superLong(item.seller, 6);
               item.number = divisionDecimals(item.remainAmount, item.tokenDecimals);
               item.amount = Division(item.number, item.rate).toString();
+              item.price = parseFloat(tofix(Division(1, item.rate), 6, -1));
               if (item.seller === this.addressInfo.address) {
                 item.isMyOrder = true;
               } else {
@@ -712,6 +721,8 @@
           this.dialogTitle = '挂卖单';
           this.type = 'sell';
         }
+        this.tokenSwapForm.number = '';
+        this.tokenSwapForm.price = '';
         this.buyOrSellDialog = true;
         this.isShowInfo = false;
       },
@@ -756,7 +767,7 @@
         this.tokenInfo = newAssetsInfo[0];
         this.tokenSwapForm.fromAddress = this.addressInfo.address.toString();
         this.tokenSwapForm.number = info.number;
-        this.tokenSwapForm.amount = info.amount;
+        this.tokenSwapForm.price = info.price;
 
       },
 
@@ -767,7 +778,7 @@
        * @author: Wave
        */
       buyClick(info) {
-        console.log(info);
+        //console.log(info);
         this.changeInfo = info;
         this.buyOrSellDialog = true;
         this.isShowInfo = true;
@@ -780,6 +791,8 @@
           this.tokenInfo = newAssetsInfo;
         }
         this.tokenSwapForm.fromAddress = this.addressInfo.address.toString();
+        this.tokenSwapForm.number = info.number;
+        this.tokenSwapForm.price = info.price;
       },
 
       /**
@@ -792,7 +805,7 @@
       editInfo(type, info) {
         console.log(type, info);
         this.tokenSwapForm.number = info.number;
-        this.tokenSwapForm.amount = info.amount;
+        this.tokenSwapForm.price = info.price;
 
         let newAssetsInfo = this.addressInfo.tokens.filter(obj => obj.contractAddress === info.token);
         this.tokenSwapForm.assets = newAssetsInfo[0].contractAddress;
@@ -831,10 +844,10 @@
           type: 'warning'
         }).then(async () => {
           let name = type === 'buy' ? 'cancelBuyOrder' : 'cancelSaleOrder';
-          console.log(name);
-          console.log(this.contractInfo);
+          //console.log(name);
+          //console.log(this.contractInfo);
           let methodsInfo = this.contractInfo.methods.filter(obj => obj.name === name);
-          console.log(this.tokenInfo);
+          //console.log(this.tokenInfo);
           methodsInfo[0].params[0].value = info.token;
           methodsInfo[0].params[1].value = info.totalAmount;
           let newArgs = getArgs(methodsInfo[0].params);
@@ -976,10 +989,10 @@
         } else if (this.type === 'buying') {
           if (this.addressInfo.balance > this.changeInfo.amount) {
             this.tokenSwapForm.number = this.changeInfo.number;
-            this.tokenSwapForm.amount = this.changeInfo.amount;
+            this.tokenSwapForm.price = this.changeInfo.price;
             this.changeNumber();
           } else {
-            this.tokenSwapForm.amount = this.addressInfo.balance;
+            this.tokenSwapForm.price = this.addressInfo.price;
             this.changeAmount();
           }
         } else {
@@ -990,7 +1003,7 @@
 
       //token数量发生变化
       changeNumber() {
-        console.log(this.changeInfo, this.type);
+        //console.log(this.changeInfo, this.type);
         if (this.type === 'selling' || this.type === 'buying') {
           this.tokenSwapForm.amount = Division(Number(this.tokenSwapForm.number), Number(this.changeInfo.rate)).toString();
         }
@@ -998,7 +1011,7 @@
 
       //NULS 金额发生变化
       changeAmount() {
-        console.log(this.changeInfo, this.type);
+        //console.log(this.changeInfo, this.type);
         if (this.type === 'selling' || this.type === 'buying') {
           this.tokenSwapForm.number = Times(Number(this.tokenSwapForm.amount), Number(this.changeInfo.rate)).toString();
         }
@@ -1012,6 +1025,7 @@
        */
       resetForm(formName) {
         this.$refs[formName].resetFields();
+        this.tokenInfo.contractAddress='';
         this.buyOrSellDialog = false;
       },
 
@@ -1027,8 +1041,10 @@
             //console.log(this.type);
             let name = '';
             if (this.type === 'buy') {
+              this.tokenSwapForm.amount = Times(this.tokenSwapForm.number, this.tokenSwapForm.price).toString();
               name = 'buyOrder';
             } else if (this.type === 'sell') {
+              this.tokenSwapForm.amount = Times(this.tokenSwapForm.number, this.tokenSwapForm.price).toString();
               name = 'saleOrder';
               let resData = await this.authorizationInfoValue(this.tokenInfo.contractAddress);
               if (!resData.success) {
@@ -1070,10 +1086,10 @@
               value = this.tokenSwapForm.amount;
             } else if (this.type === 'editBuy') {
               methodsInfo[0].params[0].value = this.tokenInfo.contractAddress;
-              methodsInfo[0].params[1].value = Number(Division(this.tokenSwapForm.number, this.tokenSwapForm.amount));
+              methodsInfo[0].params[1].value = this.tokenSwapForm.price;
             } else if (this.type === 'editSell') {
               methodsInfo[0].params[0].value = this.tokenInfo.contractAddress;
-              methodsInfo[0].params[1].value = Number(Division(this.tokenSwapForm.number, this.tokenSwapForm.amount));
+              methodsInfo[0].params[1].value = this.tokenSwapForm.price;
             }
 
             let newArgs = getArgs(methodsInfo[0].params);
@@ -1086,6 +1102,9 @@
             console.log(resData);
             if (!resData.success) {
               console.log('验证合约错误：' + resData.data);
+              if(resData.data ==='contract error - No enough amount for authorization'){
+                this.authorization(this.tokenInfo.contractAddress, '');
+              }
               return;
             }
             this.contractCallData = resData.data;
@@ -1122,16 +1141,17 @@
         let amount = Number(Times(this.contractCallData.gasLimit, this.contractCallData.price));
         let transferInfo = {
           fromAddress: this.contractCallData.sender,
-          toAddress: this.contractAddress,
+          toAddress: '',
           assetsChainId: chainInfo.chainId,
           assetsId: 1,
           amount: amount,
           fee: 100000,
-          value: timesDecimals(this.tokenSwapForm.amount).toString()
+          value: 0
         };
 
-        if (this.type === 'approve') {
-          transferInfo.toAddress = '';
+        if (this.contractCallData.methodName === 'buyOrder') {
+          transferInfo.toAddress = this.contractAddress;
+          transferInfo.value = timesDecimals(this.tokenSwapForm.amount).toString()
         }
 
         amount = Number(Plus(transferInfo.fee, amount));
@@ -1238,6 +1258,7 @@
               item.number = parseFloat(divisionDecimals(item.totalAmount, item.tokenDecimals).toString());
               item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
               item.amountSymbol = 'NULS';
+              item.price = parseFloat(tofix(Division(1, item.rate), 6, -1));
               item.amount = parseFloat(Division(item.number, item.rate).toString());
             }
             this.mySellData = resData.data.data.list.filter(obj => Number(obj.amount) > 0);
@@ -1272,6 +1293,7 @@
               item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
               item.amountSymbol = 'NULS';
               item.amount = divisionDecimals(item.remainAmount, 8).toString();
+              item.price = parseFloat(tofix(Division(1, item.rate), 6, -1));
               item.number = Times(item.rate, item.amount).toString();
             }
             this.myBuyData = resData.data.data.list.filter(obj => Number(obj.amount) > 0);
