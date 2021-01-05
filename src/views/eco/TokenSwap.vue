@@ -180,8 +180,8 @@
             </el-table-column>
             <el-table-column label="类型" width="100" align="center">
               <template slot-scope="scope">
-                <span v-if="scope.row.type ===1">卖单</span>
-                <span v-else-if="scope.row.type ===2">买单</span>
+                <span v-if="scope.row.type ===1">买单</span>
+                <span v-else-if="scope.row.type ===2">卖单</span>
                 <span v-else-if="scope.row.type ===3">卖出</span>
                 <span v-else-if="scope.row.type ===4">买入</span>
               </template>
@@ -224,25 +224,26 @@
                        v-if="addressInfo.tokens" :disabled="isShowInfo || type === 'editBuy' || type ==='editSell'">
               <el-option v-for="item in addressInfo.tokens"
                          :key="item.contractAddress"
-                         :label="item.tokenSymbol +'('+item.balances +')'"
+                         :label="item.symbol +'('+item.balance +')'"
                          :value="item.contractAddress">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item
-                  :label="type.includes('sell') ? '卖出数量('+tokenInfo.tokenSymbol+'):':'买入数量('+tokenInfo.tokenSymbol+'):'"
+                  :label="type.includes('sell') ? '卖出数量('+tokenInfo.symbol+'):':'买入数量('+tokenInfo.symbol+'):'"
                   prop="number">
             <el-input v-model="tokenSwapForm.number" autocomplete="off" @input="changeNumber">
               <el-button slot="append" @click="changeAll">Max</el-button>
             </el-input>
           </el-form-item>
           <el-form-item prop="price"
-                        :label="'单价( 1 '+tokenInfo.tokenSymbol+'兑换 '+tokenSwapForm.price+' NULS):' ">
+                        :label="'单价( 1 '+tokenInfo.symbol+'兑换 '+tokenSwapForm.price+' NULS):' ">
             <el-input v-model="tokenSwapForm.price" autocomplete="off" @input="changeAmount"
                       :disabled="type ==='buying' || type ==='selling'">
             </el-input>
           </el-form-item>
-          <div class="font14">预计{{type.includes('sell') ? '收入':'支出'}}金额: {{tokenSwapForm.number*tokenSwapForm.price}}
+          <div class="font14">预计{{type.includes('sell') ? '收入':'支出'}}金额:
+            {{parseFloat((tokenSwapForm.number*tokenSwapForm.price).toFixed(6))}}
             <span class="fCN">NULS</span></div>
         </el-form>
       </div>
@@ -416,8 +417,8 @@
 
       //初始化
       async init() {
-        this.allList();
         this.getContractAddress();
+        this.allList();
         setTimeout(() => {
           this.getBuyOrdersList('', this.pager.page);
           this.getSaleOrdersList('', this.pager.page);
@@ -597,17 +598,18 @@
           let methodsInfo = contractInfo.data.methods.filter(obj => obj.name === name);
           let value = 0;
           //console.log(this.tokenInfo);
-          console.log(contractInfo.decimals);
           methodsInfo[0].params[0].value = this.contractAddress;
-          methodsInfo[0].params[1].value = timesDecimals('1000000000000000000', contractInfo.decimals).toFormat();
+          let newValue = '1000000000';
+          let len = newValue.length + Number(contractInfo.data.decimals);
+          methodsInfo[0].params[1].value = newValue.padEnd(len, '0');
           let newArgs = getArgs(methodsInfo[0].params);
-          console.log(newArgs);
+          //console.log(newArgs);
           if (!newArgs.allParameter) {
             console.log('arges 错误：' + newArgs.allParameter);
             return;
           }
           let resData = await chainMethodCall(this.addressInfo.address, methodsInfo[0], tokenAddress, value, newArgs.args);
-          console.log(resData);
+          // console.log(resData);
           if (!resData.success) {
             console.log('验证合约错误：' + resData.data);
             return;
@@ -713,11 +715,19 @@
        * @author: Wave
        */
       showDialog(type) {
-        this.tokenSwapForm.assets = this.addressInfo.tokens[0].contractAddress;
         if (type === 0) {
+          //console.log(this.allNRC20List);
+          this.addressInfo.tokens = this.allNRC20List;
           this.dialogTitle = '挂买单';
           this.type = 'buy';
         } else {
+          //this.addressInfo = accountList(1);
+          //console.log(this.addressInfo);
+          if (this.addressInfo.tokens.length === 0 || !this.addressInfo.tokens) {
+            this.$message({message: '对不起！您的改账户没有nrc20资产，请切换账户。', type: 'error', duration: 3000});
+            return
+          }
+          this.tokenSwapForm.assets = this.addressInfo.tokens[0].contractAddress;
           this.dialogTitle = '挂卖单';
           this.type = 'sell';
         }
@@ -737,6 +747,8 @@
         this.$refs['tokenSwapForm'].resetFields();
         this.tokenSwapForm.number = '';
         this.tokenSwapForm.amount = '';
+        this.addressInfo.tokens = [];
+        this.getAddressList();
       },
 
       /**
@@ -784,8 +796,9 @@
         this.isShowInfo = true;
         this.type = 'buying';
         this.dialogTitle = '买入ID:' + info.id;
-
+        this.addressInfo.tokens = this.allNRC20List;
         let newAssetsInfo = this.addressInfo.tokens.filter(obj => obj.contractAddress === info.token)[0];
+        //console.log(newAssetsInfo);
         if (newAssetsInfo.contractAddress) {
           this.tokenSwapForm.assets = newAssetsInfo.contractAddress;
           this.tokenInfo = newAssetsInfo;
@@ -894,7 +907,8 @@
             //console.log(item.tokens);
             for (let k of item.tokens) {
               //console.log(k);
-              k.balances = parseFloat(tofix(divisionDecimals(k.balance, k.decimals), k.decimals, -1));
+              k.balance = parseFloat(tofix(divisionDecimals(k.balance, k.decimals), k.decimals, -1));
+              k.symbol = k.tokenSymbol;
             }
           }
 
@@ -983,18 +997,13 @@
 
       //全部
       changeAll() {
+        //console.log(this.type);
         if (this.type === 'selling') {
           this.tokenSwapForm.number = this.changeInfo.number;
           this.changeNumber();
         } else if (this.type === 'buying') {
-          if (this.addressInfo.balance > this.changeInfo.amount) {
-            this.tokenSwapForm.number = this.changeInfo.number;
-            this.tokenSwapForm.price = this.changeInfo.price;
-            this.changeNumber();
-          } else {
-            this.tokenSwapForm.price = this.addressInfo.price;
-            this.changeAmount();
-          }
+          this.tokenSwapForm.number = this.changeInfo.number;
+          this.changeNumber();
         } else {
           let newTokenData = this.addressInfo.tokens.filter(obj => obj.contractAddress === this.tokenSwapForm.assets);
           this.tokenSwapForm.number = newTokenData[0].balances
@@ -1025,7 +1034,7 @@
        */
       resetForm(formName) {
         this.$refs[formName].resetFields();
-        this.tokenInfo.contractAddress='';
+        this.tokenInfo.contractAddress = '';
         this.buyOrSellDialog = false;
       },
 
@@ -1038,7 +1047,7 @@
       submitForm(formName) {
         this.$refs[formName].validate(async (valid) => {
           if (valid) {
-            //console.log(this.type);
+            console.log(this.type);
             let name = '';
             if (this.type === 'buy') {
               this.tokenSwapForm.amount = Times(this.tokenSwapForm.number, this.tokenSwapForm.price).toString();
@@ -1102,7 +1111,7 @@
             console.log(resData);
             if (!resData.success) {
               console.log('验证合约错误：' + resData.data);
-              if(resData.data ==='contract error - No enough amount for authorization'){
+              if (resData.data === 'contract error - No enough amount for authorization') {
                 this.authorization(this.tokenInfo.contractAddress, '');
               }
               return;
@@ -1139,6 +1148,7 @@
 
         console.log(this.contractCallData);
         let amount = Number(Times(this.contractCallData.gasLimit, this.contractCallData.price));
+        console.log(amount);
         let transferInfo = {
           fromAddress: this.contractCallData.sender,
           toAddress: '',
@@ -1148,10 +1158,12 @@
           fee: 100000,
           value: 0
         };
-
         if (this.contractCallData.methodName === 'buyOrder') {
           transferInfo.toAddress = this.contractAddress;
           transferInfo.value = timesDecimals(this.tokenSwapForm.amount).toString()
+        } else if (this.contractCallData.methodName === 'takeSaleOrder') {
+          transferInfo.toAddress = this.contractAddress;
+          transferInfo.value = this.contractCallData.value
         }
 
         amount = Number(Plus(transferInfo.fee, amount));
@@ -1248,14 +1260,14 @@
         //console.log(url);
         try {
           let resData = await axios.get(url);
-          //console.log(resData.data);
+          console.log(resData.data);
           if (resData.data.success) {
             for (let item of resData.data.data.list) {
               //console.log(item);
               item.address = superLong(item.seller, 6);
               item.txHashs = superLong(item.txHash, 8);
               item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
-              item.number = parseFloat(divisionDecimals(item.totalAmount, item.tokenDecimals).toString());
+              item.number = parseFloat(divisionDecimals(item.remainAmount, item.tokenDecimals).toString());
               item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
               item.amountSymbol = 'NULS';
               item.price = parseFloat(tofix(Division(1, item.rate), 6, -1));
@@ -1316,13 +1328,14 @@
         //console.log(url);
         try {
           let resData = await axios.get(url);
-          //console.log(resData.data);
+          console.log(resData.data);
           if (resData.data.success) {
             for (let item of resData.data.data.list) {
               item.txHashs = superLong(item.txHash, 10);
               item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
-              item.number = parseFloat(divisionDecimals(item.buyAmountOfToken, 8).toString());
-              item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              let contractInfo = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0];
+              item.number = parseFloat(divisionDecimals(item.buyAmountOfToken, contractInfo.decimals).toString());
+              item.symbol = contractInfo.symbol;
               item.amountSymbol = 'NULS';
               item.amount = parseFloat(divisionDecimals(item.payAmountOfNuls, 8).toString());
               item.type = 1;
@@ -1353,8 +1366,9 @@
             for (let item of resData.data.data.list) {
               item.txHashs = superLong(item.txHash, 10);
               item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
-              item.number = parseFloat(divisionDecimals(item.payAmountOfToken, 8).toString());
-              item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              let contractInfo = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0];
+              item.number = parseFloat(divisionDecimals(item.payAmountOfToken, contractInfo.decimals).toString());
+              item.symbol = contractInfo.symbol;
               item.amountSymbol = 'NULS';
               item.amount = parseFloat(divisionDecimals(item.buyAmountOfNuls, 8).toString());
               item.type = 2;
@@ -1381,13 +1395,14 @@
         //console.log(url);
         try {
           let resData = await axios.get(url);
-          //console.log(resData.data);
+          console.log(resData.data);
           if (resData.data.success) {
             for (let item of resData.data.data.list) {
               item.txHashs = superLong(item.txHash, 10);
               item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
-              item.number = parseFloat(divisionDecimals(item.buyAmountOfToken, 8).toString());
-              item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              let contractInfo = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0];
+              item.number = parseFloat(divisionDecimals(item.buyAmountOfToken, contractInfo.decimals).toString());
+              item.symbol = contractInfo.symbol;
               item.amountSymbol = 'NULS';
               item.amount = parseFloat(divisionDecimals(item.payAmountOfNuls, 8).toString());
               item.type = 3;
@@ -1413,19 +1428,20 @@
         //console.log(url);
         try {
           let resData = await axios.get(url);
-          //console.log(resData.data);
+          console.log(resData.data);
           if (resData.data.success) {
             for (let item of resData.data.data.list) {
               item.txHashs = superLong(item.txHash, 10);
               item.txTime = moment(getLocalTime(item.txTime * 1000)).format('YYYY-MM-DD HH:mm:ss');
-              item.number = parseFloat(divisionDecimals(item.payAmountOfToken, 8).toString());
-              item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
+              let contractInfo = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0];
+              item.number = parseFloat(divisionDecimals(item.payAmountOfToken, contractInfo.decimals).toString());
+              item.symbol = contractInfo.symbol;
               item.amountSymbol = 'NULS';
               item.amount = parseFloat(divisionDecimals(item.buyAmountOfNuls, 8).toString());
               item.type = 4;
             }
             this.historyData = [...this.historyData, ...resData.data.data.list];
-            console.log(this.historyData);
+            //console.log(this.historyData);
           } else {
             console.log('获取用户创建的买单的被吃记录失败: ' + JSON.stringify(resData.data))
           }
