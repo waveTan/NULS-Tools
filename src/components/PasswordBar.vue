@@ -120,6 +120,10 @@
                 this.disabledInfo = this.$t('public.confirm')
               }
             }, 1000);
+          }else{
+            this.isShowKeep = true;
+            this.isDisabled = false;
+            this.disabledInfo = this.$t('public.confirm')
           }
         } else {
           this.isShowKeep = false;
