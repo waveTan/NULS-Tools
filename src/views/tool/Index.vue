@@ -20,43 +20,20 @@
           <p>NULS {{$t('home.home20')}}</p>
           <b class="font12">{{$t('home.home21')}}</b>
         </li>
-        <!--<li @click="toUrl('https://www.npmjs.com/package/nuls-sdk-js','',1)">
-          <p>nuls-js-sdk</p>
-          <b class="font12">{{$t('home.home22')}}</b>
-        </li>-->
         <li @click="toUrl('toolNewAddress','',0)">
-          <p>地址生成器</p>
-          <b class="font12">
-            可生成指定后缀的地址
-          </b>
+          <p>{{$t('newAddress.newAddress10')}}</p>
+          <b class="font12">{{$t('newAddress.newAddress11')}}</b>
         </li>
         <li @click="toUrl('lockedTransfer','',0)">
           <p>{{$t('locking.locking0')}}</p>
           <b class="font12">{{$t('locking.locking0')}}</b>
         </li>
         <li @click="toUrl('oneToMore','',0)">
-          <p>一对多转账交易</p>
-          <b class="font12">可以一对多转NULS交易</b>
+          <p>{{$t('oneTo.oneTo11')}}</p>
+          <b class="font12">{{$t('oneTo.oneTo12')}}</b>
         </li>
       </ul>
     </div>
-    <!--<div class="cb">
-      <h6 class="title font18 fW600">{{$t('public.interflow')}}</h6>
-      <ul class="dapp-list">
-        <li>
-          <p>{{$t('home.home23')}}</p>
-          <b class="font12"></b>
-        </li>
-        <li>
-          <p>{{$t('home.home24')}}</p>
-          <b class="font12"></b>
-        </li>
-        <li>
-          <p>{{$t('home.home25')}}</p>
-          <b class="font12"></b>
-        </li>
-      </ul>
-    </div>-->
   </div>
 </template>
 

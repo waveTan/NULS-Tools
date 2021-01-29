@@ -4,7 +4,7 @@
     "game": "Game",
     "roulette": "Roulette",
     "guess": "Guess",
-    "tool": "Tool",
+    "tool": "Tools",
     "more": "More",
     "login": "Login",
     "user": "My"
@@ -100,6 +100,7 @@
     "home27": "Win NULS a hundred percent by playing the turntable",
     "home28": "NULS lottery",
     "home29": "NULS random num based welfare lottery is absolutely open and transparent",
+    "home30": "NRC20 Tokon Push in NULS Ecosystem",
     "home": "home"
   },
   "guessNum": {
@@ -141,7 +142,7 @@
     "guessNum": "guessNum"
   },
   "locking": {
-    "locking0": "Customizable lock time transfers",
+    "locking0": "Lock up transfer",
     "locking1": "Payment Address：",
     "locking2": "Assets：",
     "locking3": "Collection address：",
@@ -171,9 +172,10 @@
     "oneTo8": "Collection address/amount",
     "oneTo9": "Can't be empty",
     "oneTo10": "Sorry, your balance is not enough!",
+    "oneTo11": "One-to-many transfer transactions",
+    "oneTo12": "One - to - many NULs can be traded",
     "oneTo": "oneTo"
   },
-
   "transfer": {
     "transfer0": "Sender:",
     "transfer1": "Receiver:",
@@ -204,7 +206,6 @@
     "transfer25": "The asset cannot be transferred to the contract address",
     "transfer": "transfer"
   },
-
   "newAddress": {
     "newAddress0": "Keystore import",
     "newAddress1": "Key import",
@@ -216,6 +217,9 @@
     "newAddress7": "Password",
     "newAddress8": "Confirm password",
     "newAddress9": "Key import",
+
+    "newAddress10": "Address generator",
+    "newAddress11": "Generates an address with the specified suffix",
     "newAddress": ""
   },
   "backupsAddress": {
@@ -295,5 +299,15 @@
     "goblin3": "goblin",
     "goblin4": "goblin",
     "goblin": "goblin"
+  },
+  "cannotGuess": {
+    "cannotGuess0": "Can't guess",
+    "cannotGuess1": "Can not guess to participate in the amount of full return and give compensation",
+    "cannotGuess2": "cannotGuess",
+    "cannotGuess3": "cannotGuess",
+    "cannotGuess4": "cannotGuess",
+    "cannotGuess5": "cannotGuess",
+    "cannotGuess6": "cannotGuess",
+    "cannotGuess": "cannotGuess"
   }
 }

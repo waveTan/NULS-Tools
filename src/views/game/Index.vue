@@ -8,22 +8,12 @@
       </li>
       <li @click="toUrl('guessNumber','',0)">
         <p>{{$t('home.home9')}}</p>
-        <!--<li>
-            <p>{{$t('home.home9')}}<span class="font12 fW400">({{$t('public.testing')}})</span></p>-->
         <b class="font12">{{$t('home.home10')}}</b>
       </li>
-      <li>
-        <p>{{$t('home.home28')}}<span class="font12 fW400">({{$t('public.design')}}...)</span></p>
-        <b class="font12">{{$t('home.home29')}}</b>
+      <li @click="toUrl('cannotGuess','',0)">
+        <p>{{$t('cannotGuess.cannotGuess0')}}<span class="font12 fW400">({{$t('public.design')}}...)</span></p>
+        <b class="font12">{{$t('cannotGuess.cannotGuess1')}}</b>
       </li>
-      <!-- <li>
-         <img src="@/assets/logo.png">
-         <b class="font12">快乐翻牌<br/>{{$t('public.comingSoon')}}</b>
-       </li>
-       <li>
-         <img src="@/assets/logo.png">
-         <b class="font12">数字华容道<br/>{{$t('public.comingSoon')}}</b>
-       </li>-->
     </ul>
   </div>
 </template>

@@ -1,7 +1,7 @@
 <template>
   <div class="tokenSwap w1200">
     <div class="top">
-      <div class="tc font18" style="line-height: 3rem">Token Swap</div>
+      <div class="tc font18" style="line-height: 3rem">Push Market</div>
     </div>
     <div class="info">
       <div class="fl">

@@ -23,18 +23,9 @@
     <div class="cb">
       <h6 class="title font18 fW600">{{$t('public.zoology')}}</h6>
       <ul class="dapp-list">
-        <!--<li @click="toUrl('https://pocm.nuls.io/','',1)">
-          <p>POCM</p>
-          <b class="font12">{{$t('home.home5')}}</b>
-        </li>
-        <li @click="toUrl('https://factory.nuls.io/','',1)">
-          <p>{{$t('home.home7')}}</p>
-          <b class="font12">{{$t('home.home8')}}</b>
-        </li>-->
         <li @click="toUrl('tokenSwap','',0)">
-          <!--<li>-->
-          <p>Token闪兑(测试中....)</p>
-          <b class="font12">NULS生态内的NRC20 Tokon闪兑NULS</b>
+          <p>Token Push({{$t('public.testing')}}....)</p>
+          <b class="font12">{{$t('home.home30')}}</b>
         </li>
       </ul>
     </div>
@@ -49,9 +40,9 @@
           <p>{{$t('home.home9')}}</p>
           <b class="font12">{{$t('home.home10')}}</b>
         </li>
-        <li>
-          <p>{{$t('home.home28')}}<span class="font12 fW400">({{$t('public.design')}}...)</span></p>
-          <b class="font12">{{$t('home.home29')}}</b>
+        <li @click="toUrl('cannotGuess','',0)">
+          <p>{{$t('cannotGuess.cannotGuess0')}}<span class="font12 fW400">({{$t('public.design')}}...)</span></p>
+          <b class="font12">{{$t('cannotGuess.cannotGuess1')}}</b>
         </li>
       </ul>
     </div>
@@ -63,18 +54,16 @@
           <b class="font12">{{$t('home.home21')}}</b>
         </li>
         <li @click="toUrl('toolNewAddress','',0)">
-          <p>地址生成器</p>
-          <b class="font12">
-            可生成指定后缀的地址
-          </b>
+          <p>{{$t('newAddress.newAddress10')}}</p>
+          <b class="font12">{{$t('newAddress.newAddress11')}}</b>
         </li>
         <li @click="toUrl('lockedTransfer','',0)">
           <p>{{$t('locking.locking0')}}</p>
           <b class="font12">{{$t('locking.locking0')}}</b>
         </li>
         <li @click="toUrl('oneToMore','',0)">
-          <p>一对多转账交易</p>
-          <b class="font12">可以一对多转NULS交易</b>
+          <p>{{$t('oneTo.oneTo11')}}</p>
+          <b class="font12">{{$t('oneTo.oneTo12')}}</b>
         </li>
       </ul>
     </div>
