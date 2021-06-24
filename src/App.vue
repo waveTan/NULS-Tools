@@ -1,26 +1,29 @@
 <template>
-  <div id="app">
-    <HeaderBar>
-    </HeaderBar>
-    <router-view>
-    </router-view>
-    <BottomBar>
-    </BottomBar>
-  </div>
+    <div class="app">
+        <HeaderBar></HeaderBar>
+        <router-view>
+        </router-view>
+        <BottomBar></BottomBar>
+    </div>
 </template>
 
-<script>
-  import HeaderBar from './components/HeaderBar'
-  import BottomBar from './components/BottomBar'
+<script lang="ts">
+    import {defineComponent} from 'vue'
+    import HeaderBar from './components/HeaderBar.vue'
+    import BottomBar from './components/BottomBar.vue'
 
-  export default {
-    components: {
-      HeaderBar, BottomBar
-    }
-  }
+    export default defineComponent({
+        name: 'App',
+        components: {
+            HeaderBar, BottomBar
+        }
+    })
 </script>
-
-<style lang="less">
-  @import "assets/css/base.less";
+<style lang="scss">
+    @import 'assets/css/base';
+    @import 'assets/css/el-index';
+    .app {
+        width: 100%;
+        height: 100%;
+    }
 </style>
-

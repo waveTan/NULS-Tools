@@ -1,50 +1,26 @@
 <template>
-    <el-row class="header">
-        <el-row class="pc w1200">
-            <el-col class="logo fl">
+    <div class="header">
+        <div class="pc w1200">
+            <div class="logo fl">
                 <img class="click" @click="toUrl('home','',0)" :src="logoSvg">
-            </el-col>
-            <el-col class="nav fl">
+            </div>
+            <div class="nav fl">
                 <el-menu :default-active="activeIndex" mode="horizontal" @select="handleSelect" class="nav fl">
                     <el-menu-item index="home"><i class="iconfont icon-quanbu"></i>{{$t('nav.home')}}</el-menu-item>
                     <el-menu-item index="game"><i class="iconfont icon-dazhuanpan"></i>{{$t('nav.game')}}</el-menu-item>
                     <el-menu-item index="tool"><i class="iconfont icon-gongju"></i>{{$t('nav.tool')}}</el-menu-item>
                     <el-menu-item index="more"><i class="iconfont icon-gengduo"></i>{{$t('nav.more')}}</el-menu-item>
                 </el-menu>
-            </el-col>
-            <el-col class="user fr font14">
-                <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
-                <div class="fl">
-                    <el-menu :default-active="rightActiveIndex" mode="horizontal" class="fl right-menu"
-                             @select="handleSelect">
-                        <el-submenu index="userList" v-show="accountList.length !== 0" class="user-lists">
-                            <template slot="title">
-                                <i class="el-icon-s-custom"></i>
-                            </template>
-                            <el-menu-item-group>
-                                <el-menu-item v-for="item of accountList" :key="item.address" :index="item.address">
-                                    {{item.labels}}
-                                </el-menu-item>
-                            </el-menu-item-group>
-                        </el-submenu>
-                        <el-submenu index="set">
-                            <template slot="title">
-                                <i class="el-icon-s-tools"></i>
-                            </template>
-                            <el-menu-item-group>
-                                <el-menu-item index="user" v-show="currentAccount.address">账号管理</el-menu-item>
-                                <el-menu-item index="set">系统信息</el-menu-item>
-                            </el-menu-item-group>
-                        </el-submenu>
-                    </el-menu>
-                    <div v-show="accountList.length ===0" class="fr font12 click user_login"
-                         @click="toUrl('newAddress','',0)">
-                        {{$t('nav.login')}}
-                    </div>
+            </div>
+            <div class="user fr font14">
+                <div v-show="accountList.length ===0" class="fl font12 click user_login"
+                     @click="toUrl('newAddress','',0)">
+                    连接插件
                 </div>
-            </el-col>
+                <div class="language font12 click fl" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
+            </div>
 
-            <div class="address-info" v-show="currentAccount.address">
+            <!--<div class="address-info" v-show="currentAccount.address">
                 <div class="ad tr">
                     {{currentAccount.addresss}}{{currentAccount.node}}
                     <span v-if="alias">({{alias}})</span>
@@ -55,99 +31,27 @@
                     <i v-else class="el-icon-loading"></i>
                     <span>NULS</span>
                 </div>
-            </div>
-        </el-row>
-        <!-- <el-row class="mobile">
-           <div class="fl header_height">
-             <div class="fl">
-               <Height>
-               </Height>
-             </div>
-             <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
-           </div>
-           <div class="fr font12 user_info" v-show="accountInfo.address">
-             <h6>{{$t('public.address')}}：{{accountInfo.addresss}}</h6>
-             <p>
-               {{$t('public.balance')}}：{{accountInfo.balance}}
-               <span class="click fr" @click="signOut">{{$t('public.signOut')}}</span>
-             </p>
-           </div>
-           <div class="fr font12 click user_login" @click="toUrl('newAddress','',0)" v-show="!accountInfo.address">
-             {{$t('nav.login')}}
-           </div>
-
-         </el-row>-->
-    </el-row>
+            </div>-->
+        </div>
+        <div class="cb"></div>
+    </div>
 </template>
 
-<script>
-    import logo from '@/assets/logo.png'
-    import logoBeta from '@/assets/logo.png'
-    import {accountList, superLong, divisionDecimals, tofix} from '@/api/util.js'
-    import {IS_RUN} from '@/config.js'
-    import {getAddressInfoByAddress} from '@/api/requestData'
+<script lang="ts">
+    import {ref, defineComponent} from 'vue'
+    import logo from './../assets/logo.png'
 
-    export default {
-        data() {
-            return {
-                logoSvg: IS_RUN ? logo : logoBeta,
-                activeIndex: '1',//导航选中项
-                rightActiveIndex: 'userList',//右边菜单选择
-                lang: 'en',  //语言
-                accountList: [],//账户列表
-                currentAccount: {},//当前账户信息
-                balanceLoading: true,//余额加载
-                balance: 0,
-                alias: '',
+    export default defineComponent({
+        name: 'HeaderBar',
+        setup: () => {
+            const logoSvg = logo;
+            const activeIndex = '1';//导航选中项
+            const rightActiveIndex = 'userList';//右边菜单选择
+            const lang = 'en'; //语言
+            const accountList = [];//账户列表
+            const currentAccount = {};//当前账户信息
 
-            };
-        },
-        created() {
-            this.accountList = accountList(0);
-            for (let item of this.accountList) {
-                if (!item.note || item.note.toString() === 'undefined') {
-                    item.note = '';
-                    item.labels = item.address;
-                } else {
-                    item.labels = item.address + '(' + item.note + ')';
-                }
-            }
-            this.currentAccount = accountList(1);
-        },
-        mounted() {
-            setInterval(() => {
-                this.accountList = accountList(0);
-                for (let item of this.accountList) {
-                    if (!item.note || item.note.toString() === 'undefined') {
-                        item.note = '';
-                        item.labels = item.address;
-                    } else {
-                        item.labels = item.address + '(' + item.note + ')';
-                    }
-                }
-                this.currentAccount = accountList(1);
-                if (this.currentAccount.address) {
-                    this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
-                }
-
-            }, 1000)
-        },
-        components: {},
-        watch: {
-            "currentAccount.address": async function (val, oldVal) {
-                //console.log(val, oldVal);
-                if (val && val !== oldVal) {
-                    this.balanceLoading = true;
-                    let resData = await this.getAddressInfo(this.currentAccount.address);
-                    //console.log(resData);
-                    if (resData.success) {
-                        this.alias = resData.data.alias;
-                        this.balance = tofix(divisionDecimals(resData.data.balance), 3, -1);
-                        //console.log(this.balance);
-                        this.balanceLoading = false;
-                    }
-                }
-            }
+            return {logoSvg, activeIndex, rightActiveIndex, lang, accountList, currentAccount}
         },
         methods: {
 
@@ -182,7 +86,7 @@
              * 语言切换
              */
             selectLanguage() {
-                this.lang = this.lang === 'en' ? 'zh-cn' : 'en';
+                this.lang = this.lang === 'en' ? 'cn' : 'en';
                 this.$i18n.locale = this.lang;
             },
 
@@ -215,15 +119,11 @@
                 }
             },
         }
-    }
+    })
 </script>
 
-<style lang="less">
-    @import "./../assets/css/el-index";
-
+<style lang="scss">
     .header {
-        border-bottom: @BD1;
-
         .pc {
             .logo {
                 width: 100px;
@@ -253,7 +153,7 @@
                 }
 
                 .user_login {
-                    margin: 22px 30px 0 0;
+
                 }
 
                 .language {
@@ -275,44 +175,6 @@
 
                 }
             }
-
-            .address-info {
-                width: 200px;
-                float: right;
-
-                .ad {
-                    font-size: 14px;
-                    margin: 0.6rem 0 0 0;
-                }
-
-                .yue {
-                    line-height: 1rem;
-                    font-size: 12px;
-
-                    span {
-                        color: #0ede94;
-                    }
-                }
-
-            }
         }
-
-        .mobile {
-            .header_height {
-                margin: 0 0 0 5px;
-            }
-
-            .user_info {
-                margin: 5px 5px 0 0;
-                line-height: 14px;
-            }
-
-            .user_login, .language {
-                margin: 0.95rem 0.25rem 0 0;
-                font-size: 0.7rem;
-                line-height: 0.7rem;
-            }
-        }
-
     }
 </style>

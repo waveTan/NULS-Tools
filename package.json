@@ -1,93 +1,31 @@
 {
-  "name": "NULS-Tools",
-  "version": "1.1.0",
-  "private": true,
+  "version": "0.0.0",
   "scripts": {
-    "serve-prod": "cross-env NULS_ENV=prod vue-cli-service serve src/main",
-    "serve-beta": "cross-env NULS_ENV=beta vue-cli-service serve src/main",
-    "build-prod": "cross-env NULS_ENV=prod vue-cli-service build src/main",
-    "build-beta": "cross-env NULS_ENV=beta vue-cli-service build src/main",
-    "lint": "vue-cli-service lint",
-    "electron:build": "cross-env NULS_ENV=electron-prod vue-cli-service electron:build",
-    "electron:build-beta": "cross-env NULS_ENV=electron-beta vue-cli-service electron:build",
-    "electron:serve": "cross-env NULS_ENV=electron-prod vue-cli-service electron:serve",
-    "electron:serve-beta": "cross-env NULS_ENV=electron-beta vue-cli-service electron:serve",
-    "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps"
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "serve": "vite preview"
   },
   "dependencies": {
-    "bignumber": "^1.1.0",
-    "bignumber.js": "^9.0.0",
-    "bs58": "^4.0.1",
-    "caniuse-lite": "^1.0.30001159",
-    "compression-webpack-plugin": "^4.0.0",
-    "copy-to-clipboard": "^3.3.1",
-    "electron-builder": "^22.9.1",
-    "element-ui": "^2.4.5",
-    "file-saver": "^2.0.2",
-    "int64-buffer": "^0.99.1007",
-    "less": "^3.9.0",
-    "moment": "^2.24.0",
-    "nuls-jssdk": "^1.0.8",
-    "nuls-sdk-js": "^2.4.7",
-    "secp256k1": "^3.6.1",
-    "vue": "^2.5.21",
-    "vue-i18n": "^8.0.0",
-    "vue-luck-draw": "^1.0.8",
-    "vue-router": "^3.0.1",
-    "vue-typed-js": "^0.1.2",
-    "vuex": "^3.0.1"
+    "@intlify/vite-plugin-vue-i18n": "^2.2.1",
+    "@types/node": "^15.12.4",
+    "vue": "^3.0.5",
+    "vue-count-to": "^1.0.13",
+    "vue-router": "4.0.5",
+    "vuex": "^4.0.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.2.0",
-    "@vue/cli-plugin-eslint": "^3.2.0",
-    "@vue/cli-service": "^3.2.0",
-    "babel-eslint": "^10.0.1",
-    "cross-env": "^6.0.0",
-    "electron": "^4.0.0",
-    "electron-builder": "^20.18.0",
-    "electron-updater": "^4.0.6",
-    "element-ui": "^2.4.11",
-    "eslint": "^5.8.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "i18n": "^0.8.3",
-    "less-loader": "^4.1.0",
-    "vue-cli-plugin-electron-builder": "^1.2.0",
-    "vue-cli-plugin-element": "^1.0.0",
-    "vue-cli-plugin-i18n": "^0.5.1",
-    "vue-template-compiler": "^2.5.21"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended"
-    ],
-    "rules": {
-      "no-console": "off"
-    },
-    "parserOptions": {
-      "parser": "babel-eslint"
-    }
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ],
-  "publish": [
-    {
-      "provider": "generic",
-      "url": "http://file.wallet.nuls.io/download/main"
-    }
-  ],
-  "main": "background.js"
+    "@vitejs/plugin-vue": "^1.2.3",
+    "@vue/compiler-sfc": "^3.0.5",
+    "bignumber.js": "^9.0.0",
+    "copy-to-clipboard": "^3.3.1",
+    "element-plus": "^1.0.2-beta.48",
+    "moment": "^2.24.0",
+    "nuls-sdk-js": "^2.4.7",
+    "sass": "^1.32.8",
+    "sass-loader": "^10.1.1",
+    "typescript": "^4.3.2",
+    "vite": "^2.3.7",
+    "vue-i18n": "^9.1.6",
+    "vue-tsc": "^0.0.24"
+  }
 }
