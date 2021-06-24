@@ -72,9 +72,9 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import nuls from 'nuls-sdk-js'
-  import {copys} from '@/api/util.js'
+  import {copys} from './../../../api/util'
 
   export default {
     data() {
@@ -197,7 +197,7 @@
   }
 </script>
 
-<style lang="less">
+<style lang="scss">
   .new_address {
     .new {
       width: 35%;

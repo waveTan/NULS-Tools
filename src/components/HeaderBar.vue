@@ -13,25 +13,12 @@
                 </el-menu>
             </div>
             <div class="user fr font14">
-                <div v-show="accountList.length ===0" class="fl font12 click user_login"
+                <div v-show="accountList.length ===0" class="fl click user_login"
                      @click="toUrl('newAddress','',0)">
                     连接插件
                 </div>
-                <div class="language font12 click fl" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
+                <div class="language click fl" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
             </div>
-
-            <!--<div class="address-info" v-show="currentAccount.address">
-                <div class="ad tr">
-                    {{currentAccount.addresss}}{{currentAccount.node}}
-                    <span v-if="alias">({{alias}})</span>
-                    <span v-else-if="currentAccount.note">({{currentAccount.note}})</span>
-                </div>
-                <div class="yue tr">可用：
-                    <font v-if="!balanceLoading">{{balance}}</font>
-                    <i v-else class="el-icon-loading"></i>
-                    <span>NULS</span>
-                </div>
-            </div>-->
         </div>
         <div class="cb"></div>
     </div>
@@ -91,19 +78,6 @@
             },
 
             /**
-             * 获取地址信息
-             */
-            async getAddressInfo(address) {
-                let addressInfo = await getAddressInfoByAddress(address);
-                //console.log(addressInfo);
-                if (addressInfo.success) {
-                    return {success: true, data: addressInfo.data}
-                } else {
-                    return {success: false, data: addressInfo}
-                }
-            },
-
-            /**
              * 连接跳转
              * @param urlName
              * @param parameter
@@ -124,12 +98,14 @@
 
 <style lang="scss">
     .header {
+        height: 62px;
+        border-bottom: 1px solid #c1c1c1;
         .pc {
+            height: 60px;
+            line-height: 60px;
             .logo {
                 width: 100px;
-                height: auto;
-                margin: 10px 0 0 20px;
-
+                padding: 10px 0 0 20px;
                 img {
                     width: 40px;
                 }
@@ -153,11 +129,12 @@
                 }
 
                 .user_login {
-
+                        line-height: 60px;
                 }
 
                 .language {
                     margin: 0 0 0 10px;
+                    line-height: 60px;
                 }
 
                 .right-menu {

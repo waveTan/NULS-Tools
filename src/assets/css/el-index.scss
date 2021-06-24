@@ -1,0 +1,51 @@
+@import "style";
+
+.el-menu {
+  float: left;
+  border-bottom: 0 !important;
+  .el-menu-item {
+    padding: 0 25px;
+    font-size: 16px;
+    .iconfont {
+      font-size: 28px;
+      padding: 0 5px 0 0;
+    }
+  }
+  .is-active {
+    border-color: transparent !important;
+    color: $Ncolour !important;
+  }
+}
+
+.el-select {
+  .el-input {
+    width: 110px;
+  }
+}
+
+.el-dialog__wrapper {
+  .el-dialog {
+    .el-dialog__body {
+      padding: 10px 20px;
+    }
+    .el-dialog__footer {
+      .el-button {
+        width: 150px;
+      }
+    }
+  }
+}
+
+.el-button--success {
+  width: 280px;
+  background: linear-gradient(to right, #4ef16a, #0ede94) !important;
+  border-color: #4ef16a !important;
+}
+
+.el-menu--horizontal{
+  .el-menu-item-group__title{
+    height: 0;
+    padding: 0;
+  }
+}
+
