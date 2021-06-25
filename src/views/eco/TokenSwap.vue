@@ -312,8 +312,7 @@
     inputsOrOutputs,
     validateAndBroadcast,
     passwordVerification,
-    getBalanceOrNonceByAddress,
-    validateTx
+    getBalanceOrNonceByAddress
   } from '@/api/requestData'
   import {chainMethodCall, methodCall} from '@/api/contractCall'
 

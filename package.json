@@ -28,14 +28,12 @@
     "int64-buffer": "^0.99.1007",
     "less": "^3.9.0",
     "moment": "^2.24.0",
-    "nuls-jssdk": "^1.0.8",
-    "nuls-sdk-js": "^2.4.7",
+    "nuls-sdk-js": "^2.5.0",
     "secp256k1": "^3.6.1",
-    "vue": "^2.5.21",
+    "vue": "^2.6.14",
     "vue-i18n": "^8.0.0",
     "vue-luck-draw": "^1.0.8",
     "vue-router": "^3.0.1",
-    "vue-typed-js": "^0.1.2",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
@@ -89,5 +87,6 @@
       "url": "http://file.wallet.nuls.io/download/main"
     }
   ],
-  "main": "background.js"
+  "main": "background.js",
+  "__npminstall_done": false
 }

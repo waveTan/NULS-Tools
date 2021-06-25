@@ -16,8 +16,7 @@
   export default {
     props: {
       allData: {
-        type: Array,
-        default: []
+        type: Array
       },
       type: {
         type: String,
