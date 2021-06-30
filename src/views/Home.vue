@@ -32,10 +32,10 @@
     <div class="cb">
       <h6 class="title font18 fW600">{{$t('public.recreation')}}</h6>
       <ul class="dapp-list">
-        <li @click="toUrl('goblin','',0)">
+        <!--<li @click="toUrl('goblin','',0)">
           <img src="@/assets/img/goblin-logo.png" width="50">
           <b class="font12">{{$t('goblin.goblin0')}}<br/>{{$t('goblin.goblin1')}}</b>
-        </li>
+        </li>-->
         <li @click="toUrl('guessNumber','',0)">
           <p>{{$t('home.home9')}}</p>
           <b class="font12">{{$t('home.home10')}}</b>

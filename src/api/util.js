@@ -317,15 +317,19 @@ export function addressSetStorage(newAddressInfo) {
 
 /**
  * 获取地址列表或选择地址
- * @param type 0:地址列表，1:选中地址
  * @returns {*}
  */
-export function accountList(type) {
-  let addressList = localStorage.hasOwnProperty('addressData') ? JSON.parse(localStorage.getItem('addressData')) : [];
-  if (type === 0) {
-    return addressList
+export async function accountList() {
+
+  if (typeof window.nabox === "undefined") {
+    return {};
+  }
+  let naboxInfo = await window.nabox.createSession({chain: "NULS"});
+  //console.log(naboxInfo[0]);
+  if (naboxInfo[0].startsWith('NULS') || naboxInfo[0].startsWith('tNULS')) {
+    return {address:naboxInfo[0]};
   } else {
-    return localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : '';
+    return {};
   }
 }
 

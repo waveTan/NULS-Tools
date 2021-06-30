@@ -13,27 +13,19 @@
                 </el-menu>
             </el-col>
             <el-col class="user fr font14">
-                <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
                 <div class="fl">
-                    <div v-show="accountList.length ===0" class="fr font12 click user_login"
-                         @click="connectPlugin">
+                    <div class="address-info" v-if="currentAccount.address">
+                        <div class="ad tr">
+                            {{currentAccount.addresss}}
+                        </div>
+                    </div>
+                    <div class="font12 click user_login" v-else @click="connectPlugin">
                         连接插件
                     </div>
                 </div>
+                <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
             </el-col>
 
-            <div class="address-info" v-show="currentAccount.address">
-                <div class="ad tr">
-                    {{currentAccount.addresss}}{{currentAccount.node}}
-                    <span v-if="alias">({{alias}})</span>
-                    <span v-else-if="currentAccount.note">({{currentAccount.note}})</span>
-                </div>
-                <div class="yue tr">可用：
-                    <font v-if="!balanceLoading">{{balance}}</font>
-                    <i v-else class="el-icon-loading"></i>
-                    <span>NULS</span>
-                </div>
-            </div>
         </el-row>
     </el-row>
 </template>
@@ -41,7 +33,7 @@
 <script>
   import logo from '@/assets/logo.png'
   import logoBeta from '@/assets/logo.png'
-  import {accountList, superLong, divisionDecimals, tofix} from '@/api/util.js'
+  import {superLong, divisionDecimals, tofix} from '@/api/util.js'
   import {IS_RUN} from '@/config.js'
   import {getAddressInfoByAddress} from '@/api/requestData'
 
@@ -52,7 +44,6 @@
         activeIndex: '1',//导航选中项
         rightActiveIndex: 'userList',//右边菜单选择
         lang: 'en',  //语言
-        accountList: [],//账户列表
         currentAccount: {},//当前账户信息
         balanceLoading: true,//余额加载
         balance: 0,
@@ -60,34 +51,30 @@
       };
     },
     created() {
-      this.accountList = accountList(0);
-      for (let item of this.accountList) {
-        if (!item.note || item.note.toString() === 'undefined') {
-          item.note = '';
-          item.labels = item.address;
-        } else {
-          item.labels = item.address + '(' + item.note + ')';
+      setTimeout(async () => {
+        if (typeof window.nabox === "undefined") {
+          this.$notify.error({
+            title: '插件检查',
+            message: '没有发现nabox插件，请先安装nabox插件'
+          });
+          return;
         }
-      }
-      this.currentAccount = accountList(1);
+        let naboxInfo = await window.nabox.createSession({chain: "NULS"});
+        //console.log(naboxInfo[0]);
+        if (naboxInfo[0].startsWith('NULS') || naboxInfo[0].startsWith('tNULS')) {
+          this.currentAccount.address = naboxInfo[0];
+          this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
+          console.log(this.currentAccount);
+        } else {
+          this.$notify.error({
+            title: '网络切换',
+            message: '请在Nabox插件切换到NULS网络'
+          });
+        }
+      }, 100)
     },
     mounted() {
-      setInterval(() => {
-        this.accountList = accountList(0);
-        for (let item of this.accountList) {
-          if (!item.note || item.note.toString() === 'undefined') {
-            item.note = '';
-            item.labels = item.address;
-          } else {
-            item.labels = item.address + '(' + item.note + ')';
-          }
-        }
-        this.currentAccount = accountList(1);
-        if (this.currentAccount.address) {
-          this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
-        }
 
-      }, 1000)
     },
     components: {},
     watch: {
@@ -210,11 +197,10 @@
                 width: 220px;
                 float: right;
 
-                .user-info {
-                    margin: 16px 0 0 0;
-
-                    p {
-                        line-height: 16px;
+                .address-info {
+                    width: 150px;
+                    .ad {
+                        font-size: 14px;
                     }
                 }
 
@@ -242,25 +228,7 @@
                 }
             }
 
-            .address-info {
-                width: 200px;
-                float: right;
 
-                .ad {
-                    font-size: 14px;
-                    margin: 0.6rem 0 0 0;
-                }
-
-                .yue {
-                    line-height: 1rem;
-                    font-size: 12px;
-
-                    span {
-                        color: #0ede94;
-                    }
-                }
-
-            }
         }
 
         .mobile {

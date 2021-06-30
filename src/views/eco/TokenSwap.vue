@@ -1,289 +1,302 @@
 <template>
-  <div class="tokenSwap w1200">
-    <div class="top">
-      <div class="tc font18" style="line-height: 3rem">Push Market</div>
+    <div class="tokenSwap w1200">
+        <div class="top">
+            <div class="tc font18" style="line-height: 3rem">Push Market</div>
+        </div>
+        <div class="info">
+            <div class="fl">
+                <div class="title">
+                    <span style="color: #0ede94 ">我要卖Token</span>
+                    <Search :allData="allNRC20List" type="buy">
+                    </Search>
+                    <el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="success"
+                               size="mini"
+                               round>
+                        导入/创建账户
+                    </el-button>
+                    <el-button @click="showDialog(1)" v-else class="fr" type="success" size="mini" round>挂卖单</el-button>
+                </div>
+                <div class="scroll" style="width: 580px;height: 455px;overflow: auto">
+                    <el-table :data="buyData" style="height: 420px">
+                        <el-table-column prop="addresss" label="广告方" min-width="140">
+                        </el-table-column>
+                        <el-table-column prop="id" label="ID" width="40" align="center">
+                        </el-table-column>
+                        <el-table-column label="数量" width="110" align="center">
+                            <template slot-scope="scope">
+                                {{scope.row.number}}<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="单价(NULS)" width="110" align="center">
+                            <template slot-scope="scope">
+                                {{scope.row.price}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="总额(NULS)" width="110" align="center">
+                            <template slot-scope="scope">
+                                {{scope.row.amount}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作" width="50" align="center">
+                            <template slot-scope="scope">
+                                <el-button @click="sellClick(scope.row)" v-if="addressInfo.address" class="sell"
+                                           type="text"
+                                           size="small">
+                                    出售
+                                </el-button>
+                                <!--<el-button @click="undoClick('buy',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
+                                </el-button>-->
+                            </template>
+                        </el-table-column>
+                    </el-table>
+
+                    <el-pagination
+                            @current-change="buyCurrentChange"
+                            :current-page="buyPage"
+                            :page-size="10"
+                            :total="buyTotal"
+                            layout="total, prev, pager, next, jumper"
+                            v-show="buyTotal > 10">
+                    </el-pagination>
+                </div>
+
+            </div>
+
+            <div class="fr tl">
+                <div class="title">
+                    <span class="fred">我要买Token</span>
+                    <Search :allData="allNRC20List" type="sell">
+                    </Search>
+                    <el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="danger"
+                               size="mini"
+                               round>
+                        导入/创建账户
+                    </el-button>
+                    <el-button @click="showDialog(0)" v-else class="fr" type="danger" size="mini" round>挂买单</el-button>
+                </div>
+                <div class="scroll" style="width: 580px;height: 455px;overflow: auto">
+                    <el-table :data="sellData" stripe style="height: 420px">
+                        <el-table-column prop="addresss" label="广告方" min-width="140">
+                        </el-table-column>
+                        <el-table-column prop="id" label="ID" width="40" align="center">
+                        </el-table-column>
+                        <el-table-column label="数量" width="110" align="center">
+                            <template slot-scope="scope">
+                                {{scope.row.number}}<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="单价(NULS)" width="110" align="center">
+                            <template slot-scope="scope">
+                                {{scope.row.price}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="总额(NULS)" width="110" align="center">
+                            <template slot-scope="scope">
+                                {{scope.row.amount}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作" width="50" align="center">
+                            <template slot-scope="scope">
+                                <el-button @click="buyClick(scope.row)" v-if="addressInfo.address" class="buy"
+                                           type="text" size="small">
+                                    买入
+                                </el-button>
+                                <!--<el-button @click="undoClick('sell',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
+                                </el-button>-->
+                            </template>
+                        </el-table-column>
+                    </el-table>
+
+                    <el-pagination
+                            @current-change="sellCurrentChange"
+                            :current-page="sellPage"
+                            :page-size="10"
+                            :total="sellTotal"
+                            layout="total, prev, pager, next, jumper"
+                            v-show="sellTotal > 10">
+                    </el-pagination>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="cb bottom" v-if="addressInfo.address">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="我的卖单" name="first">
+                    <el-table :data="mySellData" stripe>
+                        <el-table-column prop="address" label="地址" width="200">
+                        </el-table-column>
+                        <el-table-column prop="id" label="ID" width="60" align="center">
+                        </el-table-column>
+                        <el-table-column label="数量" width="150" align="center">
+                            <template slot-scope="scope">
+                                {{scope.row.number}}
+                                <span @click="toUrl('contractsInfo',scope.row.token)" class="click"
+                                      :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="price" label="单价(NULS)" width="150" align="center">
+                        </el-table-column>
+                        <el-table-column label="金额(NULS)" width="150" align="center">
+                            <template slot-scope="scope">
+                                {{scope.row.amount}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="txHashs" label="TXHash" width="220" align="center">
+                            <template slot-scope="scope">
+                                <span class="click" @click="toUrl('transactionInfo',scope.row.txHash)">{{scope.row.txHashs}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="txTime" label="创建时间" width="160" align="center">
+                        </el-table-column>
+                        <el-table-column label="操作" min-width="100" align="center">
+                            <template slot-scope="scope">
+                                <el-button type="text" @click="editInfo('editSell',scope.row)" size="small">修改
+                                </el-button>
+                                <el-button type="text" @click="undoClick('sell',scope.row)" size="small">撤销</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-tab-pane>
+                <el-tab-pane label="我的买单" name="second">
+                    <el-table :data="myBuyData" stripe>
+                        <el-table-column prop="address" label="地址" width="200">
+                        </el-table-column>
+                        <el-table-column prop="id" label="ID" width="60" align="center">
+                        </el-table-column>
+                        <el-table-column label="数量" width="150" align="center">
+                            <template slot-scope="scope">
+                                {{scope.row.number}}
+                                <span class="click" @click="toUrl('contractsInfo',scope.row.token)"
+                                      :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="金额" width="150" align="center">
+                            <template slot-scope="scope">
+                                {{scope.row.amount}} <span>{{scope.row.amountSymbol}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="txHashs" label="TXHash" width="220" align="center">
+                            <template slot-scope="scope">
+                                <span class="click" @click="toUrl('transactionInfo',scope.row.txHash)">{{scope.row.txHashs}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="txTime" label="创建时间" width="160" align="center">
+                        </el-table-column>
+                        <el-table-column label="操作" min-width="100" align="center">
+                            <template slot-scope="scope">
+                                <el-button @click="editInfo('editBuy',scope.row)" type="text" size="small">修改
+                                </el-button>
+                                <el-button type="text" @click="undoClick('buy',scope.row)" size="small">撤销</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-tab-pane>
+                <el-tab-pane label="历史记录" name="third">
+                    <el-table :data="historyData" stripe>
+                        <el-table-column prop="id" label="ID" width="100" align="center">
+                        </el-table-column>
+                        <el-table-column prop="txHashs" label="TXHash" min-width="220" align="center">
+                            <template slot-scope="scope">
+                                <span class="click" @click="toUrl('transactionInfo',scope.row.txHash)">{{scope.row.txHashs}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="数量" width="180" align="center">
+                            <template slot-scope="scope">
+                                {{scope.row.number}}
+                                <span class="click" @click="toUrl('contractsInfo',scope.row.token)"
+                                      :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="amount" label="金额" width="180" align="center">
+                            <template slot-scope="scope">
+                                {{scope.row.amount}} <span>{{scope.row.amountSymbol}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="类型" width="100" align="center">
+                            <template slot-scope="scope">
+                                <span v-if="scope.row.type ===1">买单</span>
+                                <span v-else-if="scope.row.type ===2">卖单</span>
+                                <span v-else-if="scope.row.type ===3">卖出</span>
+                                <span v-else-if="scope.row.type ===4">买入</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="txTime" label="交易时间" width="200" align="center">
+                        </el-table-column>
+                    </el-table>
+                </el-tab-pane>
+            </el-tabs>
+        </div>
+
+        <el-dialog class="token-dialog" width="50rem" @close="closeTokenDialog"
+                   :title="dialogTitle"
+                   :visible.sync="buyOrSellDialog"
+                   :close-on-click-modal="false"
+                   :close-on-press-escape="false">
+            <div class="fl" v-if="isShowInfo">
+                <ul>
+                    <li>广告方:<span class="click">{{changeInfo.buyer ? changeInfo.buyer: changeInfo.seller}}</span></li>
+                    <li>{{type==='selling' ? '可卖出':'可买入'}}数量:<span>{{changeInfo.number}}({{changeInfo.symbol}})</span>
+                    </li>
+                    <li>单价:<span>{{changeInfo.price}}(NULS)</span></li>
+                    <li>预计总共需支付金额:<span>{{changeInfo.amount}}(NULS)</span></li>
+                    <li>合约地址:<span class="click">{{changeInfo.token}}</span></li>
+                </ul>
+            </div>
+            <div :class="isShowInfo ? 'fr':''">
+                <el-form :model="tokenSwapForm" status-icon :rules="tokenSwapRules" ref="tokenSwapForm"
+                         class="tokenSwap-form">
+                    <el-form-item label="账户: " prop="fromAddress">
+                        <!--<el-select v-model="tokenSwapForm.fromAddress" filterable placeholder="请选择地址" @change="changeAddress"
+                                   :disabled="type === 'editBuy' || type ==='editSell'">
+                          <el-option v-for="item in addressList" :key="item.address" :label="item.labels" :value="item.address">
+                          </el-option>
+                        </el-select>-->
+                        <el-input v-model="tokenSwapForm.fromAddress" autocomplete="off" disabled="true">
+                        </el-input>
+                    </el-form-item>
+                    <!--<div class="balance">{{addressInfo.balance}} <span class="fCN">NULS</span></div>-->
+                    <el-form-item :label="type.includes('sell') ? '卖出Token:':'买入Token:'" prop="assets">
+                        <el-select v-model="tokenSwapForm.assets" filterable placeholder="请选择Token"
+                                   @change="changeAssets"
+                                   v-if="addressInfo.tokens"
+                                   :disabled="isShowInfo || type === 'editBuy' || type ==='editSell'">
+                            <el-option v-for="item in addressInfo.tokens"
+                                       :key="item.contractAddress"
+                                       :label="item.symbol +'('+item.balance +')'"
+                                       :value="item.contractAddress">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item
+                            :label="type.includes('sell') ? '卖出数量('+tokenInfo.symbol+'):':'买入数量('+tokenInfo.symbol+'):'"
+                            prop="number">
+                        <el-input v-model="tokenSwapForm.number" autocomplete="off" @input="changeNumber"
+                                  :disabled="type ==='editSell' || type ==='editBuy'">
+                            <el-button slot="append" @click="changeAll">Max</el-button>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item prop="price"
+                                  :label="'单价( 1 '+tokenInfo.symbol+'兑换 '+tokenSwapForm.price+' NULS):' ">
+                        <el-input v-model="tokenSwapForm.price" autocomplete="off" @input="changeAmount"
+                                  :disabled="type ==='buying' || type ==='selling'">
+                        </el-input>
+                    </el-form-item>
+                    <div class="font14">预计{{type.includes('sell') ? '收入':'支出'}}金额:
+                        {{parseFloat((tokenSwapForm.number*tokenSwapForm.price).toFixed(6))}}
+                        <span class="fCN">NULS</span></div>
+                </el-form>
+            </div>
+            <div class="cb"></div>
+            <div slot="footer" class="dialog-footer tc">
+                <el-button @click="resetForm('tokenSwapForm')">取 消</el-button>
+                <el-button type="primary" @click="submitForm('tokenSwapForm')">确 定</el-button>
+            </div>
+        </el-dialog>
+
+        <Password ref="password" @passwordSubmit="passSubmit">
+        </Password>
     </div>
-    <div class="info">
-      <div class="fl">
-        <div class="title">
-          <span style="color: #0ede94 ">我要卖Token</span>
-          <Search :allData="allNRC20List" type="buy">
-          </Search>
-          <el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="success" size="mini"
-                     round>
-            导入/创建账户
-          </el-button>
-          <el-button @click="showDialog(1)" v-else class="fr" type="success" size="mini" round>挂卖单</el-button>
-        </div>
-        <div class="scroll" style="width: 580px;height: 455px;overflow: auto">
-          <el-table :data="buyData" style="height: 420px">
-            <el-table-column prop="addresss" label="广告方" min-width="140">
-            </el-table-column>
-            <el-table-column prop="id" label="ID" width="40" align="center">
-            </el-table-column>
-            <el-table-column label="数量" width="110" align="center">
-              <template slot-scope="scope">
-                {{scope.row.number}}<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="单价(NULS)" width="110" align="center">
-              <template slot-scope="scope">
-                {{scope.row.price}}
-              </template>
-            </el-table-column>
-            <el-table-column label="总额(NULS)" width="110" align="center">
-              <template slot-scope="scope">
-                {{scope.row.amount}}
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="50" align="center">
-              <template slot-scope="scope">
-                <el-button @click="sellClick(scope.row)" v-if="addressInfo.address" class="sell" type="text"
-                           size="small">
-                  出售
-                </el-button>
-                <!--<el-button @click="undoClick('buy',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
-                </el-button>-->
-              </template>
-            </el-table-column>
-          </el-table>
-
-          <el-pagination
-                  @current-change="buyCurrentChange"
-                  :current-page="buyPage"
-                  :page-size="10"
-                  :total="buyTotal"
-                  layout="total, prev, pager, next, jumper"
-                  v-show="buyTotal > 10">
-          </el-pagination>
-        </div>
-
-      </div>
-
-      <div class="fr tl">
-        <div class="title">
-          <span class="fred">我要买Token</span>
-          <Search :allData="allNRC20List" type="sell">
-          </Search>
-          <el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="danger" size="mini"
-                     round>
-            导入/创建账户
-          </el-button>
-          <el-button @click="showDialog(0)" v-else class="fr" type="danger" size="mini" round>挂买单</el-button>
-        </div>
-        <div class="scroll" style="width: 580px;height: 455px;overflow: auto">
-          <el-table :data="sellData" stripe style="height: 420px">
-            <el-table-column prop="addresss" label="广告方" min-width="140">
-            </el-table-column>
-            <el-table-column prop="id" label="ID" width="40" align="center">
-            </el-table-column>
-            <el-table-column label="数量" width="110" align="center">
-              <template slot-scope="scope">
-                {{scope.row.number}}<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="单价(NULS)" width="110" align="center">
-              <template slot-scope="scope">
-                {{scope.row.price}}
-              </template>
-            </el-table-column>
-            <el-table-column label="总额(NULS)" width="110" align="center">
-              <template slot-scope="scope">
-                {{scope.row.amount}}
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="50" align="center">
-              <template slot-scope="scope">
-                <el-button @click="buyClick(scope.row)" v-if="addressInfo.address" class="buy" type="text" size="small">
-                  买入
-                </el-button>
-                <!--<el-button @click="undoClick('sell',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
-                </el-button>-->
-              </template>
-            </el-table-column>
-          </el-table>
-
-          <el-pagination
-                  @current-change="sellCurrentChange"
-                  :current-page="sellPage"
-                  :page-size="10"
-                  :total="sellTotal"
-                  layout="total, prev, pager, next, jumper"
-                  v-show="sellTotal > 10">
-          </el-pagination>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="cb bottom" v-if="addressInfo.address">
-      <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="我的卖单" name="first">
-          <el-table :data="mySellData" stripe>
-            <el-table-column prop="address" label="地址" width="200">
-            </el-table-column>
-            <el-table-column prop="id" label="ID" width="60" align="center">
-            </el-table-column>
-            <el-table-column label="数量" width="150" align="center">
-              <template slot-scope="scope">
-                {{scope.row.number}}
-                <span @click="toUrl('contractsInfo',scope.row.token)" class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="price" label="单价(NULS)" width="150" align="center">
-            </el-table-column>
-            <el-table-column label="金额(NULS)" width="150" align="center">
-              <template slot-scope="scope">
-                {{scope.row.amount}}
-              </template>
-            </el-table-column>
-            <el-table-column prop="txHashs" label="TXHash" width="220" align="center">
-              <template slot-scope="scope">
-                <span class="click" @click="toUrl('transactionInfo',scope.row.txHash)">{{scope.row.txHashs}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="txTime" label="创建时间" width="160" align="center">
-            </el-table-column>
-            <el-table-column label="操作" min-width="100" align="center">
-              <template slot-scope="scope">
-                <el-button type="text" @click="editInfo('editSell',scope.row)" size="small">修改</el-button>
-                <el-button type="text" @click="undoClick('sell',scope.row)" size="small">撤销</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-tab-pane>
-        <el-tab-pane label="我的买单" name="second">
-          <el-table :data="myBuyData" stripe>
-            <el-table-column prop="address" label="地址" width="200">
-            </el-table-column>
-            <el-table-column prop="id" label="ID" width="60" align="center">
-            </el-table-column>
-            <el-table-column label="数量" width="150" align="center">
-              <template slot-scope="scope">
-                {{scope.row.number}}
-                <span class="click" @click="toUrl('contractsInfo',scope.row.token)" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="金额" width="150" align="center">
-              <template slot-scope="scope">
-                {{scope.row.amount}} <span>{{scope.row.amountSymbol}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="txHashs" label="TXHash" width="220" align="center">
-              <template slot-scope="scope">
-                <span class="click" @click="toUrl('transactionInfo',scope.row.txHash)">{{scope.row.txHashs}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="txTime" label="创建时间" width="160" align="center">
-            </el-table-column>
-            <el-table-column label="操作" min-width="100" align="center">
-              <template slot-scope="scope">
-                <el-button @click="editInfo('editBuy',scope.row)" type="text" size="small">修改</el-button>
-                <el-button type="text" @click="undoClick('buy',scope.row)" size="small">撤销</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-tab-pane>
-        <el-tab-pane label="历史记录" name="third">
-          <el-table :data="historyData" stripe>
-            <el-table-column prop="id" label="ID" width="100" align="center">
-            </el-table-column>
-            <el-table-column prop="txHashs" label="TXHash" min-width="220" align="center">
-              <template slot-scope="scope">
-                <span class="click" @click="toUrl('transactionInfo',scope.row.txHash)">{{scope.row.txHashs}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="数量" width="180" align="center">
-              <template slot-scope="scope">
-                {{scope.row.number}}
-                <span class="click" @click="toUrl('contractsInfo',scope.row.token)" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="amount" label="金额" width="180" align="center">
-              <template slot-scope="scope">
-                {{scope.row.amount}} <span>{{scope.row.amountSymbol}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column label="类型" width="100" align="center">
-              <template slot-scope="scope">
-                <span v-if="scope.row.type ===1">买单</span>
-                <span v-else-if="scope.row.type ===2">卖单</span>
-                <span v-else-if="scope.row.type ===3">卖出</span>
-                <span v-else-if="scope.row.type ===4">买入</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="txTime" label="交易时间" width="200" align="center">
-            </el-table-column>
-          </el-table>
-        </el-tab-pane>
-      </el-tabs>
-    </div>
-
-    <el-dialog class="token-dialog" width="50rem" @close="closeTokenDialog"
-               :title="dialogTitle"
-               :visible.sync="buyOrSellDialog"
-               :close-on-click-modal="false"
-               :close-on-press-escape="false">
-      <div class="fl" v-if="isShowInfo">
-        <ul>
-          <li>广告方:<span class="click">{{changeInfo.buyer ? changeInfo.buyer: changeInfo.seller}}</span></li>
-          <li>{{type==='selling' ? '可卖出':'可买入'}}数量:<span>{{changeInfo.number}}({{changeInfo.symbol}})</span></li>
-          <li>单价:<span>{{changeInfo.price}}(NULS)</span></li>
-          <li>预计总共需支付金额:<span>{{changeInfo.amount}}(NULS)</span></li>
-          <li>合约地址:<span class="click">{{changeInfo.token}}</span></li>
-        </ul>
-      </div>
-      <div :class="isShowInfo ? 'fr':''">
-        <el-form :model="tokenSwapForm" status-icon :rules="tokenSwapRules" ref="tokenSwapForm" class="tokenSwap-form">
-          <el-form-item label="账户: " prop="fromAddress">
-            <!--<el-select v-model="tokenSwapForm.fromAddress" filterable placeholder="请选择地址" @change="changeAddress"
-                       :disabled="type === 'editBuy' || type ==='editSell'">
-              <el-option v-for="item in addressList" :key="item.address" :label="item.labels" :value="item.address">
-              </el-option>
-            </el-select>-->
-            <el-input v-model="tokenSwapForm.fromAddress" autocomplete="off" disabled="true">
-            </el-input>
-          </el-form-item>
-          <!--<div class="balance">{{addressInfo.balance}} <span class="fCN">NULS</span></div>-->
-          <el-form-item :label="type.includes('sell') ? '卖出Token:':'买入Token:'" prop="assets">
-            <el-select v-model="tokenSwapForm.assets" filterable placeholder="请选择Token" @change="changeAssets"
-                       v-if="addressInfo.tokens" :disabled="isShowInfo || type === 'editBuy' || type ==='editSell'">
-              <el-option v-for="item in addressInfo.tokens"
-                         :key="item.contractAddress"
-                         :label="item.symbol +'('+item.balance +')'"
-                         :value="item.contractAddress">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item
-                  :label="type.includes('sell') ? '卖出数量('+tokenInfo.symbol+'):':'买入数量('+tokenInfo.symbol+'):'"
-                  prop="number">
-            <el-input v-model="tokenSwapForm.number" autocomplete="off" @input="changeNumber"
-                      :disabled="type ==='editSell' || type ==='editBuy'">
-              <el-button slot="append" @click="changeAll">Max</el-button>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="price"
-                        :label="'单价( 1 '+tokenInfo.symbol+'兑换 '+tokenSwapForm.price+' NULS):' ">
-            <el-input v-model="tokenSwapForm.price" autocomplete="off" @input="changeAmount"
-                      :disabled="type ==='buying' || type ==='selling'">
-            </el-input>
-          </el-form-item>
-          <div class="font14">预计{{type.includes('sell') ? '收入':'支出'}}金额:
-            {{parseFloat((tokenSwapForm.number*tokenSwapForm.price).toFixed(6))}}
-            <span class="fCN">NULS</span></div>
-        </el-form>
-      </div>
-      <div class="cb"></div>
-      <div slot="footer" class="dialog-footer tc">
-        <el-button @click="resetForm('tokenSwapForm')">取 消</el-button>
-        <el-button type="primary" @click="submitForm('tokenSwapForm')">确 定</el-button>
-      </div>
-    </el-dialog>
-
-    <Password ref="password" @passwordSubmit="passSubmit">
-    </Password>
-  </div>
 </template>
 
 <script>
@@ -416,18 +429,16 @@
     components: {
       Password, Search
     },
-    created() {
-      this.addressInfo = accountList(1);
+    async created() {
+      this.addressInfo = await accountList();
+      console.log(this.addressInfo, 4888);
       this.urls = IS_RUN ? 'http://129.204.111.201:82' : 'http://129.204.111.201:81';
       this.getAddressList();
     },
     mounted() {
       this.init();
-      this.tokenSwapSetIntervalTwo = setInterval(() => {
-        let newAddressInfo = accountList(1);
-        if (this.addressInfo.address !== newAddressInfo.address) {
-          this.addressInfo = newAddressInfo;
-        }
+      this.tokenSwapSetIntervalTwo = setInterval(async () => {
+        this.addressInfo = await accountList();
       }, 1000);
 
       this.setInterval();
@@ -1544,105 +1555,105 @@
 </script>
 
 <style lang="less">
-  .tokenSwap {
-    .top {
-      height: 5rem;
-    }
-    .info {
-      height: 450px;
-      .title {
-        line-height: 2rem;
-        height: 2rem;
-        padding: 0;
-        span {
-          display: block;
-          float: left;
+    .tokenSwap {
+        .top {
+            height: 5rem;
         }
-
-        .el-button--mini {
-          width: auto;
-        }
-      }
-      .el-table td, .el-table th {
-        padding: 0.2rem 0;
-        .sell {
-          span {
-            color: #FF3300;
-          }
-        }
-        .buy {
-          span {
-            color: #0ede94;
-          }
-        }
-      }
-    }
-    .bottom {
-      .el-tabs {
-        .el-tabs__content {
-          .el-table {
-            margin-bottom: 5rem;
-            tr {
-              th {
-                padding: 3px 0;
-              }
-              td {
-                padding: 0 0;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    .token-dialog {
-      .fl {
-        width: 21rem;
-        border-right: 1px solid #A4AEC4;
-        ul {
-          li {
-            height: 4rem;
-            font-size: 12px;
-            span {
-              display: block;
-            }
-          }
-        }
-      }
-      .fr {
-        width: 25rem;
-      }
-      .tokenSwap-form {
-        .el-form-item {
-          .el-form-item__label {
-            line-height: 1rem;
-            height: 1rem;
-          }
-          .el-form-item__content {
-            .el-input {
-              .el-input__inner {
-                height: 2rem;
+        .info {
+            height: 450px;
+            .title {
                 line-height: 2rem;
-                .el-input__icon {
-                  line-height: 2rem;
+                height: 2rem;
+                padding: 0;
+                span {
+                    display: block;
+                    float: left;
                 }
-              }
+
+                .el-button--mini {
+                    width: auto;
+                }
             }
-            .el-select {
-              width: 100%;
-              .el-input {
-                width: 100%;
-              }
+            .el-table td, .el-table th {
+                padding: 0.2rem 0;
+                .sell {
+                    span {
+                        color: #FF3300;
+                    }
+                }
+                .buy {
+                    span {
+                        color: #0ede94;
+                    }
+                }
             }
-          }
         }
-        .balance {
-          display: block;
-          position: absolute;
-          right: 1.5rem;
-          font-size: 12px;
+        .bottom {
+            .el-tabs {
+                .el-tabs__content {
+                    .el-table {
+                        margin-bottom: 5rem;
+                        tr {
+                            th {
+                                padding: 3px 0;
+                            }
+                            td {
+                                padding: 0 0;
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
+
+        .token-dialog {
+            .fl {
+                width: 21rem;
+                border-right: 1px solid #A4AEC4;
+                ul {
+                    li {
+                        height: 4rem;
+                        font-size: 12px;
+                        span {
+                            display: block;
+                        }
+                    }
+                }
+            }
+            .fr {
+                width: 25rem;
+            }
+            .tokenSwap-form {
+                .el-form-item {
+                    .el-form-item__label {
+                        line-height: 1rem;
+                        height: 1rem;
+                    }
+                    .el-form-item__content {
+                        .el-input {
+                            .el-input__inner {
+                                height: 2rem;
+                                line-height: 2rem;
+                                .el-input__icon {
+                                    line-height: 2rem;
+                                }
+                            }
+                        }
+                        .el-select {
+                            width: 100%;
+                            .el-input {
+                                width: 100%;
+                            }
+                        }
+                    }
+                }
+                .balance {
+                    display: block;
+                    position: absolute;
+                    right: 1.5rem;
+                    font-size: 12px;
+                }
+            }
+        }
     }
-  }
 </style>
