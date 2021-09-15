@@ -431,9 +431,8 @@
     },
     async created() {
       this.addressInfo = await accountList();
-      console.log(this.addressInfo, 4888);
       this.urls = IS_RUN ? 'http://129.204.111.201:82' : 'http://129.204.111.201:81';
-      this.getAddressList();
+      this.getAddressList(this.addressInfo);
     },
     mounted() {
       this.init();
@@ -447,7 +446,7 @@
       "addressInfo.address": function (val, oldVal) {
         //console.log(val, oldVal);
         if (oldVal && val !== oldVal) {
-          this.getAddressList();
+          this.getAddressList(this.addressInfo);
           this.tabData(this.activeName);
         }
       },
@@ -492,7 +491,7 @@
         let url = this.urls + '/tokenex/contract';
         try {
           let resData = await axios.get(url);
-          //console.log(resData.data);
+          // console.log(resData.data);
           if (resData.data.success) {
             this.contractAddress = resData.data.data;
             let newContracoInfo = await this.contractInfoByAddress(this.contractAddress);
@@ -748,8 +747,9 @@
               item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
               item.addresss = superLong(item.seller, 6);
               item.number = divisionDecimals(item.remainAmount, item.tokenDecimals);
-              item.amount = parseFloat(tofix(Division(item.number, item.rate), 8, -1));
               item.price = parseFloat(tofix(Division(1, item.rate), 6, -1));
+              //item.amount = parseFloat(tofix(Division(item.number, item.rate), 8, -1));
+              item.amount = Times(item.number, item.price).toString();
               if (item.seller === this.addressInfo.address) {
                 item.isMyOrder = true;
               } else {
@@ -785,14 +785,27 @@
        * @author: Wave
        */
       showDialog(type) {
+        console.log(type);
+        console.log(this.addressInfo);
         if (type === 0) {
           //console.log(this.allNRC20List);
           this.addressInfo.tokens = this.allNRC20List;
           this.dialogTitle = '挂买单';
           this.type = 'buy';
         } else {
-          //this.addressInfo = accountList(1);
-          //console.log(this.addressInfo);
+          console.log(this.addressInfo, this.addressList);
+          if (this.addressInfo.address) {
+            this.addressInfo.tokens = this.addressList.filter(obj => obj.address === this.addressInfo.address);
+            console.log(this.addressInfo.tokens, 888);
+            if (this.addressInfo.tokens.length !== 0) {
+              this.tokenSwapForm.assets = this.addressInfo.tokens[0].contractAddress;
+              this.tokenInfo = this.addressInfo.tokens[0];
+              console.log(this.tokenInfo)
+            }
+            this.tokenSwapForm.fromAddress = this.addressInfo.address.toString();
+          }
+
+          //this.addressInfo.tokens = this.allNRC20List;
           if (this.addressInfo.tokens.length === 0 || !this.addressInfo.tokens) {
             this.$message({message: '对不起！您的改账户没有nrc20资产，请切换账户。', type: 'error', duration: 3000});
             return
@@ -818,7 +831,7 @@
         this.tokenSwapForm.number = '';
         this.tokenSwapForm.amount = '';
         this.addressInfo.tokens = [];
-        this.getAddressList();
+        this.getAddressList(this.addressInfo);
       },
 
       /**
@@ -953,45 +966,36 @@
       /**
        * 获取账户列表
        */
-      async getAddressList() {
-        let newAddressData = accountList(0);
-        for (let item of newAddressData) {
-          //console.log(item);
-          if (!item.note || item.note.toString() === 'undefined') {
-            item.note = '';
-            item.labels = item.address;
-          } else {
-            item.labels = item.address + '(' + item.note + ')';
+      async getAddressList(addressInfo) {
+        // console.log(addressInfo.address);
+        let resData = await this.getAddressInfo(addressInfo.address);
+        //console.log(resData);
+        if (resData.success) {
+          addressInfo.balance = parseFloat(tofix(divisionDecimals(resData.data.balance), 4, -1));
+          let tokenList = await this.getTokenListByAddress(addressInfo.address);
+          //console.log(tokenList);
+          addressInfo.tokens = tokenList.data.list;
+          // console.log(addressInfo.tokens);
+          for (let k of addressInfo.tokens) {
+            //console.log(k);
+            k.balance = parseFloat(tofix(divisionDecimals(k.balance, k.decimals), k.decimals, -1));
+            k.symbol = k.tokenSymbol;
           }
-
-
-          let addressInfo = await this.getAddressInfo(item.address);
-          //console.log(addressInfo);
-          if (addressInfo.success) {
-            item.balance = parseFloat(tofix(divisionDecimals(addressInfo.data.balance), 4, -1));
-            let tokenList = await this.getTokenListByAddress(item.address);
-            //console.log(tokenList);
-            item.tokens = tokenList.data.list;
-            //console.log(item.tokens);
-            for (let k of item.tokens) {
-              //console.log(k);
-              k.balance = parseFloat(tofix(divisionDecimals(k.balance, k.decimals), k.decimals, -1));
-              k.symbol = k.tokenSymbol;
-            }
-          }
-
         }
-        this.addressList = newAddressData;
-        //console.log(this.addressList);
+
+
+        this.addressList = addressInfo.tokens;
 
         if (this.addressInfo.address) {
-          this.addressInfo.tokens = this.addressList.filter(obj => obj.address === this.addressInfo.address)[0].tokens;
+          this.addressInfo.tokens = this.addressList.filter(obj => obj.address === this.addressInfo.address);
           if (this.addressInfo.tokens.length !== 0) {
             this.tokenSwapForm.assets = this.addressInfo.tokens[0].contractAddress;
             this.tokenInfo = this.addressInfo.tokens[0];
           }
           this.tokenSwapForm.fromAddress = this.addressInfo.address.toString();
         }
+
+        console.log(this.addressInfo)
       },
 
       /**
@@ -1002,7 +1006,7 @@
         //console.log(address);
         return await this.$post('/', 'getAccount', [address])
           .then((response) => {
-            //console.log(response);
+            // console.log(response);
             if (response.hasOwnProperty("result")) {
               return {success: true, data: response.result}
             } else {
@@ -1341,7 +1345,7 @@
         //console.log(url);
         try {
           let resData = await axios.get(url);
-          console.log(resData.data);
+          //console.log(resData.data);
           if (resData.data.success) {
             for (let item of resData.data.data.list) {
               //console.log(item);

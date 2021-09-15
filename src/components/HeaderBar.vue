@@ -53,10 +53,7 @@
     created() {
       setTimeout(async () => {
         if (typeof window.nabox === "undefined") {
-          this.$notify.error({
-            title: '插件检查',
-            message: '没有发现nabox插件，请先安装nabox插件'
-          });
+          this.$notify.error({title: '插件检查', message: '没有发现nabox插件，请先安装nabox插件'});
           return;
         }
         let naboxInfo = await window.nabox.createSession({chain: "NULS"});
@@ -66,10 +63,7 @@
           this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
           console.log(this.currentAccount);
         } else {
-          this.$notify.error({
-            title: '网络切换',
-            message: '请在Nabox插件切换到NULS网络'
-          });
+          this.$notify.error({title: '网络切换', message: '请在Nabox插件切换到NULS网络'});
         }
       }, 100)
     },
@@ -227,7 +221,6 @@
 
                 }
             }
-
 
         }
 

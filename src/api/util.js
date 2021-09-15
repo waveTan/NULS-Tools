@@ -44,12 +44,12 @@ export function Minus(nu, arg) {
  * 乘法
  * @param nu
  * @param arg
- * @returns {BigNumber}
+ * @returns {string}
  * @constructor
  */
 export function Times(nu, arg) {
   let newTimes = new BigNumber(nu);
-  return newTimes.times(arg);
+  return newTimes.times(arg).toFormat().replace(/[,]/g, '');
 }
 
 /**
@@ -71,12 +71,12 @@ export function timesDecimals(nu, decimals = 8) {
  * 除法
  * @param nu
  * @param arg
- * @returns {BigNumber}
+ * @returns {string}
  * @constructor
  */
 export function Division(nu, arg) {
   let newDiv = new BigNumber(nu);
-  return newDiv.div(arg);
+  return newDiv.div(arg).toFormat().replace(/[,]/g, '');
 }
 
 /**
