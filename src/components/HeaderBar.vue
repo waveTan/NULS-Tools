@@ -56,12 +56,20 @@
           this.$notify.error({title: '插件检查', message: '没有发现nabox插件，请先安装nabox插件'});
           return;
         }
-        let naboxInfo = await window.nabox.createSession({chain: "NULS"});
-        //console.log(naboxInfo[0]);
+        let naboxInfo = await window.nabox.createSession({chain: IS_RUN ? 'tNULS' : "NULS"});
+        console.log(naboxInfo[0]);
         if (naboxInfo[0].startsWith('NULS') || naboxInfo[0].startsWith('tNULS')) {
-          this.currentAccount.address = naboxInfo[0];
-          this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
-          console.log(this.currentAccount);
+          if(IS_RUN && naboxInfo[0].startsWith('NULS')){
+            this.currentAccount.address = naboxInfo[0];
+            this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
+            console.log(this.currentAccount);
+          }else if(!IS_RUN && naboxInfo[0].startsWith('tNULS')){
+            this.currentAccount.address = naboxInfo[0];
+            this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
+            console.log(this.currentAccount);
+          }else{
+            this.offLink(naboxInfo[0])
+          }
         } else {
           this.$notify.error({title: '网络切换', message: '请在Nabox插件切换到NULS网络'});
         }
@@ -142,8 +150,15 @@
           console.log("没有方法nabox插件，请先安装nabox插件");
           return;
         }
-        let naboxInfo = await window.nabox.createSession({chain: "NULS"});
+        let naboxInfo = await window.nabox.createSession({chain: IS_RUN ? 'tNULS' : "NULS"});
         console.log(naboxInfo);
+      },
+
+      //断开连接钱包
+      async offLink(address) {
+        let resData = await window.nabox.offLink({address: address, chain: IS_RUN ? 'tNULS' : "NULS"});
+        console.log(resData);
+        //this.$store.commit("changeAccount", {address: ""});
       },
 
       /**

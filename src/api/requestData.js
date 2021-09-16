@@ -38,6 +38,7 @@ export function countFee(tx, signatrueCount) {
  * @returns {Promise<any>}
  */
 export async function getAddressInfoByAddress(address) {
+  //console.log(address)
   return await post('/', 'getAccount', [address])
     .then((response) => {
       //console.log(response);
@@ -228,4 +229,3 @@ export async function getContractConstructor(contractCodeHex) {
       return {success: false, data: error};
     });
 }
-

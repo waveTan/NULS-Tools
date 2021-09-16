@@ -1,9 +1,8 @@
 import {BigNumber} from 'bignumber.js'
 import copy from 'copy-to-clipboard'
-import {EXPLORER_URL} from '@/config'
+import {EXPLORER_URL, IS_RUN} from '@/config'
 import openner from "./opener-web";
-
-//import openner from "./opener-desktop";
+import {post} from './https'
 
 /**
  * 10的N 次方
@@ -320,16 +319,15 @@ export function addressSetStorage(newAddressInfo) {
  * @returns {*}
  */
 export async function accountList() {
-
   if (typeof window.nabox === "undefined") {
-    return {};
+    return '';
   }
-  let naboxInfo = await window.nabox.createSession({chain: "NULS"});
+  let naboxInfo = await window.nabox.createSession({chain: IS_RUN ? 'tNULS' : "NULS"});
   //console.log(naboxInfo[0]);
   if (naboxInfo[0].startsWith('NULS') || naboxInfo[0].startsWith('tNULS')) {
-    return {address:naboxInfo[0]};
+    return naboxInfo[0];
   } else {
-    return {};
+    return '';
   }
 }
 

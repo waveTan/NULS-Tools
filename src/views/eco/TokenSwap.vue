@@ -247,11 +247,6 @@
                 <el-form :model="tokenSwapForm" status-icon :rules="tokenSwapRules" ref="tokenSwapForm"
                          class="tokenSwap-form">
                     <el-form-item label="账户: " prop="fromAddress">
-                        <!--<el-select v-model="tokenSwapForm.fromAddress" filterable placeholder="请选择地址" @change="changeAddress"
-                                   :disabled="type === 'editBuy' || type ==='editSell'">
-                          <el-option v-for="item in addressList" :key="item.address" :label="item.labels" :value="item.address">
-                          </el-option>
-                        </el-select>-->
                         <el-input v-model="tokenSwapForm.fromAddress" autocomplete="off" disabled="true">
                         </el-input>
                     </el-form-item>
@@ -325,7 +320,8 @@
     inputsOrOutputs,
     validateAndBroadcast,
     passwordVerification,
-    getBalanceOrNonceByAddress
+    getBalanceOrNonceByAddress,
+    getAddressInfoByAddress
   } from '@/api/requestData'
   import {chainMethodCall, methodCall} from '@/api/contractCall'
 
@@ -430,23 +426,22 @@
       Password, Search
     },
     async created() {
-      this.addressInfo = await accountList();
+      this.addressInfo.address = await accountList();
       this.urls = IS_RUN ? 'http://129.204.111.201:82' : 'http://129.204.111.201:81';
-      this.getAddressList(this.addressInfo);
     },
     mounted() {
       this.init();
       this.tokenSwapSetIntervalTwo = setInterval(async () => {
-        this.addressInfo = await accountList();
+        this.addressInfo.address = await accountList();
       }, 1000);
 
       this.setInterval();
     },
     watch: {
-      "addressInfo.address": function (val, oldVal) {
+      "addressInfo.address": async function (val, oldVal) {
         //console.log(val, oldVal);
         if (oldVal && val !== oldVal) {
-          this.getAddressList(this.addressInfo);
+          this.init();
           this.tabData(this.activeName);
         }
       },
@@ -460,6 +455,12 @@
 
       //初始化
       async init() {
+        let resData = await  getAddressInfoByAddress(this.addressInfo.address);
+        //console.log(resData);
+        if (resData.success) {
+          this.addressInfo = resData.data
+        }
+        this.getAddressList(this.addressInfo);
         this.getContractAddress();
         this.allList();
         setTimeout(() => {
@@ -491,7 +492,7 @@
         let url = this.urls + '/tokenex/contract';
         try {
           let resData = await axios.get(url);
-          // console.log(resData.data);
+          console.log(resData.data);
           if (resData.data.success) {
             this.contractAddress = resData.data.data;
             let newContracoInfo = await this.contractInfoByAddress(this.contractAddress);
@@ -554,7 +555,7 @@
       async getAllNRC20(pageIndex = 1, pageSize = 100) {
         return await this.$post('/', 'getContractList', [pageIndex, pageSize, 1, false])
           .then((response) => {
-            //console.log(response);
+           // console.log(response);
             if (response.hasOwnProperty("result")) {
               //this.contractInfo = response.result;
               for (let item of response.result.list) {
@@ -660,8 +661,8 @@
           this.contractCallData = resData.data;
           this.buyOrSellDialog = false;
           this.$refs.password.showPassword(true, this.addressInfo.address);
-        }).catch(() => {
-
+        }).catch((e) => {
+          console.log(e)
         });
       },
 
@@ -785,22 +786,20 @@
        * @author: Wave
        */
       showDialog(type) {
-        console.log(type);
-        console.log(this.addressInfo);
         if (type === 0) {
           //console.log(this.allNRC20List);
           this.addressInfo.tokens = this.allNRC20List;
           this.dialogTitle = '挂买单';
           this.type = 'buy';
         } else {
-          console.log(this.addressInfo, this.addressList);
+          //console.log(this.addressInfo, this.addressList);
           if (this.addressInfo.address) {
             this.addressInfo.tokens = this.addressList.filter(obj => obj.address === this.addressInfo.address);
-            console.log(this.addressInfo.tokens, 888);
+            //console.log(this.addressInfo.tokens);
             if (this.addressInfo.tokens.length !== 0) {
               this.tokenSwapForm.assets = this.addressInfo.tokens[0].contractAddress;
               this.tokenInfo = this.addressInfo.tokens[0];
-              console.log(this.tokenInfo)
+              //console.log(this.tokenInfo)
             }
             this.tokenSwapForm.fromAddress = this.addressInfo.address.toString();
           }
@@ -841,7 +840,7 @@
        * @author: Wave
        */
       async sellClick(info) {
-        console.log(info);
+        //console.log(info);
         let newAssetsInfo = this.addressInfo.tokens.filter(obj => obj.contractAddress === info.token);
         if (newAssetsInfo.length === 0) {
           this.$message({message: "对不起！改账户没有 " + info.symbol + " 资产", type: 'error', duration: 3000});
@@ -899,7 +898,7 @@
        * @author: Wave
        */
       editInfo(type, info) {
-        console.log(type, info);
+        //console.log(type, info);
         this.tokenSwapForm.number = info.number;
         this.tokenSwapForm.price = info.price;
         let newAssetsInfo = this.allNRC20List.filter(obj => obj.contractAddress === info.token);
@@ -928,7 +927,7 @@
        * @author: Wave
        */
       undoClick(type, info) {
-        console.log(type, info);
+        //console.log(type, info);
         let infos = '您确定要撤销ID:' + info.id + '的订单';
         let newInfo = type === 'buy' ? '买' : '卖';
         let title = '撤销' + newInfo + '订单ID:' + info.id;
@@ -950,16 +949,15 @@
             return;
           }
           let resData = await chainMethodCall(this.addressInfo.address, methodsInfo[0], this.contractAddress, 0, newArgs.args);
-          console.log(resData);
+          //console.log(resData);
           if (!resData.success) {
             console.log('验证合约错误：' + resData.data);
             return;
           }
           this.contractCallData = resData.data;
-
-          this.$refs.password.showPassword(true, this.addressInfo.address);
-        }).catch(() => {
-
+          this.contractData();
+        }).catch((e) => {
+          console.log(e)
         });
       },
 
@@ -1037,22 +1035,6 @@
           .catch((error) => {
             return {success: false, data: error}
           });
-      },
-
-      /**
-       * @disc: 选择地址
-       * @params: address
-       * @date: 2020-12-09 10:55
-       * @author: Wave
-       */
-      changeAddress(address) {
-        //console.log(address);
-        let newAddressData = this.addressList.filter(obj => obj.address === address);
-        this.addressInfo = newAddressData[0];
-        if (this.addressInfo.tokens && this.addressInfo.tokens.length !== 0) {
-          this.tokenSwapForm.assets = this.addressInfo.tokens[0].contractAddress;
-          this.tokenInfo = this.addressInfo.tokens.filter(obj => obj.contractAddress === this.tokenSwapForm.assets)[0];
-        }
       },
 
       /**
@@ -1185,7 +1167,7 @@
               let newAmount = timesDecimals(this.tokenSwapForm.amount, 8).toString();
               methodsInfo[0].params[1].value = Division(newNumber, newAmount).toString();
             }
-
+            console.log(methodsInfo);
             let newArgs = getArgs(methodsInfo[0].params);
             console.log(newArgs);
             if (!newArgs.allParameter) {
@@ -1202,8 +1184,8 @@
               return;
             }
             this.contractCallData = resData.data;
-
-            this.$refs.password.showPassword(true, this.addressInfo.address);
+            this.contractData()
+            //this.$refs.password.showPassword(true, this.addressInfo.address);
           } else {
             return false;
           }
@@ -1302,6 +1284,31 @@
         }).catch((err) => {
           this.$message({message: this.$t('public.err1') + err, type: 'error', duration: 3000});
         });
+      },
+
+      /**
+       *  获取密码框的密码
+       * @param password
+       **/
+      async contractData() {
+        console.log(this.contractCallData);
+        const data = {
+          from: this.contractCallData.sender,
+          value: this.contractCallData.value,
+          contractAddress: this.contractCallData.contractAddress,
+          methodName: this.contractCallData.methodName,
+          methodDesc: this.contractCallData.methodDesc,
+          args: this.contractCallData.args,
+          multyAssetValues: []
+        };
+        console.log(data);
+        const resData = await window.nabox.contractCall(data); // 返回交易hash
+        console.log(resData);
+        if (resData) {
+          this.$message({message: this.$t('tips.tips15'), type: 'success', duration: 1000});
+          this.buyOrSellDialog = false;
+        }
+
       },
 
       /**
