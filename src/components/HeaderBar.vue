@@ -13,7 +13,8 @@
                 </el-menu>
             </el-col>
             <el-col class="user fr font14">
-                <div class="fl">
+                <div class="fl" v-loading="userLoading"  element-loading-text="loading..."
+                     element-loading-spinner="el-icon-loading">
                     <div class="address-info" v-if="currentAccount.address">
                         <div class="ad tr">
                             {{currentAccount.addresss}}
@@ -48,6 +49,7 @@
         balanceLoading: true,//余额加载
         balance: 0,
         alias: '',
+        userLoading: true,
       };
     },
     created() {
@@ -58,16 +60,17 @@
         }
         let naboxInfo = await window.nabox.createSession({chain: IS_RUN ? 'tNULS' : "NULS"});
         console.log(naboxInfo[0]);
+        this.userLoading = false;
         if (naboxInfo[0].startsWith('NULS') || naboxInfo[0].startsWith('tNULS')) {
-          if(IS_RUN && naboxInfo[0].startsWith('NULS')){
+          if (IS_RUN && naboxInfo[0].startsWith('NULS')) {
             this.currentAccount.address = naboxInfo[0];
             this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
             console.log(this.currentAccount);
-          }else if(!IS_RUN && naboxInfo[0].startsWith('tNULS')){
+          } else if (!IS_RUN && naboxInfo[0].startsWith('tNULS')) {
             this.currentAccount.address = naboxInfo[0];
             this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
             console.log(this.currentAccount);
-          }else{
+          } else {
             this.offLink(naboxInfo[0])
           }
         } else {
