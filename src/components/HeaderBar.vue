@@ -15,9 +15,9 @@
             <el-col class="user fr font14">
                 <div class="fl" v-loading="userLoading" element-loading-text="loading..."
                      element-loading-spinner="el-icon-loading">
-                    <div class="address-info" v-if="currentAccount.address">
+                    <div class="address-info" v-if="$store.state.accountInfo.address">
                         <div class="ad tr click" @click="accountDialog=true">
-                            {{currentAccount.addresss}}
+                            {{superLongs($store.state.accountInfo.address,5)}}
                         </div>
                     </div>
                     <div class="font12 click user_login" v-else @click="connectPlugin">
@@ -30,11 +30,11 @@
         </el-row>
 
         <el-dialog title="" :visible.sync="accountDialog" width="500px" class="account-dialog">
-            <div class="address">{{currentAccount.address}}</div>
+            <div class="address">{{$store.state.accountInfo.address}}</div>
             <div class="btns">
-                <el-button @click="toUrl(currentAccount.address,'url',1)">{{$t('header.header1')}}</el-button>
-                <el-button @click="copy(currentAccount.address)">{{$t('header.header2')}}</el-button>
-                <el-button @click="offLink(currentAccount.address)">{{$t('header.header3')}}</el-button>
+                <el-button @click="toUrl($store.state.accountInfo.address,'url',1)">{{$t('header.header1')}}</el-button>
+                <el-button @click="copy($store.state.accountInfo.address)">{{$t('header.header2')}}</el-button>
+                <el-button @click="offLink($store.state.accountInfo.address)">{{$t('header.header3')}}</el-button>
             </div>
         </el-dialog>
     </el-row>
@@ -73,16 +73,10 @@
         this.userLoading = false;
         if (naboxInfo[0].startsWith('NULS') || naboxInfo[0].startsWith('tNULS')) {
           if (IS_RUN && naboxInfo[0].startsWith('NULS')) {
-            this.userLoading = true;
-            this.currentAccount.address = naboxInfo[0];
-            this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
-            this.userLoading = false;
+            this.$store.commit("changeAccount", {address: naboxInfo[0]});
             this.naboxAccount();
           } else if (!IS_RUN && naboxInfo[0].startsWith('tNULS')) {
-            this.userLoading = true;
-            this.currentAccount.address = naboxInfo[0];
-            this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
-            this.userLoading = false;
+            this.$store.commit("changeAccount", {address: naboxInfo[0]});
             this.naboxAccount();
           } else {
             this.offLink(naboxInfo[0])
@@ -118,6 +112,10 @@
       }
     },
     methods: {
+
+      superLongs(string, leng) {
+        return superLong(string, leng)
+      },
 
       /**
        * 导航跳转
@@ -174,10 +172,7 @@
         }
         let naboxInfo = await window.nabox.createSession({chain: IS_RUN ? 'tNULS' : "NULS"});
         console.log(naboxInfo);
-        this.userLoading = true;
-        this.currentAccount.address = naboxInfo[0];
-        this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
-        this.userLoading = false;
+        this.$store.commit("changeAccount", {address: naboxInfo[0]});
         this.naboxAccount();
       },
 
@@ -191,10 +186,7 @@
           //console.log(payload);
           if (payload && payload.length) {
             if (payload[0].startsWith('tNULS') || payload[0].startsWith('NULS')) {
-              this.userLoading = true;
-              this.currentAccount.address = payload[0];
-              this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
-              this.userLoading = false;
+              this.$store.commit("changeAccount", {address: payload[0]});
             }
           } else {
             this.currentAccount = {};
@@ -206,7 +198,7 @@
       //断开连接钱包
       async offLink(address) {
         //console.log(address);
-        this.currentAccount = {};
+        this.$store.commit("changeAccount", {address: ""});
         this.accountDialog = false;
         let resData = await window.nabox.offLink({address: address, chain: "NULS"});
         console.log(resData);

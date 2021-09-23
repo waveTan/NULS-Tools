@@ -6,11 +6,16 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     height: 0, //最新高度
+    accountInfo: {},
   },
   mutations: {
     setHeight(state, data) {
       state.height = data;
       sessionStorage.setItem('height', JSON.stringify(data));
+    },
+    changeAccount(state, accountInfo) {
+      accountInfo = accountInfo || {address: ""};
+      state.accountInfo = accountInfo;
     },
   },
   getters: {

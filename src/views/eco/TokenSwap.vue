@@ -426,13 +426,13 @@
       Password, Search
     },
     async created() {
-      this.addressInfo.address = await accountList();
+      this.addressInfo.address = this.$store.state.accountInfo.address;
       this.urls = IS_RUN ? 'http://129.204.111.201:82' : 'http://129.204.111.201:81';
     },
     mounted() {
       this.init();
       this.tokenSwapSetIntervalTwo = setInterval(async () => {
-        this.addressInfo.address = await accountList();
+        this.addressInfo.address = this.$store.state.accountInfo.address;
       }, 1000);
 
       this.setInterval();
@@ -555,7 +555,7 @@
       async getAllNRC20(pageIndex = 1, pageSize = 100) {
         return await this.$post('/', 'getContractList', [pageIndex, pageSize, 1, false])
           .then((response) => {
-           // console.log(response);
+            // console.log(response);
             if (response.hasOwnProperty("result")) {
               //this.contractInfo = response.result;
               for (let item of response.result.list) {
