@@ -1,4 +1,10 @@
 {
+  "header": {
+    "header0": "Connect Wallet",
+    "header1": "View",
+    "header2": "Copy",
+    "header3": "Disconnect"
+  },
   "nav": {
     "home": "Home",
     "game": "Game",
@@ -217,7 +223,6 @@
     "newAddress7": "Password",
     "newAddress8": "Confirm password",
     "newAddress9": "Key import",
-
     "newAddress10": "Address generator",
     "newAddress11": "Generates an address with the specified suffix",
     "newAddress": ""

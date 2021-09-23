@@ -13,10 +13,10 @@
                 </el-menu>
             </el-col>
             <el-col class="user fr font14">
-                <div class="fl" v-loading="userLoading"  element-loading-text="loading..."
+                <div class="fl" v-loading="userLoading" element-loading-text="loading..."
                      element-loading-spinner="el-icon-loading">
                     <div class="address-info" v-if="currentAccount.address">
-                        <div class="ad tr">
+                        <div class="ad tr click" @click="accountDialog=true">
                             {{currentAccount.addresss}}
                         </div>
                     </div>
@@ -28,13 +28,22 @@
             </el-col>
 
         </el-row>
+
+        <el-dialog title="" :visible.sync="accountDialog" width="500px" class="account-dialog">
+            <div class="address">{{currentAccount.address}}</div>
+            <div class="btns">
+                <el-button @click="toUrl(currentAccount.address,'url',1)">{{$t('header.header1')}}</el-button>
+                <el-button @click="copy(currentAccount.address)">{{$t('header.header2')}}</el-button>
+                <el-button @click="offLink(currentAccount.address)">{{$t('header.header3')}}</el-button>
+            </div>
+        </el-dialog>
     </el-row>
 </template>
 
 <script>
   import logo from '@/assets/logo.png'
   import logoBeta from '@/assets/logo.png'
-  import {superLong, divisionDecimals, tofix} from '@/api/util.js'
+  import {superLong, divisionDecimals, tofix, copys} from '@/api/util.js'
   import {IS_RUN} from '@/config.js'
   import {getAddressInfoByAddress} from '@/api/requestData'
 
@@ -50,6 +59,7 @@
         balance: 0,
         alias: '',
         userLoading: true,
+        accountDialog: false
       };
     },
     created() {
@@ -63,22 +73,31 @@
         this.userLoading = false;
         if (naboxInfo[0].startsWith('NULS') || naboxInfo[0].startsWith('tNULS')) {
           if (IS_RUN && naboxInfo[0].startsWith('NULS')) {
+            this.userLoading = true;
             this.currentAccount.address = naboxInfo[0];
             this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
-            console.log(this.currentAccount);
+            this.userLoading = false;
+            this.naboxAccount();
           } else if (!IS_RUN && naboxInfo[0].startsWith('tNULS')) {
+            this.userLoading = true;
             this.currentAccount.address = naboxInfo[0];
             this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
-            console.log(this.currentAccount);
+            this.userLoading = false;
+            this.naboxAccount();
           } else {
             this.offLink(naboxInfo[0])
           }
         } else {
+          this.userLoading = false;
           this.$notify.error({title: '网络切换', message: '请在Nabox插件切换到NULS网络'});
         }
+        this.userLoading = false;
       }, 100)
     },
     mounted() {
+      setTimeout(async () => {
+        this.userLoading = false;
+      }, 1000)
 
     },
     components: {},
@@ -155,13 +174,52 @@
         }
         let naboxInfo = await window.nabox.createSession({chain: IS_RUN ? 'tNULS' : "NULS"});
         console.log(naboxInfo);
+        this.userLoading = true;
+        this.currentAccount.address = naboxInfo[0];
+        this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
+        this.userLoading = false;
+        this.naboxAccount();
+      },
+
+      //监听插件账户变化
+      naboxAccount() {
+        if (!window.nabox) {
+          this.currentAccount = {};
+          return
+        }
+        window.nabox.on("accountsChanged", (payload) => {
+          //console.log(payload);
+          if (payload && payload.length) {
+            if (payload[0].startsWith('tNULS') || payload[0].startsWith('NULS')) {
+              this.userLoading = true;
+              this.currentAccount.address = payload[0];
+              this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
+              this.userLoading = false;
+            }
+          } else {
+            this.currentAccount = {};
+          }
+        });
+
       },
 
       //断开连接钱包
       async offLink(address) {
-        let resData = await window.nabox.offLink({address: address, chain: IS_RUN ? 'tNULS' : "NULS"});
+        //console.log(address);
+        this.currentAccount = {};
+        this.accountDialog = false;
+        let resData = await window.nabox.offLink({address: address, chain: "NULS"});
         console.log(resData);
-        //this.$store.commit("changeAccount", {address: ""});
+      },
+
+      /**
+       * 复制方法
+       * @param sting
+       **/
+      copy(sting) {
+        copys(sting);
+        this.$message({message: this.$t('public.copySuccess'), type: 'success', duration: 2000});
+        this.accountDialog = false;
       },
 
       /**
@@ -176,7 +234,8 @@
             name: urlName
           })
         } else {
-          window.open(urlName)
+          let url = IS_RUN ? 'http://beta.nulscan.io/address/info?address=' : 'https://nulscan.io/address/info?address=';
+          window.open(url + urlName)
         }
       },
     }
@@ -257,6 +316,39 @@
                 font-size: 0.7rem;
                 line-height: 0.7rem;
             }
+        }
+
+        .account-dialog {
+            .el-dialog {
+                .el-dialog__header {
+                    .el-dialog__headerbtn {
+                        top: 5px;
+                        right: 5px;
+                    }
+                }
+                .el-dialog__body {
+                    padding: 10px 5px;
+                    .address {
+                        padding: 10px 5px;
+                        border-radius: 5px;
+                        background-color: #f1f1f1;
+                        margin: 0 0 20px 0;
+                        font-size: 13px;
+                        height: 80px;
+                    }
+                    .btns {
+                        text-align: center;
+                        padding: 0 0 20px 0;
+                        .el-button {
+                            width: 100px;
+                            .span {
+                                color: #000000 !important;
+                            }
+                        }
+                    }
+                }
+            }
+
         }
 
     }

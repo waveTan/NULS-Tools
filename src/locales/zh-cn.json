@@ -1,4 +1,10 @@
 {
+  "header": {
+    "header0": "连接钱包",
+    "header1": "查看",
+    "header2": "复制",
+    "header3": "断开"
+  },
   "nav": {
     "home": "首页",
     "game": "游戏",
@@ -217,7 +223,6 @@
     "newAddress7": "密码",
     "newAddress8": "确认密码",
     "newAddress9": "私钥导入",
-
     "newAddress10": "地址生成器",
     "newAddress11": "可生成指定后缀的地址",
     "newAddress": ""
@@ -306,14 +311,14 @@
     "goblin4": "goblin",
     "goblin": "goblin"
   },
-  "cannotGuess":{
-    "cannotGuess0":"猜不着",
-    "cannotGuess1":"猜不着参与金额全部返还并给与赔偿",
-    "cannotGuess2":"cannotGuess",
-    "cannotGuess3":"cannotGuess",
-    "cannotGuess4":"cannotGuess",
-    "cannotGuess5":"cannotGuess",
-    "cannotGuess6":"cannotGuess",
-    "cannotGuess":"cannotGuess"
+  "cannotGuess": {
+    "cannotGuess0": "猜不着",
+    "cannotGuess1": "猜不着参与金额全部返还并给与赔偿",
+    "cannotGuess2": "cannotGuess",
+    "cannotGuess3": "cannotGuess",
+    "cannotGuess4": "cannotGuess",
+    "cannotGuess5": "cannotGuess",
+    "cannotGuess6": "cannotGuess",
+    "cannotGuess": "cannotGuess"
   }
 }
