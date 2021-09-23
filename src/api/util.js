@@ -319,16 +319,7 @@ export function addressSetStorage(newAddressInfo) {
  * @returns {*}
  */
 export async function accountList() {
-  if (typeof window.nabox === "undefined") {
-    return '';
-  }
-  let naboxInfo = await window.nabox.createSession({chain: IS_RUN ? 'tNULS' : "NULS"});
-  //console.log(naboxInfo[0]);
-  if (naboxInfo[0].startsWith('NULS') || naboxInfo[0].startsWith('tNULS')) {
-    return naboxInfo[0];
-  } else {
-    return '';
-  }
+  return this.$store.state.accountInfo.address;
 }
 
 /**

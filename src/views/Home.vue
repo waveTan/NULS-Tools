@@ -58,14 +58,14 @@
                     <p>{{$t('newAddress.newAddress10')}}</p>
                     <b class="font12">{{$t('newAddress.newAddress11')}}</b>
                 </li>
-                <li @click="toUrl('lockedTransfer','',0)">
+                <!--<li @click="toUrl('lockedTransfer','',0)">
                     <p>{{$t('locking.locking0')}}</p>
                     <b class="font12">{{$t('locking.locking0')}}</b>
                 </li>
                 <li @click="toUrl('oneToMore','',0)">
                     <p>{{$t('oneTo.oneTo11')}}</p>
                     <b class="font12">{{$t('oneTo.oneTo12')}}</b>
-                </li>
+                </li>-->
             </ul>
         </div>
     </div>

@@ -660,7 +660,7 @@
           }
           this.contractCallData = resData.data;
           this.buyOrSellDialog = false;
-          this.$refs.password.showPassword(true, this.addressInfo.address);
+          this.contractData();
         }).catch((e) => {
           console.log(e)
         });

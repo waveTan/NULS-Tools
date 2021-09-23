@@ -1,205 +1,216 @@
 <template>
-  <div class="guess_number w1200">
-    <div class="top">
-      <div class="fl guess" v-loading="loading"
-           :element-loading-text=loadingText
-           element-loading-spinner="el-icon-loading"
-           element-loading-background="rgba(0, 0, 0, 0.8)">
-        <h2>NULS {{$t('guessNum.guessNum0')}}{{gameCurrentInfo.id}}{{$t('guessNum.guessNum1')}}</h2>
-        <div class="explain">
-          <p>1、{{$t('guessNum.guessNum2')}}
-            <el-tooltip placement="bottom" style="padding: 0">
-              <div slot="content" class="portion">
-                <ul>
-                  <li>{{$t('guessNum.guessNum3')}} &lt; 10 {{$t('guessNum.guessNum4')}} 20%</li>
-                  <li>{{$t('guessNum.guessNum3')}} &lt; 50 {{$t('guessNum.guessNum4')}} 25%</li>
-                  <li>{{$t('guessNum.guessNum3')}} &lt; 100 {{$t('guessNum.guessNum4')}} 30%</li>
-                  <li>{{$t('guessNum.guessNum3')}} &lt; 200 {{$t('guessNum.guessNum4')}} 35%</li>
-                  <li>{{$t('guessNum.guessNum3')}} &lt; 500 {{$t('guessNum.guessNum4')}} 40%</li>
-                  <li>{{$t('guessNum.guessNum3')}} &lt; 1000 {{$t('guessNum.guessNum4')}} 45%</li>
-                  <li>{{$t('guessNum.guessNum3')}} &gt; 1000 {{$t('guessNum.guessNum4')}} 50%</li>
-                </ul>
-              </div>
-              <el-button type="text">{{$t('guessNum.guessNum5')}}</el-button>
-            </el-tooltip>
-            {{$t('guessNum.guessNum6')}}
-          </p>
-          <p>2、{{$t('guessNum.guessNum7')}} <span class="fred fW600">2.1 </span>NULS + {{$t('locking.locking91')}} </p>
-          <p>
-            3、{{$t('guessNum.guessNum8')}}
-            <span class="fyellow fW600"> 60 </span>
-            {{$t('guessNum.guessNum9')}}
-            <span class="fyellow fW600"> 10 </span>
-            {{$t('guessNum.guessNum10')}}
-          </p>
-          <p>
-            4、{{$t('guessNum.guessNum11')}}
-            <span class="click"
-                  @click="toUrl('','https://www.8btc.com/article/374354',1)">{{$t('guessNum.guessNum12')}}</span>
-            {{$t('guessNum.guessNum13')}}
-          </p>
-        </div>
-        <div class="number">
-          <el-button circle v-for="item in valueList" :key="item.value" @click="clickNumber(item.value)"
-                     :class="item.value.toString() ===numberValue.toString() ? 'is_number':''">
-            {{item.label}}
-          </el-button>
-        </div>
-        <div class="submit tc">
-          <el-button type="success" @click="guessStart">
-            {{this.numberValue ==='' ? $t('guessNum.guessNum14'):$t('guessNum.guessNum15')}}
-            {{this.numberValue}}
-          </el-button>
-        </div>
-        <div class="jackpot font14">
-          {{$t('guessNum.guessNum3')}}
-          <span class="font12">({{jackpotInfo.address}})</span>:
-          <font class="fCN fW600">{{jackpotInfo.balance}}</font> NULS
-        </div>
-        <div class="font14" v-if="gameCurrentInfo.endHeight">
-          <div class="fl">
-            {{$t('guessNum.guessNum16')}}:
-            <span class="fred fW600">{{gameCurrentInfo.endHeight}}</span>
-          </div>
-          <div class="fl">&nbsp;
-            {{$t('guessNum.guessNum17')}}:
-            <span class="fred fW600">{{gameCurrentInfo.endHeight + gameCurrentInfo.gameLotteryDelay}}</span>
-          </div>
-        </div>
-        <div class="font14 fyellow" v-else>{{$t('guessNum.guessNum18')}}</div>
-      </div>
-      <div class="fr party">
-        <h3>{{$t('guessNum.guessNum19')}}</h3>
-        <el-table :data="gameDetailInfo.participants" style="width: 100%">
-          <el-table-column :label="$t('public.address')" align="center" width="108">
-            <template slot-scope="scope">
-              <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="txHash" align="center" min-width="90">
-            <template slot-scope="scope">
-              <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="txTime" :label="$t('public.time')" align="center" width="90">
-          </el-table-column>
-          <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center" width="90">
-          </el-table-column>
-          <el-table-column :label="$t('public.status')" align="center" width="100">
-            <template slot-scope="scope">
-              <span :class="scope.row.status === 0 ? 'fCN':''">{{$t('status.status'+ scope.row.status)}}</span>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-    </div>
-    <div class="footer cb">
-      <el-tabs v-model="activeHistory" @tab-click="handleClick">
-        <el-tab-pane :label="$t('guessNum.guessNum21')" name="first">
-          <el-table :data="participantData" stripe style="width: 100%" border>
-            <el-table-column prop="gameId" :label="$t('guessNum.guessNum22')" width="120" align="center">
-            </el-table-column>
-            <el-table-column :label="$t('guessNum.guessNum23')" width="380" align="center">
-              <template slot-scope="scope">
-                <span class="click" @click="toUrl('address',scope.row.winner,1)">{{scope.row.winner}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="perPrize" :label="$t('guessNum.guessNum24')" width="120" align="center">
-            </el-table-column>
-            <el-table-column prop="number" :label="$t('guessNum.guessNum25')" width="130" align="center">
-            </el-table-column>
-            <el-table-column prop="txTime" :label="$t('guessNum.guessNum26')" width="160" align="center">
-            </el-table-column>
-            <el-table-column label="txHash" min-width="160" align="center">
-              <template slot-scope="scope">
-                <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-tab-pane>
-        <el-tab-pane :label="$t('guessNum.guessNum27')" name="second">
-          <el-table :data="participantHistoryData" stripe style="width: 100%" border>
-            <el-table-column prop="gameId" :label="$t('guessNum.guessNum22')" width="120" align="center">
-            </el-table-column>
-            <el-table-column :label="$t('guessNum.guessNum23')" width="380" align="center">
-              <template slot-scope="scope">
-                <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.address}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="number" :label="$t('guessNum.guessNum25')" width="160" align="center">
-            </el-table-column>
-            <el-table-column prop="txTime" :label="$t('guessNum.guessNum26')" width="160" align="center">
-            </el-table-column>
-            <el-table-column label="txHash" min-width="180" align="center">
-              <template slot-scope="scope">
-                <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-tab-pane>
-        <el-tab-pane :label="$t('guessNum.guessNum28')" name="third">
-          <el-collapse v-model="activeName" accordion @change="changeColapse()">
-            <el-collapse-item v-for="(item,index) in historyData" :key="index"
-                              :title="$t('guessNum.guessNum0') +item.gameId+$t('guessNum.guessNum29')+$t('guessNum.guessNum30')+':'+item.number+ $t('guessNum.guessNum31')+': '+item.perPrize"
-                              :name=item.gameId
-            >
-              <div class="footer_table">
-                <div>{{$t('guessNum.guessNum32')}}</div>
-                <el-table :data="historyDataIn" style="width: 100%">
-                  <el-table-column :label="$t('public.address')" align="center" width="180">
-                    <template slot-scope="scope">
-                      <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="txHash" align="center" min-width="80">
-                    <template slot-scope="scope">
-                      <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="txTime" :label="$t('public.time')" align="center" width="180">
-                  </el-table-column>
-                  <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center" width="150">
-                  </el-table-column>
+    <div class="guess_number w1200">
+        <div class="top">
+            <div class="fl guess" v-loading="loading"
+                 :element-loading-text=loadingText
+                 element-loading-spinner="el-icon-loading"
+                 element-loading-background="rgba(0, 0, 0, 0.8)">
+                <h2>NULS {{$t('guessNum.guessNum0')}}{{gameCurrentInfo.id}}{{$t('guessNum.guessNum1')}}</h2>
+                <div class="explain">
+                    <p>1、{{$t('guessNum.guessNum2')}}
+                        <el-tooltip placement="bottom" style="padding: 0">
+                            <div slot="content" class="portion">
+                                <ul>
+                                    <li>{{$t('guessNum.guessNum3')}} &lt; 10 {{$t('guessNum.guessNum4')}} 20%</li>
+                                    <li>{{$t('guessNum.guessNum3')}} &lt; 50 {{$t('guessNum.guessNum4')}} 25%</li>
+                                    <li>{{$t('guessNum.guessNum3')}} &lt; 100 {{$t('guessNum.guessNum4')}} 30%</li>
+                                    <li>{{$t('guessNum.guessNum3')}} &lt; 200 {{$t('guessNum.guessNum4')}} 35%</li>
+                                    <li>{{$t('guessNum.guessNum3')}} &lt; 500 {{$t('guessNum.guessNum4')}} 40%</li>
+                                    <li>{{$t('guessNum.guessNum3')}} &lt; 1000 {{$t('guessNum.guessNum4')}} 45%</li>
+                                    <li>{{$t('guessNum.guessNum3')}} &gt; 1000 {{$t('guessNum.guessNum4')}} 50%</li>
+                                </ul>
+                            </div>
+                            <el-button type="text">{{$t('guessNum.guessNum5')}}</el-button>
+                        </el-tooltip>
+                        {{$t('guessNum.guessNum6')}}
+                    </p>
+                    <p>2、{{$t('guessNum.guessNum7')}} <span class="fred fW600">2.1 </span>NULS +
+                        {{$t('locking.locking91')}} </p>
+                    <p>
+                        3、{{$t('guessNum.guessNum8')}}
+                        <span class="fyellow fW600"> 60 </span>
+                        {{$t('guessNum.guessNum9')}}
+                        <span class="fyellow fW600"> 10 </span>
+                        {{$t('guessNum.guessNum10')}}
+                    </p>
+                    <p>
+                        4、{{$t('guessNum.guessNum11')}}
+                        <span class="click"
+                              @click="toUrl('','https://www.8btc.com/article/374354',1)">{{$t('guessNum.guessNum12')}}</span>
+                        {{$t('guessNum.guessNum13')}}
+                    </p>
+                </div>
+                <div class="number">
+                    <el-button circle v-for="item in valueList" :key="item.value" @click="clickNumber(item.value)"
+                               :class="item.value.toString() ===numberValue.toString() ? 'is_number':''">
+                        {{item.label}}
+                    </el-button>
+                </div>
+                <div class="submit tc">
+                    <el-button type="success" @click="guessStart">
+                        {{this.numberValue ==='' ? $t('guessNum.guessNum14'):$t('guessNum.guessNum15')}}
+                        {{this.numberValue}}
+                    </el-button>
+                </div>
+                <div class="jackpot font14">
+                    {{$t('guessNum.guessNum3')}}
+                    <span class="font12">({{jackpotInfo.address}})</span>:
+                    <font class="fCN fW600">{{jackpotInfo.balance}}</font> NULS
+                </div>
+                <div class="font14" v-if="gameCurrentInfo.endHeight">
+                    <div class="fl">
+                        {{$t('guessNum.guessNum16')}}:
+                        <span class="fred fW600">{{gameCurrentInfo.endHeight}}</span>
+                    </div>
+                    <div class="fl">&nbsp;
+                        {{$t('guessNum.guessNum17')}}:
+                        <span class="fred fW600">{{gameCurrentInfo.endHeight + gameCurrentInfo.gameLotteryDelay}}</span>
+                    </div>
+                </div>
+                <div class="font14 fyellow" v-else>{{$t('guessNum.guessNum18')}}</div>
+            </div>
+            <div class="fr party">
+                <h3>{{$t('guessNum.guessNum19')}}</h3>
+                <el-table :data="gameDetailInfo.participants" style="width: 100%">
+                    <el-table-column :label="$t('public.address')" align="center" width="108">
+                        <template slot-scope="scope">
+                            <span class="click"
+                                  @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="txHash" align="center" min-width="90">
+                        <template slot-scope="scope">
+                            <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="txTime" :label="$t('public.time')" align="center" width="90">
+                    </el-table-column>
+                    <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center" width="90">
+                    </el-table-column>
+                    <el-table-column :label="$t('public.status')" align="center" width="100">
+                        <template slot-scope="scope">
+                            <span :class="scope.row.status === 0 ? 'fCN':''">{{$t('status.status'+ scope.row.status)}}</span>
+                        </template>
+                    </el-table-column>
                 </el-table>
-                <div>{{$t('guessNum.guessNum33')}}</div>
-                <el-table :data="historyDataOut" style="width: 100%">
-                  <el-table-column :label="$t('public.address')" align="center" width="180">
-                    <template slot-scope="scope">
-                      <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column label="txHash" align="center" min-width="80">
-                    <template slot-scope="scope">
-                      <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
-                    </template>
-                  </el-table-column>
-                  <el-table-column prop="txTime" :label="$t('public.time')" align="center" width="180">
-                  </el-table-column>
-                  <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center" width="150">
-                  </el-table-column>
-                  <el-table-column prop="perPrize" :label="$t('guessNum.guessNum31')" align="center" width="150">
-                  </el-table-column>
-                </el-table>
-              </div>
-            </el-collapse-item>
-          </el-collapse>
+            </div>
+        </div>
+        <div class="footer cb">
+            <el-tabs v-model="activeHistory" @tab-click="handleClick">
+                <el-tab-pane :label="$t('guessNum.guessNum21')" name="first">
+                    <el-table :data="participantData" stripe style="width: 100%" border>
+                        <el-table-column prop="gameId" :label="$t('guessNum.guessNum22')" width="120" align="center">
+                        </el-table-column>
+                        <el-table-column :label="$t('guessNum.guessNum23')" width="380" align="center">
+                            <template slot-scope="scope">
+                                <span class="click"
+                                      @click="toUrl('address',scope.row.winner,1)">{{scope.row.winner}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="perPrize" :label="$t('guessNum.guessNum24')" width="120" align="center">
+                        </el-table-column>
+                        <el-table-column prop="number" :label="$t('guessNum.guessNum25')" width="130" align="center">
+                        </el-table-column>
+                        <el-table-column prop="txTime" :label="$t('guessNum.guessNum26')" width="160" align="center">
+                        </el-table-column>
+                        <el-table-column label="txHash" min-width="160" align="center">
+                            <template slot-scope="scope">
+                                <span class="click"
+                                      @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-tab-pane>
+                <el-tab-pane :label="$t('guessNum.guessNum27')" name="second">
+                    <el-table :data="participantHistoryData" stripe style="width: 100%" border>
+                        <el-table-column prop="gameId" :label="$t('guessNum.guessNum22')" width="120" align="center">
+                        </el-table-column>
+                        <el-table-column :label="$t('guessNum.guessNum23')" width="380" align="center">
+                            <template slot-scope="scope">
+                                <span class="click"
+                                      @click="toUrl('address',scope.row.address,1)">{{scope.row.address}}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="number" :label="$t('guessNum.guessNum25')" width="160" align="center">
+                        </el-table-column>
+                        <el-table-column prop="txTime" :label="$t('guessNum.guessNum26')" width="160" align="center">
+                        </el-table-column>
+                        <el-table-column label="txHash" min-width="180" align="center">
+                            <template slot-scope="scope">
+                                <span class="click"
+                                      @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-tab-pane>
+                <el-tab-pane :label="$t('guessNum.guessNum28')" name="third">
+                    <el-collapse v-model="activeName" accordion @change="changeColapse()">
+                        <el-collapse-item v-for="(item,index) in historyData" :key="index"
+                                          :title="$t('guessNum.guessNum0') +item.gameId+$t('guessNum.guessNum29')+$t('guessNum.guessNum30')+':'+item.number+ $t('guessNum.guessNum31')+': '+item.perPrize"
+                                          :name=item.gameId
+                        >
+                            <div class="footer_table">
+                                <div>{{$t('guessNum.guessNum32')}}</div>
+                                <el-table :data="historyDataIn" style="width: 100%">
+                                    <el-table-column :label="$t('public.address')" align="center" width="180">
+                                        <template slot-scope="scope">
+                                            <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="txHash" align="center" min-width="80">
+                                        <template slot-scope="scope">
+                                            <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column prop="txTime" :label="$t('public.time')" align="center"
+                                                     width="180">
+                                    </el-table-column>
+                                    <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center"
+                                                     width="150">
+                                    </el-table-column>
+                                </el-table>
+                                <div>{{$t('guessNum.guessNum33')}}</div>
+                                <el-table :data="historyDataOut" style="width: 100%">
+                                    <el-table-column :label="$t('public.address')" align="center" width="180">
+                                        <template slot-scope="scope">
+                                            <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column label="txHash" align="center" min-width="80">
+                                        <template slot-scope="scope">
+                                            <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
+                                        </template>
+                                    </el-table-column>
+                                    <el-table-column prop="txTime" :label="$t('public.time')" align="center"
+                                                     width="180">
+                                    </el-table-column>
+                                    <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center"
+                                                     width="150">
+                                    </el-table-column>
+                                    <el-table-column prop="perPrize" :label="$t('guessNum.guessNum31')" align="center"
+                                                     width="150">
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                        </el-collapse-item>
+                    </el-collapse>
 
-        </el-tab-pane>
-      </el-tabs>
+                </el-tab-pane>
+            </el-tabs>
 
-      <div class="page" v-show="pageTotal > pageSize">
-        <el-pagination layout="total, prev, pager, next, jumper"
-                       @current-change="pageChange"
-                       :current-page=pageIndex
-                       :page-size=pageSize
-                       :total="pageTotal">
-        </el-pagination>
-      </div>
+            <div class="page" v-show="pageTotal > pageSize">
+                <el-pagination layout="total, prev, pager, next, jumper"
+                               @current-change="pageChange"
+                               :current-page=pageIndex
+                               :page-size=pageSize
+                               :total="pageTotal">
+                </el-pagination>
+            </div>
 
+        </div>
+        <Password ref="password" @passwordSubmit="guessPassSubmit">
+        </Password>
     </div>
-    <Password ref="password" @passwordSubmit="guessPassSubmit">
-    </Password>
-  </div>
 </template>
 
 <script>
@@ -233,7 +244,7 @@
       return {
         accontInfo: {}, //账户信息
         config: {
-          url: process.env.NODE_ENV !== 'production' ? 'http://111.229.189.176/' : 'http://111.229.189.176/',
+          url: process.env.NODE_ENV !== 'production' ? 'http://dapp.mimieye.net:83/' : 'http://111.229.189.176/',
         },//配置信息
         jackpotInfo: {
           address: '',//合约地址
@@ -275,7 +286,7 @@
 
     created() {
       this.getGameContract();
-      this.accontInfo = accountList(1);
+      this.accontInfo.address = this.$store.state.accountInfo.address;
       setTimeout(() => {
         if (this.jackpotInfo.address) {
           this.gameCurrent();
@@ -301,7 +312,7 @@
       }, 5000);
 
       this.guessNumberInterval2 = setInterval(() => {
-        this.accontInfo = accountList(1);
+        this.accontInfo.address = this.$store.state.accountInfo.address;
       }, 1000);
 
     },
@@ -813,133 +824,133 @@
 </script>
 
 <style lang="less">
-  .guess_number {
-    .top {
-      min-height: 480px;
-      @media screen and (max-width: 1000px) {
-        min-height: auto;
-      }
-      .guess {
-        width: 600px;
-        @media screen and (max-width: 1000px) {
-          width: 100%;
-          min-height: 28.5rem;
-          clear: none;
-        }
-        h2 {
-          text-align: center;
-          margin: 40px 0;
-          @media screen and (max-width: 1000px) {
-            margin: 1rem 0;
-          }
-        }
-        .explain {
-          background-color: #c1c1c1;
-          padding: 10px;
-          p {
-            font-size: 12px;
-            line-height: 22px;
-          }
-        }
-        .number {
-          margin: 40px auto 0;
-          text-align: center;
-          height: 50px;
-          .is-circle {
-            width: 40px;
-            height: 40px;
+    .guess_number {
+        .top {
+            min-height: 480px;
             @media screen and (max-width: 1000px) {
-              width: 1.8rem;
-              height: 1.8rem;
-              line-height: 0.9rem;
-              padding: 0.45rem;
+                min-height: auto;
             }
-          }
-          .is_number {
-            //background-color: #0ede94;
-            background: linear-gradient(to right, #4ef16a, #0ede94) !important;
-            color: #FFFFFF;
-          }
-        }
-        .submit {
-          margin: 20px 0 0 0;
-        }
-        .jackpot {
-          margin: 50px 0 0 0;
-          height: 30px;
-        }
-      }
-      .party {
-        width: 550px;
-        @media screen and (max-width: 1000px) {
-          margin: 0 auto;
-          float: none;
-          clear: none;
-          width: 98%;
-        }
-        h3 {
-          text-align: left;
-          margin: 20px 0 0 0;
-          border-bottom: 1px solid #c1c1c1;
-          padding: 0 0 5px 10px;
-          font-size: 16px;
-          font-weight: bold;
-          @media screen and (max-width: 1000px) {
-            margin: 0 0 0 0 ;
-            padding: 0.5rem 1rem;
-          }
-        }
-        .el-table {
-          margin: 10px 0 0 0;
-          @media screen and (max-width: 1000px) {
-            margin: 0.5rem auto 0;
-            width: 98%;
-          }
-          th {
-            background-color: #c1c1c1;
-          }
-          td, th {
-            padding: 2px 0;
-            .cell {
-              padding: 0 5px;
+            .guess {
+                width: 600px;
+                @media screen and (max-width: 1000px) {
+                    width: 100%;
+                    min-height: 28.5rem;
+                    clear: none;
+                }
+                h2 {
+                    text-align: center;
+                    margin: 40px 0;
+                    @media screen and (max-width: 1000px) {
+                        margin: 1rem 0;
+                    }
+                }
+                .explain {
+                    background-color: #c1c1c1;
+                    padding: 10px;
+                    p {
+                        font-size: 12px;
+                        line-height: 22px;
+                    }
+                }
+                .number {
+                    margin: 40px auto 0;
+                    text-align: center;
+                    height: 50px;
+                    .is-circle {
+                        width: 40px;
+                        height: 40px;
+                        @media screen and (max-width: 1000px) {
+                            width: 1.8rem;
+                            height: 1.8rem;
+                            line-height: 0.9rem;
+                            padding: 0.45rem;
+                        }
+                    }
+                    .is_number {
+                        //background-color: #0ede94;
+                        background: linear-gradient(to right, #4ef16a, #0ede94) !important;
+                        color: #FFFFFF;
+                    }
+                }
+                .submit {
+                    margin: 20px 0 0 0;
+                }
+                .jackpot {
+                    margin: 50px 0 0 0;
+                    height: 30px;
+                }
             }
-          }
+            .party {
+                width: 550px;
+                @media screen and (max-width: 1000px) {
+                    margin: 0 auto;
+                    float: none;
+                    clear: none;
+                    width: 98%;
+                }
+                h3 {
+                    text-align: left;
+                    margin: 20px 0 0 0;
+                    border-bottom: 1px solid #c1c1c1;
+                    padding: 0 0 5px 10px;
+                    font-size: 16px;
+                    font-weight: bold;
+                    @media screen and (max-width: 1000px) {
+                        margin: 0 0 0 0 ;
+                        padding: 0.5rem 1rem;
+                    }
+                }
+                .el-table {
+                    margin: 10px 0 0 0;
+                    @media screen and (max-width: 1000px) {
+                        margin: 0.5rem auto 0;
+                        width: 98%;
+                    }
+                    th {
+                        background-color: #c1c1c1;
+                    }
+                    td, th {
+                        padding: 2px 0;
+                        .cell {
+                            padding: 0 5px;
+                        }
+                    }
+                }
+            }
         }
-      }
-    }
-    .footer {
-      margin: 20px auto 80px;
-      @media screen and (max-width: 1000px) {
-        margin: 1rem auto 3rem;
-        width: 98%;
-      }
-      .footer_table {
-        .el-table {
-          margin: 10px 0 0 0;
-          th {
-            background-color: #c1c1c1;
-          }
-          td, th {
-            padding: 2px 0;
-          }
+        .footer {
+            margin: 20px auto 80px;
+            @media screen and (max-width: 1000px) {
+                margin: 1rem auto 3rem;
+                width: 98%;
+            }
+            .footer_table {
+                .el-table {
+                    margin: 10px 0 0 0;
+                    th {
+                        background-color: #c1c1c1;
+                    }
+                    td, th {
+                        padding: 2px 0;
+                    }
+                }
+            }
+            .el-collapse-item__header {
+                height: 35px;
+                line-height: 35px;
+            }
+            .el-table td, .el-table th {
+                padding: 5px 0 !important;
+            }
+            .page {
+                margin: 20px auto 80px;
+                text-align: center;
+            }
         }
-      }
-      .el-collapse-item__header {
-        height: 35px;
-        line-height: 35px;
-      }
-      .el-table td, .el-table th {
-        padding: 5px 0 !important;
-      }
-      .page {
-        margin: 20px auto 80px;
-        text-align: center;
-      }
     }
-  }
 
-  .is-dark {
-    background-color: #FFFFFF !important;
-    border: 1px solid #c1c1c1;
-  }
+    .is-dark {
+        background-color: #FFFFFF !important;
+        border: 1px solid #c1c1c1;
+    }
 </style>
