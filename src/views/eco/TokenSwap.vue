@@ -1137,13 +1137,15 @@
             //console.log(this.contractInfo);
             let methodsInfo = this.contractInfo.methods.filter(obj => obj.name === name);
             let value = 0;
-            //console.log(this.tokenInfo);
+            console.log(this.type);
             if (this.type === 'buy') {
               value = this.tokenSwapForm.amount;
               methodsInfo[0].params[0].value = this.tokenInfo.contractAddress;
-              let newNumber = timesDecimals(this.tokenSwapForm.number, this.tokenInfo.decimals).toString();
-              let newAmount = timesDecimals(this.tokenSwapForm.amount, 8).toString();
-              methodsInfo[0].params[1].value = Division(newNumber, newAmount).toString();
+              /*let newNumber = timesDecimals(this.tokenSwapForm.number, this.tokenInfo.decimals).toString();
+              let newAmount = timesDecimals(this.tokenSwapForm.amount, 8).toString();*/
+              console.log(this.tokenSwapForm.number, this.tokenSwapForm.amount);
+              methodsInfo[0].params[1].value = Division(this.tokenSwapForm.number, this.tokenSwapForm.amount).toString();
+              //methodsInfo[0].params[1].value = timesDecimals(this.tokenSwapForm.amount, 8).toString();
             } else if (this.type === 'sell') {
               methodsInfo[0].params[0].value = this.tokenInfo.contractAddress;
               methodsInfo[0].params[1].value = timesDecimals(this.tokenSwapForm.number, this.tokenInfo.decimals).toString();
@@ -1184,6 +1186,9 @@
               return;
             }
             this.contractCallData = resData.data;
+            if (this.type === 'buy') {
+              this.contractCallData.value = divisionDecimals(this.contractCallData.value,8).toString()
+            }
             this.contractData()
             //this.$refs.password.showPassword(true, this.addressInfo.address);
           } else {
@@ -1287,8 +1292,7 @@
       },
 
       /**
-       *  获取密码框的密码
-       * @param password
+       *  nabox 调用合约
        **/
       async contractData() {
         console.log(this.contractCallData);
