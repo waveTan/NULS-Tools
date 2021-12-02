@@ -317,7 +317,7 @@
     "cannotGuess": "cannotGuess"
   },
   "pm": {
-    "pm0":"My sell",
+    "pm0":"My sell ",
     "pm1":"Please enter the",
     "pm2":"Hang sale",
     "pm3":"Advertising",
@@ -327,7 +327,7 @@
     "pm7":"Total",
     "pm8":"OP",
     "pm9":"sell",
-    "pm10":"My buy",
+    "pm10":"My buy ",
     "pm11":"Hang onto",
     "pm12":"Buy",
     "pm13":"My seel",
