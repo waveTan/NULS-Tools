@@ -26,9 +26,9 @@
       this.getBestBlockHeader();
     },
     mounted() {
-      setInterval(() => {
+      /*setInterval(() => {
         this.getBestBlockHeader()
-      }, 10000)
+      }, 10000)*/
     },
     methods: {
 
