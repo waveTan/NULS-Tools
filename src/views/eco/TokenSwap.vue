@@ -6,43 +6,44 @@
     <div class="info">
       <div class="fl">
         <div class="title">
-          <span style="color: #0ede94 ">我要卖Token</span>
+          <span style="color: #0ede94 ">{{$t('pm.pm0')}}Token</span>
           <Search :allData="allNRC20List" type="buy">
           </Search>
-          <el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="success"
+          <!--<el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="success"
                      size="mini"
                      round>
             导入/创建账户
           </el-button>
-          <el-button @click="showDialog(1)" v-else class="fr" type="success" size="mini" round>挂卖单</el-button>
+          <el-button @click="showDialog(1)" v-else class="fr" type="success" size="mini" round>挂卖单</el-button>-->
+          <el-button @click="showDialog(1)" v-if="addressInfo.address" class="fr" type="success" size="mini" round>{{$t('pm.pm2')}}</el-button>
         </div>
         <div class="scroll" style="width: 580px;height: 455px;overflow: auto">
           <el-table :data="buyData" style="height: 420px">
-            <el-table-column prop="addresss" label="广告方" min-width="140">
+            <el-table-column prop="addresss" :label="$t('pm.pm3')" min-width="140">
             </el-table-column>
             <el-table-column prop="id" label="ID" width="40" align="center">
             </el-table-column>
-            <el-table-column label="数量" width="110" align="center">
+            <el-table-column :label="$t('pm.pm4')" width="110" align="center">
               <template slot-scope="scope">
-                {{scope.row.number}}<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
+                {{scope.row.number}}<span class="click" :title="$t('pm.pm5')+':'+scope.row.token">{{scope.row.symbol}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="单价(NULS)" width="110" align="center">
+            <el-table-column :label="$t('pm.pm6')+'(NULS)'" width="110" align="center">
               <template slot-scope="scope">
                 {{scope.row.price}}
               </template>
             </el-table-column>
-            <el-table-column label="总额(NULS)" width="110" align="center">
+            <el-table-column :label="$t('pm.pm7')+'(NULS)'" width="110" align="center">
               <template slot-scope="scope">
                 {{scope.row.amount}}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="50" align="center">
+            <el-table-column :label="$t('pm.pm8')" width="50" align="center">
               <template slot-scope="scope">
                 <el-button @click="sellClick(scope.row)" v-if="addressInfo.address" class="sell"
                            type="text"
                            size="small">
-                  出售
+                  {{$t('pm.pm9')}}
                 </el-button>
                 <!--<el-button @click="undoClick('buy',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
                 </el-button>-->
@@ -64,42 +65,43 @@
 
       <div class="fr tl">
         <div class="title">
-          <span class="fred">我要买Token</span>
+          <span class="fred">{{$t('pm.pm10')}}Token</span>
           <Search :allData="allNRC20List" type="sell">
           </Search>
-          <el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="danger"
+          <!--<el-button @click="toUrl('newAddress','',0)" v-if="!addressInfo.address" class="fr" type="danger"
                      size="mini"
                      round>
             导入/创建账户
           </el-button>
-          <el-button @click="showDialog(0)" v-else class="fr" type="danger" size="mini" round>挂买单</el-button>
+          <el-button @click="showDialog(0)" v-else class="fr" type="danger" size="mini" round>挂买单</el-button>-->
+          <el-button @click="showDialog(0)" v-if="addressInfo.address" class="fr" type="danger" size="mini" round>{{$t('pm.pm11')}}</el-button>
         </div>
         <div class="scroll" style="width: 580px;height: 455px;overflow: auto">
           <el-table :data="sellData" stripe style="height: 420px">
-            <el-table-column prop="addresss" label="广告方" min-width="140">
+            <el-table-column prop="addresss" :label="$t('pm.pm3')" min-width="140">
             </el-table-column>
             <el-table-column prop="id" label="ID" width="40" align="center">
             </el-table-column>
-            <el-table-column label="数量" width="110" align="center">
+            <el-table-column :label="$t('pm.pm4')" width="110" align="center">
               <template slot-scope="scope">
-                {{scope.row.number}}<span class="click" :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
+                {{scope.row.number}}<span class="click" :title="$t('pm.pm5')+':'+scope.row.token">{{scope.row.symbol}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="单价(NULS)" width="110" align="center">
+            <el-table-column :label="$t('pm.pm6')+'(NULS)'" width="110" align="center">
               <template slot-scope="scope">
                 {{scope.row.price}}
               </template>
             </el-table-column>
-            <el-table-column label="总额(NULS)" width="110" align="center">
+            <el-table-column :label="$t('pm.pm7')+'(NULS)'" width="110" align="center">
               <template slot-scope="scope">
                 {{scope.row.amount}}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="50" align="center">
+            <el-table-column :label="$t('pm.pm8')" width="50" align="center">
               <template slot-scope="scope">
                 <el-button @click="buyClick(scope.row)" v-if="addressInfo.address" class="buy"
                            type="text" size="small">
-                  买入
+                  {{$t('pm.pm12')}}
                 </el-button>
                 <!--<el-button @click="undoClick('sell',scope.row)" type="text" size="small" v-if="scope.row.isMyOrder">撤销
                 </el-button>-->
@@ -122,22 +124,22 @@
 
     <div class="cb bottom" v-if="addressInfo.address">
       <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="我的卖单" name="first">
+        <el-tab-pane :label="$t('pm.pm13')" name="first">
           <el-table :data="mySellData" stripe>
-            <el-table-column prop="address" label="地址" width="200">
+            <el-table-column prop="address" :label="$t('pm.pm14')" width="200">
             </el-table-column>
             <el-table-column prop="id" label="ID" width="60" align="center">
             </el-table-column>
-            <el-table-column label="数量" width="150" align="center">
+            <el-table-column :label="$t('pm.pm4')" width="150" align="center">
               <template slot-scope="scope">
                 {{scope.row.number}}
                 <span @click="toUrl('contractsInfo',scope.row.token)" class="click"
-                      :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
+                      :title="$t('pm.pm5')+':'+scope.row.token">{{scope.row.symbol}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="price" label="单价(NULS)" width="150" align="center">
+            <el-table-column prop="price" :label="$t('pm.pm6')+'(NULS)'" width="150" align="center">
             </el-table-column>
-            <el-table-column label="金额(NULS)" width="150" align="center">
+            <el-table-column :label="$t('pm.pm7')+'(NULS)'" width="150" align="center">
               <template slot-scope="scope">
                 {{scope.row.amount}}
               </template>
@@ -147,31 +149,31 @@
                 <span class="click" @click="toUrl('transactionInfo',scope.row.txHash)">{{scope.row.txHashs}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="txTime" label="创建时间" width="160" align="center">
+            <el-table-column prop="txTime" :label="$t('pm.pm17')" width="160" align="center">
             </el-table-column>
-            <el-table-column label="操作" min-width="100" align="center">
+            <el-table-column :label="$t('pm.pm8')" min-width="100" align="center">
               <template slot-scope="scope">
-                <el-button type="text" @click="editInfo('editSell',scope.row)" size="small">修改
+                <el-button type="text" @click="editInfo('editSell',scope.row)" size="small">{{$t('pm.pm18')}}
                 </el-button>
-                <el-button type="text" @click="undoClick('sell',scope.row)" size="small">撤销</el-button>
+                <el-button type="text" @click="undoClick('sell',scope.row)" size="small">{{$t('pm.pm19')}}</el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="我的买单" name="second">
+        <el-tab-pane :label="$t('pm.pm20')" name="second">
           <el-table :data="myBuyData" stripe>
-            <el-table-column prop="address" label="地址" width="200">
+            <el-table-column prop="address" :label="$t('pm.pm14')" width="200">
             </el-table-column>
             <el-table-column prop="id" label="ID" width="60" align="center">
             </el-table-column>
-            <el-table-column label="数量" width="150" align="center">
+            <el-table-column :label="$t('pm.pm4')" width="150" align="center">
               <template slot-scope="scope">
                 {{scope.row.number}}
                 <span class="click" @click="toUrl('contractsInfo',scope.row.token)"
-                      :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
+                      :title="$t('pm.pm5')+':'+scope.row.token">{{scope.row.symbol}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="金额" width="150" align="center">
+            <el-table-column :label="$t('pm.pm16')" width="150" align="center">
               <template slot-scope="scope">
                 {{scope.row.amount}} <span>{{scope.row.amountSymbol}}</span>
               </template>
@@ -181,18 +183,18 @@
                 <span class="click" @click="toUrl('transactionInfo',scope.row.txHash)">{{scope.row.txHashs}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="txTime" label="创建时间" width="160" align="center">
+            <el-table-column prop="txTime" :label="$t('pm.pm17')" width="160" align="center">
             </el-table-column>
-            <el-table-column label="操作" min-width="100" align="center">
+            <el-table-column :label="$t('pm.pm8')" min-width="100" align="center">
               <template slot-scope="scope">
-                <el-button @click="editInfo('editBuy',scope.row)" type="text" size="small">修改
+                <el-button @click="editInfo('editBuy',scope.row)" type="text" size="small">{{$t('pm.pm18')}}
                 </el-button>
-                <el-button type="text" @click="undoClick('buy',scope.row)" size="small">撤销</el-button>
+                <el-button type="text" @click="undoClick('buy',scope.row)" size="small">{{$t('pm.pm19')}}</el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-tab-pane>
-        <el-tab-pane label="历史记录" name="third">
+        <el-tab-pane :label="$t('pm.pm21')" name="third">
           <el-table :data="historyData" stripe>
             <el-table-column prop="id" label="ID" width="100" align="center">
             </el-table-column>
@@ -201,27 +203,27 @@
                 <span class="click" @click="toUrl('transactionInfo',scope.row.txHash)">{{scope.row.txHashs}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="数量" width="180" align="center">
+            <el-table-column :label="$t('pm.pm4')" width="180" align="center">
               <template slot-scope="scope">
                 {{scope.row.number}}
                 <span class="click" @click="toUrl('contractsInfo',scope.row.token)"
-                      :title="'合约地址:'+scope.row.token">{{scope.row.symbol}}</span>
+                      :title="$t('pm.pm5')+':'+scope.row.token">{{scope.row.symbol}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="amount" label="金额" width="180" align="center">
+            <el-table-column prop="amount" :label="$t('pm.pm16')" width="180" align="center">
               <template slot-scope="scope">
                 {{scope.row.amount}} <span>{{scope.row.amountSymbol}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="类型" width="100" align="center">
+            <el-table-column :label="$t('pm.pm29')" width="100" align="center">
               <template slot-scope="scope">
-                <span v-if="scope.row.type ===1">买单</span>
-                <span v-else-if="scope.row.type ===2">卖单</span>
-                <span v-else-if="scope.row.type ===3">卖出</span>
-                <span v-else-if="scope.row.type ===4">买入</span>
+                <span v-if="scope.row.type ===1">{{$t('pm.pm30')}}</span>
+                <span v-else-if="scope.row.type ===2">{{$t('pm.pm31')}}</span>
+                <span v-else-if="scope.row.type ===3">{{$t('pm.pm32')}}</span>
+                <span v-else-if="scope.row.type ===4">{{$t('pm.pm33')}}</span>
               </template>
             </el-table-column>
-            <el-table-column prop="txTime" label="交易时间" width="200" align="center">
+            <el-table-column prop="txTime" :label="$t('pm.pm22')" width="200" align="center">
             </el-table-column>
           </el-table>
         </el-tab-pane>
@@ -235,24 +237,24 @@
                :close-on-press-escape="false">
       <div class="fl" v-if="isShowInfo">
         <ul>
-          <li>广告方:<span class="click">{{changeInfo.buyer ? changeInfo.buyer: changeInfo.seller}}</span></li>
-          <li>{{type==='selling' ? '可卖出':'可买入'}}数量:<span>{{changeInfo.number}}({{changeInfo.symbol}})</span>
+          <li>{{$t('pm.pm3')}}:<span class="click">{{changeInfo.buyer ? changeInfo.buyer: changeInfo.seller}}</span></li>
+          <li>{{type==='selling' ? $t('pm.pm34'):$t('pm.pm35')}}{{$t('pm.pm15')}}:<span>{{changeInfo.number}}({{changeInfo.symbol}})</span>
           </li>
-          <li>单价:<span>{{changeInfo.price}}(NULS)</span></li>
-          <li>预计总共需支付金额:<span>{{changeInfo.amount}}(NULS)</span></li>
-          <li>合约地址:<span class="click">{{changeInfo.token}}</span></li>
+          <li>{{$t('pm.pm6')}}:<span>{{changeInfo.price}}(NULS)</span></li>
+          <li>{{$t('pm.pm23')}}:<span>{{changeInfo.amount}}(NULS)</span></li>
+          <li>{{$t('pm.pm5')}}:<span class="click">{{changeInfo.token}}</span></li>
         </ul>
       </div>
       <div :class="isShowInfo ? 'fr':''">
         <el-form :model="tokenSwapForm" status-icon :rules="tokenSwapRules" ref="tokenSwapForm"
                  class="tokenSwap-form">
-          <el-form-item label="账户: " prop="fromAddress">
+          <el-form-item :label="$t('pm.pm14')+': '" prop="fromAddress">
             <el-input v-model="tokenSwapForm.fromAddress" autocomplete="off" disabled="true">
             </el-input>
           </el-form-item>
           <!--<div class="balance">{{addressInfo.balance}} <span class="fCN">NULS</span></div>-->
-          <el-form-item :label="type.includes('sell') ? '卖出Token:':'买入Token:'" prop="assets">
-            <el-select v-model="tokenSwapForm.assets" filterable placeholder="请选择Token"
+          <el-form-item :label="type.includes('sell') ? $t('pm.pm32')+'Token:':$t('pm.pm33')+'Token:'" prop="assets">
+            <el-select v-model="tokenSwapForm.assets" filterable :placeholder="$t('pm.pm24')"
                        @change="changeAssets"
                        v-if="addressInfo.tokens"
                        :disabled="isShowInfo || type === 'editBuy' || type ==='editSell'">
@@ -264,7 +266,7 @@
             </el-select>
           </el-form-item>
           <el-form-item
-            :label="type.includes('sell') ? '卖出数量('+tokenInfo.symbol+'):':'买入数量('+tokenInfo.symbol+'):'"
+            :label="type.includes('sell') ? $t('pm.pm25')+'('+tokenInfo.symbol+'):':$t('pm.pm26')+'('+tokenInfo.symbol+'):'"
             prop="number">
             <el-input v-model="tokenSwapForm.number" autocomplete="off" @input="changeNumber"
                       :disabled="type ==='editSell' || type ==='editBuy'">
@@ -272,20 +274,20 @@
             </el-input>
           </el-form-item>
           <el-form-item prop="price"
-                        :label="'单价( 1 '+tokenInfo.symbol+'兑换 '+tokenSwapForm.price+' NULS):' ">
+                        :label="$t('pm.pm6')+'( 1 '+tokenInfo.symbol+$t('pm.pm27')+tokenSwapForm.price+' NULS):' ">
             <el-input v-model="tokenSwapForm.price" autocomplete="off" @input="changeAmount"
                       :disabled="type ==='buying' || type ==='selling'">
             </el-input>
           </el-form-item>
-          <div class="font14">预计{{type.includes('sell') ? '收入':'支出'}}金额:
+          <div class="font14">{{$t('pm.pm28')}}{{type.includes('sell') ? '收入':'支出'}}{{$t('pm.pm16')}}:
             {{parseFloat((tokenSwapForm.number*tokenSwapForm.price).toFixed(6))}}
             <span class="fCN">NULS</span></div>
         </el-form>
       </div>
       <div class="cb"></div>
       <div slot="footer" class="dialog-footer tc">
-        <el-button @click="resetForm('tokenSwapForm')">取 消</el-button>
-        <el-button type="primary" @click="submitForm('tokenSwapForm')">确 定</el-button>
+        <el-button @click="resetForm('tokenSwapForm')">{{$t('public.cancel')}}</el-button>
+        <el-button type="primary" @click="submitForm('tokenSwapForm')">{{$t('public.confirm')}}</el-button>
       </div>
     </el-dialog>
 
@@ -305,13 +307,11 @@
     Division,
     divisionDecimals,
     timesDecimals,
-    accountList,
     superLong,
     getArgs,
     Times,
     Plus,
     tofix,
-    Minus,
     getLocalTime,
     connectToExplorer
   } from '@/api/util'
@@ -330,26 +330,26 @@
     data() {
       let checkFromAddress = (rule, value, callback) => {
         if (!value) {
-          return callback(new Error('账户不能为空'));
+          return callback(new Error(this.$t('pm.pm36')));
         } else {
           callback();
         }
       };
       let checkAssets = (rule, value, callback) => {
         if (!value) {
-          return callback(new Error('资产不能为空'));
+          return callback(new Error(this.$t('pm.pm37')));
         } else {
           callback();
         }
       };
       let checkNumber = (rule, value, callback) => {
         if (!value) {
-          return callback(new Error('数量不能为空'));
+          return callback(new Error(this.$t('pm.pm38')));
         } else {
 
           if (this.type === 'selling' || this.type === 'buying') {
             if (Number(value) > Number(this.changeInfo.number)) {
-              return callback(new Error('数量最大为:' + this.changeInfo.number));
+              return callback(new Error(this.$t('pm.pm39')+':' + this.changeInfo.number));
             }
           }
           callback();
@@ -357,7 +357,7 @@
       };
       let checkAmount = (rule, value, callback) => {
         if (!value) {
-          return callback(new Error('单价不能为空'));
+          return callback(new Error(this.$t('pm.pm40')));
         } else {
           /*if (this.type === 'selling' || this.type === 'buying') {
             if (Number(value) > Number(this.changeInfo.amount)) {
@@ -625,9 +625,9 @@
        * @author: Wave
        */
       async authorization(tokenAddress, value) {
-        this.$confirm('改账户没授权合约或授权数量过低(当前授权数量:' + value + ')，是否重新授权?', '授权提示', {
-          confirmButtonText: '重新授权',
-          cancelButtonText: '取消',
+        this.$confirm(this.$t('pm.pm41')+ value + ')，'+this.$t('pm.pm42')+'?', this.$t('pm.pm43'), {
+          confirmButtonText:this.$t('pm.pm44'),
+          cancelButtonText: this.$t('public.cancel'),
           type: 'warning'
         }).then(async () => {
           this.tokenSwapForm.amount = '0';
@@ -689,7 +689,7 @@
           if (resData.data.success) {
             //console.log(resData.data.data);
             for (let item of resData.data.data.list) {
-              let contractInfo = this.allNRC20List.filter(obj => obj.contractAddress === item.token);
+              //let contractInfo = this.allNRC20List.filter(obj => obj.contractAddress === item.token);
               //console.log(contractInfo);
               item.symbol = this.allNRC20List.filter(obj => obj.contractAddress === item.token)[0].symbol;
               item.addresss = superLong(item.buyer, 6);
@@ -791,7 +791,7 @@
         if (type === 0) {
           //console.log(this.allNRC20List);
           this.addressInfo.tokens = this.allNRC20List;
-          this.dialogTitle = '挂买单';
+          this.dialogTitle = this.$t('pm.pm11');
           this.type = 'buy';
         } else {
           //console.log(this.addressInfo, this.addressList);
@@ -808,11 +808,11 @@
 
           //this.addressInfo.tokens = this.allNRC20List;
           if (this.addressInfo.tokens.length === 0 || !this.addressInfo.tokens) {
-            this.$message({message: '对不起！您的改账户没有nrc20资产，请切换账户。', type: 'error', duration: 3000});
+            this.$message({message: this.$t('pm.pm45'), type: 'error', duration: 3000});
             return
           }
           this.tokenSwapForm.assets = this.addressInfo.tokens[0].contractAddress;
-          this.dialogTitle = '挂卖单';
+          this.dialogTitle = this.$t('pm.pm2');
           this.type = 'sell';
         }
         this.tokenSwapForm.number = '';
@@ -845,7 +845,7 @@
         //console.log(info);
         let newAssetsInfo = this.addressInfo.tokens.filter(obj => obj.contractAddress === info.token);
         if (newAssetsInfo.length === 0) {
-          this.$message({message: "对不起！改账户没有 " + info.symbol + " 资产", type: 'error', duration: 3000});
+          this.$message({message: this.$t('pm.pm46') + info.symbol + this.$t('locking.locking2'), type: 'error', duration: 3000});
           return;
         }
 
@@ -857,7 +857,7 @@
         this.buyOrSellDialog = true;
         this.isShowInfo = true;
         this.type = 'selling';
-        this.dialogTitle = '出售给ID:' + info.id;
+        this.dialogTitle = this.$t('pm.pm47')+'ID:' + info.id;
 
         this.tokenSwapForm.assets = newAssetsInfo[0].contractAddress;
         this.tokenInfo = newAssetsInfo[0];
@@ -879,7 +879,7 @@
         this.buyOrSellDialog = true;
         this.isShowInfo = true;
         this.type = 'buying';
-        this.dialogTitle = '买入ID:' + info.id;
+        this.dialogTitle = this.$t('pm.pm12')+'ID:' + info.id;
         this.addressInfo.tokens = this.allNRC20List;
         let newAssetsInfo = this.addressInfo.tokens.filter(obj => obj.contractAddress === info.token)[0];
         //console.log(newAssetsInfo);
@@ -912,10 +912,10 @@
         this.buyOrSellDialog = true;
         this.isShowInfo = false;
         if (type === 'editBuy') {
-          this.dialogTitle = '修改买单ID:' + info.id;
+          this.dialogTitle = this.$t('pm.pm48')+'ID:' + info.id;
           this.type = 'editBuy';
         } else {
-          this.dialogTitle = '修改卖单ID:' + info.id;
+          this.dialogTitle = this.$t('pm.pm49')+'ID:' + info.id;
           this.type = 'editSell';
         }
 
@@ -930,12 +930,12 @@
        */
       undoClick(type, info) {
         //console.log(type, info);
-        let infos = '您确定要撤销ID:' + info.id + '的订单';
-        let newInfo = type === 'buy' ? '买' : '卖';
-        let title = '撤销' + newInfo + '订单ID:' + info.id;
+        let infos = this.$t('pm.pm50')+'ID:' + info.id + this.$t('pm.pm51');
+        let newInfo = type === 'buy' ? this.$t('pm.pm52') : this.$t('pm.pm53');
+        let title = this.$t('pm.pm19') + newInfo + this.$t('pm.pm54')+'ID:' + info.id;
         this.$confirm(infos, title, {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+          confirmButtonText: this.$t('public.confirm'),
+          cancelButtonText: this.$t('public.cancel'),
           type: 'warning'
         }).then(async () => {
           let name = type === 'buy' ? 'cancelBuyOrder' : 'cancelSaleOrder';
@@ -1106,7 +1106,7 @@
             //let newBalance = Minus(newAddressInfo[0].balance, this.tokenSwapForm.amount);
             //console.log(newBalance);
             if (Number(this.addressInfo.balance.toFixed(3)) < 0.1) {
-              this.$message({message: "对不起，该账户余额不足0.1NULS！", type: 'error', duration: 3000});
+              this.$message({message: this.$t('pm.pm55'), type: 'error', duration: 3000});
               return;
             }
 

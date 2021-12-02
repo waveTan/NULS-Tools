@@ -1,6 +1,6 @@
 <template>
   <div class="fl search" :class="type ==='buy' ? 'buy':'sell'">
-    <el-autocomplete placeholder="请输入Token" v-model="searchValue" popper-class="my-autocomplete"
+    <el-autocomplete :placeholder="$t('pm.pm1')" v-model="searchValue" popper-class="my-autocomplete"
                      :fetch-suggestions="querySearch" @select="handleSelect">
       <i class="el-icon-search" v-if="!searchValue" slot="suffix"></i>
       <i class="el-icon-close click" v-else slot="suffix" @click="removeSearch"></i>

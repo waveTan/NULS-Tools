@@ -21,7 +21,7 @@
                         </div>
                     </div>
                     <div class="font12 click user_login" v-else @click="connectPlugin">
-                        连接插件
+                        {{$t('header.connectPlugin')}}
                     </div>
                 </div>
                 <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
