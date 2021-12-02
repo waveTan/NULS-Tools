@@ -24,7 +24,8 @@
             </el-tooltip>
             {{$t('guessNum.guessNum6')}}
           </p>
-          <p>2、{{$t('guessNum.guessNum7')}} <span class="fred fW600">2.1 </span>NULS + {{$t('locking.locking91')}} </p>
+          <p>2、{{$t('guessNum.guessNum7')}} <span class="fred fW600">2.1 </span>NULS +
+            {{$t('locking.locking91')}} </p>
           <p>
             3、{{$t('guessNum.guessNum8')}}
             <span class="fyellow fW600"> 60 </span>
@@ -63,7 +64,7 @@
           </div>
           <div class="fl">&nbsp;
             {{$t('guessNum.guessNum17')}}:
-            <span class="fred fW600">{{gameCurrentInfo.endHeight + gameCurrentInfo.gameLotteryDelay}}</span>
+            <span class="fred fW600">{{gameCurrentInfo.endHeight + gameCurrentInfo.gameLotteryDelay}}</span>+9
           </div>
         </div>
         <div class="font14 fyellow" v-else>{{$t('guessNum.guessNum18')}}</div>
@@ -73,7 +74,8 @@
         <el-table :data="gameDetailInfo.participants" style="width: 100%">
           <el-table-column :label="$t('public.address')" align="center" width="108">
             <template slot-scope="scope">
-              <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
+                            <span class="click"
+                                  @click="toUrl('address',scope.row.address,1)">{{scope.row.addresss}}</span>
             </template>
           </el-table-column>
           <el-table-column label="txHash" align="center" min-width="90">
@@ -101,7 +103,8 @@
             </el-table-column>
             <el-table-column :label="$t('guessNum.guessNum23')" width="380" align="center">
               <template slot-scope="scope">
-                <span class="click" @click="toUrl('address',scope.row.winner,1)">{{scope.row.winner}}</span>
+                                <span class="click"
+                                      @click="toUrl('address',scope.row.winner,1)">{{scope.row.winner}}</span>
               </template>
             </el-table-column>
             <el-table-column prop="perPrize" :label="$t('guessNum.guessNum24')" width="120" align="center">
@@ -112,7 +115,8 @@
             </el-table-column>
             <el-table-column label="txHash" min-width="160" align="center">
               <template slot-scope="scope">
-                <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
+                                <span class="click"
+                                      @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
               </template>
             </el-table-column>
           </el-table>
@@ -123,7 +127,8 @@
             </el-table-column>
             <el-table-column :label="$t('guessNum.guessNum23')" width="380" align="center">
               <template slot-scope="scope">
-                <span class="click" @click="toUrl('address',scope.row.address,1)">{{scope.row.address}}</span>
+                                <span class="click"
+                                      @click="toUrl('address',scope.row.address,1)">{{scope.row.address}}</span>
               </template>
             </el-table-column>
             <el-table-column prop="number" :label="$t('guessNum.guessNum25')" width="160" align="center">
@@ -132,7 +137,8 @@
             </el-table-column>
             <el-table-column label="txHash" min-width="180" align="center">
               <template slot-scope="scope">
-                <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
+                                <span class="click"
+                                      @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
               </template>
             </el-table-column>
           </el-table>
@@ -156,9 +162,11 @@
                       <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="txTime" :label="$t('public.time')" align="center" width="180">
+                  <el-table-column prop="txTime" :label="$t('public.time')" align="center"
+                                   width="180">
                   </el-table-column>
-                  <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center" width="150">
+                  <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center"
+                                   width="150">
                   </el-table-column>
                 </el-table>
                 <div>{{$t('guessNum.guessNum33')}}</div>
@@ -173,11 +181,14 @@
                       <span class="click" @click="toUrl('hash',scope.row.txHash,1)">{{scope.row.txHashs}}</span>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="txTime" :label="$t('public.time')" align="center" width="180">
+                  <el-table-column prop="txTime" :label="$t('public.time')" align="center"
+                                   width="180">
                   </el-table-column>
-                  <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center" width="150">
+                  <el-table-column prop="number" :label="$t('guessNum.guessNum20')" align="center"
+                                   width="150">
                   </el-table-column>
-                  <el-table-column prop="perPrize" :label="$t('guessNum.guessNum31')" align="center" width="150">
+                  <el-table-column prop="perPrize" :label="$t('guessNum.guessNum31')" align="center"
+                                   width="150">
                   </el-table-column>
                 </el-table>
               </div>
@@ -233,7 +244,7 @@
       return {
         accontInfo: {}, //账户信息
         config: {
-          url: process.env.NODE_ENV !== 'production' ? 'http://111.229.189.176/' : 'http://111.229.189.176/',
+          url: process.env.NODE_ENV !== 'production' ? 'http://dapp.mimieye.net:83/' : 'http://dapp.mimieye.net:83/',
         },//配置信息
         jackpotInfo: {
           address: '',//合约地址
@@ -275,7 +286,7 @@
 
     created() {
       this.getGameContract();
-      this.accontInfo = accountList(1);
+      this.accontInfo.address = this.$store.state.accountInfo.address;
       setTimeout(() => {
         if (this.jackpotInfo.address) {
           this.gameCurrent();
@@ -301,7 +312,7 @@
       }, 5000);
 
       this.guessNumberInterval2 = setInterval(() => {
-        this.accontInfo = accountList(1);
+        this.accontInfo.address = this.$store.state.accountInfo.address;
       }, 1000);
 
     },
@@ -569,7 +580,7 @@
        */
       async getPrizePool() {
         let jackpotAmount = await this.methodCall(this.jackpotInfo.address, 'getPrizePool', '() return String', []);
-        //console.log(jackpotAmount);
+        console.log(jackpotAmount);
         if (!jackpotAmount.success) {
           console.log('获取奖池金额失败！')
         }
@@ -592,7 +603,7 @@
           "params": [chainInfo.chainId, contractAddress, methodName, methodDesc, args],
           "id": Math.floor(Math.random() * 1000)
         };
-        //console.log(data);
+        console.log(data);
         try {
           let resData = await axios.post(url, data);
           //console.log(resData);

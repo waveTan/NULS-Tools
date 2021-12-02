@@ -13,209 +13,225 @@
                 </el-menu>
             </el-col>
             <el-col class="user fr font14">
-                <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
-                <div class="fl">
-                    <el-menu :default-active="rightActiveIndex" mode="horizontal" class="fl right-menu"
-                             @select="handleSelect">
-                        <el-submenu index="userList" v-show="accountList.length !== 0" class="user-lists">
-                            <template slot="title">
-                                <i class="el-icon-s-custom"></i>
-                            </template>
-                            <el-menu-item-group>
-                                <el-menu-item v-for="item of accountList" :key="item.address" :index="item.address">
-                                    {{item.labels}}
-                                </el-menu-item>
-                            </el-menu-item-group>
-                        </el-submenu>
-                        <el-submenu index="set">
-                            <template slot="title">
-                                <i class="el-icon-s-tools"></i>
-                            </template>
-                            <el-menu-item-group>
-                                <el-menu-item index="user" v-show="currentAccount.address">账号管理</el-menu-item>
-                                <el-menu-item index="set">系统信息</el-menu-item>
-                            </el-menu-item-group>
-                        </el-submenu>
-                    </el-menu>
-                    <div v-show="accountList.length ===0" class="fr font12 click user_login"
-                         @click="toUrl('newAddress','',0)">
-                        {{$t('nav.login')}}
+                <div class="fl" v-loading="userLoading" element-loading-text="loading..."
+                     element-loading-spinner="el-icon-loading">
+                    <div class="address-info" v-if="$store.state.accountInfo.address">
+                        <div class="ad tr click" @click="accountDialog=true">
+                            {{superLongs($store.state.accountInfo.address,5)}}
+                        </div>
+                    </div>
+                    <div class="font12 click user_login" v-else @click="connectPlugin">
+                        连接插件
                     </div>
                 </div>
+                <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
             </el-col>
 
-            <div class="address-info" v-show="currentAccount.address">
-                <div class="ad tr">
-                    {{currentAccount.addresss}}{{currentAccount.node}}
-                    <span v-if="alias">({{alias}})</span>
-                    <span v-else-if="currentAccount.note">({{currentAccount.note}})</span>
-                </div>
-                <div class="yue tr">可用：
-                    <font v-if="!balanceLoading">{{balance}}</font>
-                    <i v-else class="el-icon-loading"></i>
-                    <span>NULS</span>
-                </div>
-            </div>
         </el-row>
-        <!-- <el-row class="mobile">
-           <div class="fl header_height">
-             <div class="fl">
-               <Height>
-               </Height>
-             </div>
-             <div class="language click fr" @click="selectLanguage">{{lang === 'en' ? '中文':'En' }}</div>
-           </div>
-           <div class="fr font12 user_info" v-show="accountInfo.address">
-             <h6>{{$t('public.address')}}：{{accountInfo.addresss}}</h6>
-             <p>
-               {{$t('public.balance')}}：{{accountInfo.balance}}
-               <span class="click fr" @click="signOut">{{$t('public.signOut')}}</span>
-             </p>
-           </div>
-           <div class="fr font12 click user_login" @click="toUrl('newAddress','',0)" v-show="!accountInfo.address">
-             {{$t('nav.login')}}
-           </div>
 
-         </el-row>-->
+        <el-dialog title="" :visible.sync="accountDialog" width="500px" class="account-dialog">
+            <div class="address">{{$store.state.accountInfo.address}}</div>
+            <div class="btns">
+                <el-button @click="toUrl($store.state.accountInfo.address,'url',1)">{{$t('header.header1')}}</el-button>
+                <el-button @click="copy($store.state.accountInfo.address)">{{$t('header.header2')}}</el-button>
+                <el-button @click="offLink($store.state.accountInfo.address)">{{$t('header.header3')}}</el-button>
+            </div>
+        </el-dialog>
     </el-row>
 </template>
 
 <script>
-    import logo from '@/assets/logo.png'
-    import logoBeta from '@/assets/logo.png'
-    import {accountList, superLong, divisionDecimals, tofix} from '@/api/util.js'
-    import {IS_RUN} from '@/config.js'
-    import {getAddressInfoByAddress} from '@/api/requestData'
+  import logo from '@/assets/logo.png'
+  import logoBeta from '@/assets/logo.png'
+  import {superLong, divisionDecimals, tofix, copys} from '@/api/util.js'
+  import {IS_RUN} from '@/config.js'
+  import {getAddressInfoByAddress} from '@/api/requestData'
 
-    export default {
-        data() {
-            return {
-                logoSvg: IS_RUN ? logo : logoBeta,
-                activeIndex: '1',//导航选中项
-                rightActiveIndex: 'userList',//右边菜单选择
-                lang: 'en',  //语言
-                accountList: [],//账户列表
-                currentAccount: {},//当前账户信息
-                balanceLoading: true,//余额加载
-                balance: 0,
-                alias: '',
-
-            };
-        },
-        created() {
-            this.accountList = accountList(0);
-            for (let item of this.accountList) {
-                if (!item.note || item.note.toString() === 'undefined') {
-                    item.note = '';
-                    item.labels = item.address;
-                } else {
-                    item.labels = item.address + '(' + item.note + ')';
-                }
-            }
-            this.currentAccount = accountList(1);
-        },
-        mounted() {
-            setInterval(() => {
-                this.accountList = accountList(0);
-                for (let item of this.accountList) {
-                    if (!item.note || item.note.toString() === 'undefined') {
-                        item.note = '';
-                        item.labels = item.address;
-                    } else {
-                        item.labels = item.address + '(' + item.note + ')';
-                    }
-                }
-                this.currentAccount = accountList(1);
-                if (this.currentAccount.address) {
-                    this.currentAccount.addresss = superLong(this.currentAccount.address, 6);
-                }
-
-            }, 1000)
-        },
-        components: {},
-        watch: {
-            "currentAccount.address": async function (val, oldVal) {
-                //console.log(val, oldVal);
-                if (val && val !== oldVal) {
-                    this.balanceLoading = true;
-                    let resData = await this.getAddressInfo(this.currentAccount.address);
-                    //console.log(resData);
-                    if (resData.success) {
-                        this.alias = resData.data.alias;
-                        this.balance = tofix(divisionDecimals(resData.data.balance), 3, -1);
-                        //console.log(this.balance);
-                        this.balanceLoading = false;
-                    }
-                }
-            }
-        },
-        methods: {
-
-            /**
-             * 导航跳转
-             * @param key
-             **/
-            handleSelect(key) {
-                //console.log(key.startsWith('NULS'));
-                if (key.startsWith('NULS') || key.startsWith('tNULS')) {
-                    let newAccountList = this.accountList;
-                    for (let item of newAccountList) {
-                        if (item.address === key) {
-                            this.currentAccount = item;
-                            item.isCurrent = true;
-                            localStorage.setItem('accountInfo', JSON.stringify(item));
-                        } else {
-                            item.isCurrent = false;
-                        }
-
-                    }
-                    localStorage.setItem('addressData', JSON.stringify(newAccountList));
-                    return;
-                }
-                this.activeIndex = key;
-                this.$router.push({
-                    name: key
-                })
-            },
-
-            /**
-             * 语言切换
-             */
-            selectLanguage() {
-                this.lang = this.lang === 'en' ? 'zh-cn' : 'en';
-                this.$i18n.locale = this.lang;
-            },
-
-            /**
-             * 获取地址信息
-             */
-            async getAddressInfo(address) {
-                let addressInfo = await getAddressInfoByAddress(address);
-                //console.log(addressInfo);
-                if (addressInfo.success) {
-                    return {success: true, data: addressInfo.data}
-                } else {
-                    return {success: false, data: addressInfo}
-                }
-            },
-
-            /**
-             * 连接跳转
-             * @param urlName
-             * @param parameter
-             * @param type  0:路由跳转 1：外部链接
-             */
-            toUrl(urlName, parameter, type) {
-                if (type === 0) {
-                    this.$router.push({
-                        name: urlName
-                    })
-                } else {
-                    window.open(urlName)
-                }
-            },
+  export default {
+    data() {
+      return {
+        logoSvg: IS_RUN ? logo : logoBeta,
+        activeIndex: '1',//导航选中项
+        rightActiveIndex: 'userList',//右边菜单选择
+        lang: 'en',  //语言
+        currentAccount: {},//当前账户信息
+        balanceLoading: true,//余额加载
+        balance: 0,
+        alias: '',
+        userLoading: true,
+        accountDialog: false
+      };
+    },
+    created() {
+      setTimeout(async () => {
+        if (typeof window.nabox === "undefined") {
+          this.$notify.error({title: '插件检查', message: '没有发现nabox插件，请先安装nabox插件'});
+          return;
         }
+        let naboxInfo = await window.nabox.createSession({chain: IS_RUN ? 'tNULS' : "NULS"});
+        console.log(naboxInfo[0]);
+        this.userLoading = false;
+        if (naboxInfo[0].startsWith('NULS') || naboxInfo[0].startsWith('tNULS')) {
+          if (IS_RUN && naboxInfo[0].startsWith('NULS')) {
+            this.$store.commit("changeAccount", {address: naboxInfo[0]});
+            this.naboxAccount();
+          } else if (!IS_RUN && naboxInfo[0].startsWith('tNULS')) {
+            this.$store.commit("changeAccount", {address: naboxInfo[0]});
+            this.naboxAccount();
+          } else {
+            this.offLink(naboxInfo[0])
+          }
+        } else {
+          this.userLoading = false;
+          this.$notify.error({title: '网络切换', message: '请在Nabox插件切换到NULS网络'});
+        }
+        this.userLoading = false;
+      }, 100)
+    },
+    mounted() {
+      setTimeout(async () => {
+        this.userLoading = false;
+      }, 1000)
+
+    },
+    components: {},
+    watch: {
+      "currentAccount.address": async function (val, oldVal) {
+        //console.log(val, oldVal);
+        if (val && val !== oldVal) {
+          this.balanceLoading = true;
+          let resData = await this.getAddressInfo(this.currentAccount.address);
+          //console.log(resData);
+          if (resData.success) {
+            this.alias = resData.data.alias;
+            this.balance = tofix(divisionDecimals(resData.data.balance), 3, -1);
+            //console.log(this.balance);
+            this.balanceLoading = false;
+          }
+        }
+      }
+    },
+    methods: {
+
+      superLongs(string, leng) {
+        return superLong(string, leng)
+      },
+
+      /**
+       * 导航跳转
+       * @param key
+       **/
+      handleSelect(key) {
+        //console.log(key.startsWith('NULS'));
+        if (key.startsWith('NULS') || key.startsWith('tNULS')) {
+          let newAccountList = this.accountList;
+          for (let item of newAccountList) {
+            if (item.address === key) {
+              this.currentAccount = item;
+              item.isCurrent = true;
+              localStorage.setItem('accountInfo', JSON.stringify(item));
+            } else {
+              item.isCurrent = false;
+            }
+          }
+          localStorage.setItem('addressData', JSON.stringify(newAccountList));
+          return;
+        }
+        this.activeIndex = key;
+        this.$router.push({
+          name: key
+        })
+      },
+
+      /**
+       * 语言切换
+       */
+      selectLanguage() {
+        this.lang = this.lang === 'en' ? 'zh-cn' : 'en';
+        this.$i18n.locale = this.lang;
+      },
+
+      /**
+       * 获取地址信息
+       */
+      async getAddressInfo(address) {
+        let addressInfo = await getAddressInfoByAddress(address);
+        //console.log(addressInfo);
+        if (addressInfo.success) {
+          return {success: true, data: addressInfo.data}
+        } else {
+          return {success: false, data: addressInfo}
+        }
+      },
+
+      //连接nabox 插件
+      async connectPlugin() {
+        if (typeof window.nabox === "undefined") {
+          console.log("没有方法nabox插件，请先安装nabox插件");
+          return;
+        }
+        let naboxInfo = await window.nabox.createSession({chain: IS_RUN ? 'tNULS' : "NULS"});
+        console.log(naboxInfo);
+        this.$store.commit("changeAccount", {address: naboxInfo[0]});
+        this.naboxAccount();
+      },
+
+      //监听插件账户变化
+      naboxAccount() {
+        if (!window.nabox) {
+          this.currentAccount = {};
+          return
+        }
+        window.nabox.on("accountsChanged", (payload) => {
+          //console.log(payload);
+          if (payload && payload.length) {
+            if (payload[0].startsWith('tNULS') || payload[0].startsWith('NULS')) {
+              this.$store.commit("changeAccount", {address: payload[0]});
+            }
+          } else {
+            this.currentAccount = {};
+          }
+        });
+
+      },
+
+      //断开连接钱包
+      async offLink(address) {
+        //console.log(address);
+        this.$store.commit("changeAccount", {address: ""});
+        this.accountDialog = false;
+        let resData = await window.nabox.offLink({address: address, chain: "NULS"});
+        console.log(resData);
+      },
+
+      /**
+       * 复制方法
+       * @param sting
+       **/
+      copy(sting) {
+        copys(sting);
+        this.$message({message: this.$t('public.copySuccess'), type: 'success', duration: 2000});
+        this.accountDialog = false;
+      },
+
+      /**
+       * 连接跳转
+       * @param urlName
+       * @param parameter
+       * @param type  0:路由跳转 1：外部链接
+       */
+      toUrl(urlName, parameter, type) {
+        if (type === 0) {
+          this.$router.push({
+            name: urlName
+          })
+        } else {
+          let url = IS_RUN ? 'http://beta.nulscan.io/address/info?address=' : 'https://nulscan.io/address/info?address=';
+          window.open(url + urlName)
+        }
+      },
     }
+  }
 </script>
 
 <style lang="less">
@@ -244,11 +260,10 @@
                 width: 220px;
                 float: right;
 
-                .user-info {
-                    margin: 16px 0 0 0;
-
-                    p {
-                        line-height: 16px;
+                .address-info {
+                    width: 150px;
+                    .ad {
+                        font-size: 14px;
                     }
                 }
 
@@ -276,25 +291,6 @@
                 }
             }
 
-            .address-info {
-                width: 200px;
-                float: right;
-
-                .ad {
-                    font-size: 14px;
-                    margin: 0.6rem 0 0 0;
-                }
-
-                .yue {
-                    line-height: 1rem;
-                    font-size: 12px;
-
-                    span {
-                        color: #0ede94;
-                    }
-                }
-
-            }
         }
 
         .mobile {
@@ -312,6 +308,39 @@
                 font-size: 0.7rem;
                 line-height: 0.7rem;
             }
+        }
+
+        .account-dialog {
+            .el-dialog {
+                .el-dialog__header {
+                    .el-dialog__headerbtn {
+                        top: 5px;
+                        right: 5px;
+                    }
+                }
+                .el-dialog__body {
+                    padding: 10px 5px;
+                    .address {
+                        padding: 10px 5px;
+                        border-radius: 5px;
+                        background-color: #f1f1f1;
+                        margin: 0 0 20px 0;
+                        font-size: 13px;
+                        height: 80px;
+                    }
+                    .btns {
+                        text-align: center;
+                        padding: 0 0 20px 0;
+                        .el-button {
+                            width: 100px;
+                            .span {
+                                color: #000000 !important;
+                            }
+                        }
+                    }
+                }
+            }
+
         }
 
     }

@@ -1,8 +1,8 @@
 import {BigNumber} from 'bignumber.js'
 import copy from 'copy-to-clipboard'
-import {EXPLORER_URL} from '@/config'
-//import openner from "./opener-web";
-import openner from "./opener-desktop";
+import {EXPLORER_URL, IS_RUN} from '@/config'
+import openner from "./opener-web";
+import {post} from './https'
 
 /**
  * 10的N 次方
@@ -43,12 +43,12 @@ export function Minus(nu, arg) {
  * 乘法
  * @param nu
  * @param arg
- * @returns {BigNumber}
+ * @returns {string}
  * @constructor
  */
 export function Times(nu, arg) {
   let newTimes = new BigNumber(nu);
-  return newTimes.times(arg);
+  return newTimes.times(arg).toFormat().replace(/[,]/g, '');
 }
 
 /**
@@ -70,12 +70,12 @@ export function timesDecimals(nu, decimals = 8) {
  * 除法
  * @param nu
  * @param arg
- * @returns {BigNumber}
+ * @returns {string}
  * @constructor
  */
 export function Division(nu, arg) {
   let newDiv = new BigNumber(nu);
-  return newDiv.div(arg);
+  return newDiv.div(arg).toFormat().replace(/[,]/g, '');
 }
 
 /**
@@ -316,16 +316,10 @@ export function addressSetStorage(newAddressInfo) {
 
 /**
  * 获取地址列表或选择地址
- * @param type 0:地址列表，1:选中地址
  * @returns {*}
  */
-export function accountList(type) {
-  let addressList = localStorage.hasOwnProperty('addressData') ? JSON.parse(localStorage.getItem('addressData')) : [];
-  if (type === 0) {
-    return addressList
-  } else {
-    return localStorage.hasOwnProperty('accountInfo') ? JSON.parse(localStorage.getItem('accountInfo')) : '';
-  }
+export async function accountList() {
+  return this.$store.state.accountInfo.address;
 }
 
 /**

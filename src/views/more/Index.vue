@@ -14,11 +14,9 @@
         <p>{{$t('home.home15')}}</p>
         <b class="font12">{{$t('home.home13')}}: *****</b>
       </li>
-      <li @click="toUrl('lockedTransfer','',0)">
-        <p>{{$t('locking.locking0')}}</p>
-        <b class="font12">{{$t('locking.locking0')}}</b>
-      </li>
     </ul>
+    <el-button @click="ts()">取 消</el-button>
+    <el-button @click="addressList()">address list</el-button>
   </div>
 </template>
 
@@ -35,6 +33,39 @@
     computed: {},
     watch: {},
     methods: {
+
+      async ts() {
+        console.log("dfdf");
+        const Binance = require('node-binance-api');
+        const binance = new Binance().options({
+          APIKEY: '51OR2tvSw9d6rmFNnUchN0WKuLokzAxg13k5bmc6jUZC5fOgWAxFHt9w1NKl93yT',
+          APISECRET: 'NW8tbJNSFC3NG2P2TyY4GhHCoud8Bp9c1uEzayWZ0uohMLvnTyTLrH8n8VXD2ot8'
+        });
+        let ticker = await binance.prices();
+        console.info(`Price of BNB: ${ticker.BNBUSDT}`);
+      },
+
+      async addressList() {
+        const Binance = require('node-binance-api');
+        const binance = new Binance().options({
+          APIKEY: '51OR2tvSw9d6rmFNnUchN0WKuLokzAxg13k5bmc6jUZC5fOgWAxFHt9w1NKl93yT',
+          APISECRET: 'NW8tbJNSFC3NG2P2TyY4GhHCoud8Bp9c1uEzayWZ0uohMLvnTyTLrH8n8VXD2ot8'
+        });
+
+        /*let balancesList = await binance.balance();
+        console.info(balancesList);*/
+
+        await binance.balance((error, balances) => {
+          if (error) return console.error(error);
+          console.info("balances()", balances);
+          console.info("ETH balance: ", balances.ETH.available);
+        });
+
+        /* binance.bookTickers('BNBBTC', (error, ticker) => {
+           console.info("bookTickers", ticker);
+         });*/
+
+      },
 
       /**
        * @disc: 连接跳转

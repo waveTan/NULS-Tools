@@ -12,13 +12,15 @@
         </el-input>
       </el-form-item>
     </el-form>
-    <!-- <div class="red">此操作将消耗0.01NULS</div>-->
-    <el-checkbox v-model="keepRadio">
+    <el-checkbox v-if="isShowKeep" v-model="keepRadio">
       <span>记住密码</span>
     </el-checkbox>
     <div slot="footer" class="dialog-footer">
       <el-button @click="passwordClose">{{$t('public.cancel')}}</el-button>
-      <el-button type="success" @click="dialogSubmit('passwordForm')" id="passwordInfo">{{$t('public.confirm')}}
+
+      <el-button :type="isDisabled ? 'info': 'success'" @click="dialogSubmit('passwordForm')" :disabled="isDisabled"
+                 id="passwordInfo">
+        <span> {{disabledInfo}}</span>
       </el-button>
     </div>
   </el-dialog>
@@ -29,7 +31,12 @@
   import {IsPC, accountList} from '@/api/util'
 
   export default {
-    props: {},
+    props: {
+      isTime: {
+        type: Boolean,
+        default: false
+      },
+    },
     data() {
       let validatePass = (rule, value, callback) => {
         if (value === '') {
@@ -50,9 +57,13 @@
             {validator: validatePass, trigger: ['blur', 'change']}
           ]
         },
+        isShowKeep: false,//是否显示记住密码
         keepRadio: false,//是否记住密码
         timeLag: 300000,//时差
         width: IsPC() ? '35%' : '95%',
+        isDisabled: false,
+        disabledValue: 0,
+        disabledInfo: '',
       }
     },
     created() {
@@ -82,10 +93,6 @@
           this.dialogSubmit(formName);
         }
       },
-
-      //密码框显示执行事件
-      passwordShow() {
-      },
       passwordClose() {
         this.$refs['passwordForm'].resetFields();
         this.passwordVisible = false;
@@ -96,11 +103,32 @@
         //console.log(address);
         this.addressList = accountList(0);
         if (address) {
+          this.isShowKeep = true;
           this.addressInfo = this.addressList.filter(obj => obj.address === address)[0];
           if (this.addressInfo.password) {
             this.passwordForm.password = this.addressInfo.password;
             this.keepRadio = true;
+            this.disabledValue = 3;
+            this.isDisabled = true;
+            this.disabledInfo = "合约参数验证中:" + this.disabledValue;
+            let interval = setInterval(() => {
+              this.disabledValue = this.disabledValue - 1;
+              this.disabledInfo = "合约参数验证中:" + this.disabledValue;
+              if (this.disabledValue === 0) {
+                clearInterval(interval);
+                this.isDisabled = false;
+                this.disabledInfo = this.$t('public.confirm')
+              }
+            }, 1000);
+          }else{
+            this.isShowKeep = true;
+            this.isDisabled = false;
+            this.disabledInfo = this.$t('public.confirm')
           }
+        } else {
+          this.isShowKeep = false;
+          this.isDisabled = false;
+          this.disabledInfo = this.$t('public.confirm')
         }
         this.passwordVisible = boolean;
 

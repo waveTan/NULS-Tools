@@ -52,6 +52,11 @@ export default new Router({
       component: resolve => require(['@/views/game/guessNumber/GuessNumber.vue'], resolve)
     },
     {
+      path: '/game/cannotGuess',
+      name: 'cannotGuess',
+      component: resolve => require(['@/views/game/cannotGuess/CannotGuess.vue'], resolve)
+    },
+    {
       path: '/game/goblin',
       name: 'goblin',
       component: resolve => require(['@/views/game/goblin/Goblin.vue'], resolve)
@@ -67,11 +72,6 @@ export default new Router({
       component: resolve => require(['@/views/more/Index.vue'], resolve)
     },
     {
-      path: '/more/lockedTransfer',
-      name: 'lockedTransfer',
-      component: resolve => require(['@/views/more/lockedTransfer/Index.vue'], resolve)
-    },
-    {
       path: '/tool',
       name: 'tool',
       component: resolve => require(['@/views/tool/Index.vue'], resolve)
@@ -80,6 +80,16 @@ export default new Router({
       path: '/tool/newAddress',
       name: 'toolNewAddress',
       component: resolve => require(['@/views/tool/newAddress/Index.vue'], resolve)
+    },
+    {
+      path: '/tool/lockedTransfer',
+      name: 'lockedTransfer',
+      component: resolve => require(['@/views/tool/lockedTransfer/Index.vue'], resolve)
+    },
+    {
+      path: '/tool/oneToMore',
+      name: 'oneToMore',
+      component: resolve => require(['@/views/tool/oneToMore/OneToMore.vue'], resolve)
     },
     {
       path: '/dream',

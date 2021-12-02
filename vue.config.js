@@ -47,7 +47,7 @@ module.exports = {
     https: false, // https:{type:Boolean}
     open: true, //配置自动启动浏览器
     proxy: {// 配置跨域处理
-      '/api': {
+      'https://api.binance.com/': {
         target: '/',   // 需要请求的地址
         changeOrigin: true,  // 是否跨域
         pathRewrite: {

@@ -1,4 +1,10 @@
 {
+  "header": {
+    "header0": "连接钱包",
+    "header1": "查看",
+    "header2": "复制",
+    "header3": "断开"
+  },
   "nav": {
     "home": "首页",
     "game": "游戏",
@@ -100,6 +106,7 @@
     "home27": "玩转盘得NULS百分之百中奖",
     "home28": "NULS 福彩",
     "home29": "基于NULS随机数的福利彩票绝对公开透明",
+    "home30": "NULS生态内的NRC20 Tokon Push",
     "home": "home"
   },
   "guessNum": {
@@ -141,7 +148,7 @@
     "guessNum": "guessNum"
   },
   "locking": {
-    "locking0": "可自定义锁定时间的转账",
+    "locking0": "锁仓转账",
     "locking1": "付款地址：",
     "locking2": "资产",
     "locking3": "收款地址：",
@@ -159,6 +166,52 @@
     "locking14": "金额不能为空",
     "locking15": "请输入正确的金额（小数点后最多八位）"
   },
+  "transfer": {
+    "transfer0": "付款地址",
+    "transfer1": "收款地址",
+    "transfer2": "资产类型",
+    "transfer3": "转账金额",
+    "transfer4": "备注",
+    "transfer5": "该手续费值是根据当前网络预估的，实际消耗可能小于该值，多余部分将会通过共识奖励退回",
+    "transfer6": "转账确认",
+    "transfer7": "取 消",
+    "transfer8": "确认提交",
+    "transfer9": "请输入收款地址",
+    "transfer10": "请输入正确的收款地址",
+    "transfer11": "请输入金额",
+    "transfer12": "金额必须为数字并且小数点后最多位数为",
+    "transfer13": "金额必须大于0.001",
+    "transfer131": "最大转出金额为:",
+    "transfer14": "金额不能大于可用余额",
+    "transfer15": "提示：您填写的地址是跨链地址这笔交易将是跨链交易，您只能选择基本资产...",
+    "transfer16": "付款地址的资产不足，请切换账户",
+    "transfer17": "跨链交易本链资产不足，请切换账户",
+    "transfer18": "此合约没有_payable方法不能向此合约地址转账",
+    "transfer19": "此合约没有方法不能向此合约地址转账",
+    "transfer20": "该账户本链主资产不足够支付手续费",
+    "transfer21": "资产的NRC-20合约已经被注销，请选择其他资产!",
+    "transfer22": "资产验证中...",
+    "transfer23": "请填写正确的收款地址或别名",
+    "transfer24": "全部",
+    "transfer25": "该资产不能转到合约地址",
+    "transfer": ""
+  },
+  "oneTo": {
+    "oneTo0": "oneTo",
+    "oneTo1": "可以转多个地址",
+    "oneTo2": "小计",
+    "oneTo3": "转账信息确认",
+    "oneTo4": "错误：格式错误!",
+    "oneTo5": "错误：地址类型错误（只支持NULS主网地址）!",
+    "oneTo6": "错误：长度不够!",
+    "oneTo7": "错误：金额只能为数字并且小数点前后最多八位",
+    "oneTo8": "收款地址/金额",
+    "oneTo9": "不能为空",
+    "oneTo10": "对不起，您余额不足!",
+    "oneTo11": "一对多转账交易",
+    "oneTo12": "可以一对多转NULS交易",
+    "oneTo": "oneTo"
+  },
   "newAddress": {
     "newAddress0": "keystore导入",
     "newAddress1": "私钥导入",
@@ -170,6 +223,8 @@
     "newAddress7": "密码",
     "newAddress8": "确认密码",
     "newAddress9": "私钥导入",
+    "newAddress10": "地址生成器",
+    "newAddress11": "可生成指定后缀的地址",
     "newAddress": ""
   },
   "backupsAddress": {
@@ -255,5 +310,15 @@
     "goblin3": "goblin",
     "goblin4": "goblin",
     "goblin": "goblin"
+  },
+  "cannotGuess": {
+    "cannotGuess0": "猜不着",
+    "cannotGuess1": "猜不着参与金额全部返还并给与赔偿",
+    "cannotGuess2": "cannotGuess",
+    "cannotGuess3": "cannotGuess",
+    "cannotGuess4": "cannotGuess",
+    "cannotGuess5": "cannotGuess",
+    "cannotGuess6": "cannotGuess",
+    "cannotGuess": "cannotGuess"
   }
 }

@@ -2,28 +2,18 @@
   <div class="guess w1200 cb">
     <h6 class="title font18 fW600">{{$t('public.recreation')}}</h6>
     <ul class="dapp-list">
-      <li @click="toUrl('goblin','',0)">
+      <!--<li @click="toUrl('goblin','',0)">
         <img src="@/assets/img/goblin-logo.png" width="50">
         <b class="font12">{{$t('goblin.goblin0')}}<br/>{{$t('goblin.goblin1')}}</b>
-      </li>
+      </li>-->
       <li @click="toUrl('guessNumber','',0)">
         <p>{{$t('home.home9')}}</p>
-        <!--<li>
-            <p>{{$t('home.home9')}}<span class="font12 fW400">({{$t('public.testing')}})</span></p>-->
         <b class="font12">{{$t('home.home10')}}</b>
       </li>
-      <li>
-        <p>{{$t('home.home28')}}<span class="font12 fW400">({{$t('public.design')}}...)</span></p>
-        <b class="font12">{{$t('home.home29')}}</b>
+      <li @click="toUrl('cannotGuess','',0)">
+        <p>{{$t('cannotGuess.cannotGuess0')}}<span class="font12 fW400">({{$t('public.design')}}...)</span></p>
+        <b class="font12">{{$t('cannotGuess.cannotGuess1')}}</b>
       </li>
-      <!-- <li>
-         <img src="@/assets/logo.png">
-         <b class="font12">快乐翻牌<br/>{{$t('public.comingSoon')}}</b>
-       </li>
-       <li>
-         <img src="@/assets/logo.png">
-         <b class="font12">数字华容道<br/>{{$t('public.comingSoon')}}</b>
-       </li>-->
     </ul>
   </div>
 </template>
