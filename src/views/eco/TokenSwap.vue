@@ -427,7 +427,7 @@
     },
     async created() {
       this.addressInfo.address = this.$store.state.accountInfo.address;
-      this.urls = IS_RUN ? 'https://nuls.ipbsc.cn' : 'https://tokenex.mimieye.net';
+      this.urls = IS_RUN ? 'https://tokenex.mimieye.net' : 'https://tokenex.mimieye.net';
     },
     mounted() {
       this.init();

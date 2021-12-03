@@ -51,7 +51,7 @@ export async function chainMethodCall(address, methodsInfo, contractAddress, val
  * @param args
  */
 async function validateContractCall(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args) {
-  console.log(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args);
+  //console.log(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args);
   return await post('/', 'validateContractCall', [sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args])
     .then(async (response) => {
       //console.log(response);
