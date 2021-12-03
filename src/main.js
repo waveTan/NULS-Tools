@@ -7,8 +7,6 @@ import './plugins/element.js'
 import {post} from './api/https'
 //定义全局变量
 Vue.prototype.$post = post;
-
-
 Vue.config.productionTip = false;
 
 new Vue({
