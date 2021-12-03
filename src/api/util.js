@@ -1,8 +1,7 @@
 import {BigNumber} from 'bignumber.js'
 import copy from 'copy-to-clipboard'
-import {EXPLORER_URL, IS_RUN} from '@/config'
+import {EXPLORER_URL} from '@/config'
 import openner from "./opener-web";
-import {post} from './https'
 
 /**
  * 10的N 次方
