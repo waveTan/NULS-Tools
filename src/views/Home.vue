@@ -24,7 +24,7 @@
             <h6 class="title font18 fW600">{{$t('public.zoology')}}</h6>
             <ul class="dapp-list">
                 <li @click="toUrl('tokenSwap','',0)">
-                    <p>Token Push({{$t('public.testing')}}....)</p>
+                    <p>Push Market</p>
                     <b class="font12">{{$t('home.home30')}}</b>
                 </li>
             </ul>
@@ -36,10 +36,10 @@
                   <img src="@/assets/img/goblin-logo.png" width="50">
                   <b class="font12">{{$t('goblin.goblin0')}}<br/>{{$t('goblin.goblin1')}}</b>
                 </li>-->
-                <li @click="toUrl('guessNumber','',0)">
+                <!--<li @click="toUrl('guessNumber','',0)">
                     <p>{{$t('home.home9')}}</p>
                     <b class="font12">{{$t('home.home10')}}</b>
-                </li>
+                </li>-->
                 <li @click="toUrl('cannotGuess','',0)">
                     <p>{{$t('cannotGuess.cannotGuess0')}}<span class="font12 fW400">({{$t('public.design')}}...)</span>
                     </p>

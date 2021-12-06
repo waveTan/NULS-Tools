@@ -370,7 +370,7 @@
       return {
         addressList: [],//地址列表
         addressInfo: {},//选择地址信息
-        urls: 'https://nuls.ipbsc.cn',//连接地址
+        urls: 'https://tokenex.mimieye.net',//连接地址
         tokenInfo: {},//token信息
         contractAddress: '',//token swap 合约地址
         allNRC20List: [],//所有NRC20合约
