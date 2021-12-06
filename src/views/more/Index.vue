@@ -34,39 +34,6 @@
     watch: {},
     methods: {
 
-      async ts() {
-        console.log("dfdf");
-        const Binance = require('node-binance-api');
-        const binance = new Binance().options({
-          APIKEY: '51OR2tvSw9d6rmFNnUchN0WKuLokzAxg13k5bmc6jUZC5fOgWAxFHt9w1NKl93yT',
-          APISECRET: 'NW8tbJNSFC3NG2P2TyY4GhHCoud8Bp9c1uEzayWZ0uohMLvnTyTLrH8n8VXD2ot8'
-        });
-        let ticker = await binance.prices();
-        console.info(`Price of BNB: ${ticker.BNBUSDT}`);
-      },
-
-      async addressList() {
-        const Binance = require('node-binance-api');
-        const binance = new Binance().options({
-          APIKEY: '51OR2tvSw9d6rmFNnUchN0WKuLokzAxg13k5bmc6jUZC5fOgWAxFHt9w1NKl93yT',
-          APISECRET: 'NW8tbJNSFC3NG2P2TyY4GhHCoud8Bp9c1uEzayWZ0uohMLvnTyTLrH8n8VXD2ot8'
-        });
-
-        /*let balancesList = await binance.balance();
-        console.info(balancesList);*/
-
-        await binance.balance((error, balances) => {
-          if (error) return console.error(error);
-          console.info("balances()", balances);
-          console.info("ETH balance: ", balances.ETH.available);
-        });
-
-        /* binance.bookTickers('BNBBTC', (error, ticker) => {
-           console.info("bookTickers", ticker);
-         });*/
-
-      },
-
       /**
        * @disc: 连接跳转
        * @param urlName
