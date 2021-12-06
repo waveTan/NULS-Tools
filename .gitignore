@@ -21,3 +21,4 @@ yarn-error.log*
 *.sw*
 /yarn.lock
 /dist_electron
+/package-lock.json
