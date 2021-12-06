@@ -15,8 +15,6 @@
         <b class="font12">{{$t('home.home13')}}: *****</b>
       </li>
     </ul>
-    <el-button @click="ts()">取 消</el-button>
-    <el-button @click="addressList()">address list</el-button>
   </div>
 </template>
 
