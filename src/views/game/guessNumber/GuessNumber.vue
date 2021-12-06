@@ -227,8 +227,7 @@
     getLocalTime,
     superLong,
     connectToExplorer,
-    IsPC,
-    accountList, openConnection
+    IsPC, openConnection
   } from '@/api/util'
   import {
     passwordVerification,
